@@ -1,0 +1,106 @@
+/* Empty. Add your own CSS if you like */
+
+
+/* Image preloader */
+
+.preload-01 { background: url("../images/logo_comune_80x80.gif") no-repeat -9999px -9999px; }  
+.preload-02 { background: url("../images/logo_rimini.png") no-repeat -9999px -9999px; }  
+.preload-03 { background: url("../images/logo_rimini.png") no-repeat -9999px -9999px; }  
+/* .preload-03 { background: url(image-03.png) no-repeat -9999px -9999px; } */
+/* .preload-04 { background: url(image-04.png) no-repeat -9999px -9999px; } */
+/* .preload-05 { background: url(image-05.png) no-repeat -9999px -9999px; } */
+
+/* GOOGLE MAPS */
+
+.angular-google-map-container { 
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.scroll {
+  height: 100%;
+}
+
+.marker-labels {
+    color: red;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    white-space: nowrap;
+}
+
+
+.marker-labels-old {
+    color: yellow;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    white-space: nowrap;
+}
+
+/* report style */
+
+.report-title-row {
+
+    background-color: #A9F5D0;
+
+}
+
+
+/* ionic fancy select :: http://codepen.io/mhartington/pen/CImqy */
+
+.fancy-select .list {  margin: -1px 0; }
+
+/* Items */
+/* line 13, ../scss/modules/_fancy-select.scss */
+.fancy-select-items {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+  /* line 19, ../scss/modules/_fancy-select.scss */
+  .fancy-select-items .item {
+    overflow: hidden;
+    /* Clearfix */ }
+
+/* line 24, ../scss/modules/_fancy-select.scss */
+.fancy-select-items label p {
+  height: 32px;
+  line-height: 32px; }
+
+/* line 29, ../scss/modules/_fancy-select.scss */
+.fancy-select-icon {
+  float: left;
+  margin-right: 10px;
+  width: 30px;
+  text-align: center; 
+}
+
+/* collection repeat */
+.my-item-collection-repeat {
+  left: 0 !important;
+  right: 0 !important;
+} 
+
+
+/* alternate color table */
+.classOdd { 
+  background-color: #e6e6e6;
+}
+
+
+.classEven { 
+  background-color: #ffffff;
+}
