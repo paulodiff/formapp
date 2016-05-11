@@ -50,6 +50,8 @@
     <script src="bower_components/angular-dialog-service/dist/dialogs.js"></script>
 
 
+    <script src="bower_components/satellizer/satellizer.js"></script>
+
 <!--
 
     <script src="lib/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
@@ -76,18 +78,37 @@
     <script src="scripts/authService.js"></script>
     <script src="scripts/rootControllers.js"></script>
     <script src="scripts/loginControllers.js"></script>
-    <script src="scripts/segnalazioniControllers.js"></script>
-    <script src="scripts/brogliaccioControllers.js"></script>
-    <script src="scripts/reportControllers.js"></script>
-    <script src="scripts/veloxControllers.js"></script>
-    <script src="scripts/mapsControllers.js"></script>
-    <script src="scripts/heatControllers.js"></script>
-    <script src="scripts/cordovaControllers.js"></script>
+    <script src="scripts/SloginControllers.js"></script>
+
     <script src="scripts/filters.js"></script>
-    <script src="scripts/directives.js"></script>  
+    <script src="scripts/rootDirectives.js"></script>
+    <script src="scripts/directives/directives.js"></script>  
+    <script src="scripts/directives/passwordMatch.js"></script>  
+    <script src="scripts/directives/passwordStrength.js"></script>  
+<!--    
+-->    
+
   </head>
 
   <body ng-app="myApp" ng-controller="AppCtrl">
+
+    <div class="navbar" ng-controller="SNavbarCtrl" navbar-default navbar-static-top">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/"><i class="ion-ios7-pulse-strong"></i> Satellizer</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="/#/">Home</a></li>
+        <li ng-if="isAuthenticated()"><a href="/#/profile">Profile</a></li>
+      </ul>
+      <ul ng-if="!isAuthenticated()" class="nav navbar-nav pull-right">
+        <li><a href="/#/login">Login</a></li>
+        <li><a href="/#/signup">Sign up</a></li>
+      </ul>
+      <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
+        <li><a href="/#/logout">Logout</a></li>
+      </ul>
+    </div>
+
 
     <!-- loader http://pathgather.github.io/please-wait/ START 
     <div class="inner" ng-view=""></div>

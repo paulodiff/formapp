@@ -8,6 +8,7 @@ angular.module('myApp', [//'ionic',
                          'ui.bootstrap',   
                          'ui.router',
                          'dialogs.main',
+                         'satellizer',
                          'ngResource',
                          //'ngCordova',
                          'angularSpinner',
@@ -67,349 +68,94 @@ angular.module('myApp', [//'ionic',
             accessLevel: 'free1' 
     });
 
-    $stateProvider.state('login',{
-            url: '/login',
-            templateUrl: "templates/loginDashboard.html",
-            controller:'LoginController',
-            accessLogged: false,
-            accessLevel: 'free1' 
+
+    $stateProvider.state('home', {
+        url: '/',
+        controller: 'SHomeCtrl',
+        templateUrl: 'templates/Shome.html',
+        accessLogged: false,
+        accessLevel: 'free1' 
     });
 
-    $stateProvider.state('signup',{
-            url: '/signup',
-            templateUrl: "templates/signupDashboard.html",
-            controller:'LoginController',
-            accessLogged: false,
-            accessLevel: 'free1' 
-    });
-
-    $stateProvider.state('profile',{
-            url: '/profile',
-            templateUrl: "templates/profileDashboard.html",
-            controller:'LoginController',
-            accessLogged: false,
-            accessLevel: 'free1' 
-    });
-
-
-/*
-    $stateProvider.state('menu.login', {
-            url: "/login",
-            views: {
-                'menuContent' :{
-                    templateUrl: "templates/loginPRO.html",
-                    controller: "LoginController"
-                }
-            },
-            accessLogged: false 
-    });
-*/ 
-
-   /*
-    $stateProvider.state('menu.report',{
-        url: '/report',
-        views: {
-                'menuContent' :{
-                    templateUrl: "templates/reportM.html",
-                    controller: "ReportCtrlMobile"
-                }
-            },
-        accessLogged: true, 
-        configAction: 'new'
-    });
-    
-    $stateProvider.state('menu.list',{
-        url: '/list',
-        views: {
-                'menuContent' :{
-                    templateUrl: "templates/ListItemM.html",
-                    controller: "InfiniteCtrl"
-                }
-            },
-        accessLogged: true, 
-        configAction: 'new'
-    });
-    
-    $stateProvider.state('menu.new',{
-        url: '/new',
-        
-        views: {
-            'menuContent' :{
-                templateUrl: "templates/EditItemM.html",
-                controller: "EditItemCtrl"
-            }
-        },
-        
-        accessLogged: true, 
-        configAction: 'new'
-    });
-
-    $stateProvider.state('menu.edit',{
-        url: '/edit/:id',
-        views: {
-                'menuContent' :{
-                    templateUrl: "templates/EditItemM.html",
-                    controller: "EditItemCtrl"
-                }
-            },
-        accessLogged: true, 
-        configAction: 'edit'
-    });
-    
-    
-    $stateProvider.state('menu.view',{
-        url: '/view/:id',
-        views: {
-                'menuContent' :{
-                    templateUrl: 'templates/EditItemM.html', 
-                    controller: 'EditItemCtrl', 
-                }
-            },
-        accessLogged: true, 
-        configAction: 'view'
-    });
-*/
-    // protocolli
-
-/*
-    $stateProvider.state('menu.listProtocolli',{
-        url: '/listProtocolli',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/ListProtocolliM.html",
-                    controller: "ListProtocolliController"
-                }
-            },
-        accessLogged: true, 
-        configAction: 'view'
-    });   
-
-    $stateProvider.state('menu.newProtocollo',{
-        url: '/newProtocollo',
-        
-        views: {
-                'menuContent' :{
-                    templateUrl: "templates/EditItemProtocolloM.html",
-                    controller: "EditItemProtocolloController"
-                }
-            },
-        
-        accessLogged: true, 
-        configAction: 'new'
-  });
-
-*/
-/*
-    $stateProvider.state('menu.listSegnalazioni',{
-        url: '/listSegnalazioni',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/ListSegnalazioniM.html",
-                    controller: "ListSegnalazioniController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-    });   
-
-    $stateProvider.state('menu.listBrogliaccio',{
-        url: '/listBrogliaccio',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/ListBrogliaccioM.html",
-                    controller: "ListBrogliaccioController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-    });   
-
-
-    $stateProvider.state('menu.listReport',{
-        url: '/listReport',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/ListReportM.html",
-                    controller: "ListReportController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-    });  
-*/
-/*    
-    // rapporti
-    
-    $stateProvider.state('menu.listRelazioni',{
-        url: '/listRelazioni',
-        //templateUrl: 'templates/ListItemRelazioni.html', 
-        //controller: 'InfiniteCtrlRelazioni', 
-        views: {
-                'menuContent' :{
-                    templateUrl: "templates/ListItemRelazioniM.html",
-                    controller: "InfiniteCtrlRelazioni"
-                }
-            },
-        
-        accessLogged: true, 
-        configAction: 'new'
-    });
-    
-    $stateProvider.state('menu.newRelazioni',{
-        url: '/newRelazioni/:id',
-        
-        views: {
-                'menuContent' :{
-                    templateUrl: "templates/EditItemRelazioniM.html",
-                    controller: "EditItemCtrlRelazioni"
-                }
-            },
-        
-        accessLogged: true, 
-        configAction: 'new'
-  });
-
-  $stateProvider.state('menu.editRelazioni',{
-        url: '/editRelazioni/:id',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/EditItemRelazioniM.html",
-                    controller: "EditItemCtrlRelazioni"
-                }
-            },
-        accessLogged: true, 
-        configAction: 'edit'
-  });
-
-  $stateProvider.state('menu.viewRelazioni',{
-        url: '/viewRelazioni/:id',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/EditItemRelazioniM.html",
-                    controller: "EditItemCtrlRelazioni"
-                }
-            },
-        accessLogged: true, 
-        configAction: 'view'
-  });    
-
-    
-  $stateProvider.state('menu.about',{
-        url: '/about',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/aboutM.html",
-                    controller: "AboutController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-  });  
-    
-*/ /*
-  $stateProvider.state('menu.help',{
-        url: '/help',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/helpM.html",
-                    controller: "HelpController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-  });
-
- $stateProvider.state('menu.maps',{
-        url: '/maps',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/mapsM.html",
-                    controller: "MapsController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-  });
-
- $stateProvider.state('menu.heat',{
-        url: '/heat',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/heatM.html",
-                    controller: "HeatController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-  });
-
-
- $stateProvider.state('menu.velox',{
-        url: '/velox',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/veloxM.html",
-                    controller: "VeloxController"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-  });
-
-*/
-/*
- $stateProvider.state('menu.cordova',{
-        url: '/cordova',
-         views: {
-                'menuContent' :{
-                    templateUrl: "templates/playlists.html",
-                    controller: "PlaylistsCtrl"
-                }
-            },
-        accessLogged: false, 
-        configAction: 'view'
-  });
-
-
- $stateProvider.state('test',{
-        url: '/test',
-        templateUrl: 'templates/testM.html', 
-        controller: 'TestController', 
-        accessLogged: false, 
-        configAction: 'view'
-  });
-*/
- // Preload templates FAKE
-/*
- $stateProvider.state('fake1',{
-        url: '/fake1',
-        templateUrl: 'templates/fancy-select.html', 
-        controller: 'TestController', 
-        accessLogged: false, 
-        configAction: 'view'
-  });
-
- $stateProvider.state('fake2',{
-        url: '/fake2',
-        templateUrl: 'templates/fancy-select-items.html', 
-        controller: 'TestController', 
-        accessLogged: false, 
-        configAction: 'view'
-  });  
-*/
-  /*
-  RestangularProvider.setBaseUrl('/apiQ');
-  RestangularProvider.setDefaultRequestParams({ apiKey: '**********************' });
-  RestangularProvider.setRestangularFields({id: '_id.$oid'});
-  RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
-        if (operation === 'put') {
-          elem._id = undefined;
-          return elem;
+    $stateProvider.state('login', {
+        url: '/login',
+        templateUrl: 'templates/Slogin.html',
+        controller: 'SLoginCtrl',
+        resolve: {
+          skipIfLoggedIn: skipIfLoggedIn
         }
-        return elem;
-      });
-  */
+    });
+
+    $stateProvider.state('signup', {
+        url: '/signup',
+        templateUrl: 'templates/Ssignup.html',
+        controller: 'SSignupCtrl',
+        resolve: {
+          skipIfLoggedIn: skipIfLoggedIn
+        }
+    });
+
+    $stateProvider.state('logout', {
+        url: '/logout',
+        template: null,
+        controller: 'SLogoutCtrl'
+    });
+      
+    $stateProvider.state('profile', {
+        url: '/profile',
+        templateUrl: 'templates/Sprofile.html',
+        controller: 'SProfileCtrl',
+        resolve: {
+          loginRequired: loginRequired
+        }
+    });
+
+    function skipIfLoggedIn($q, $auth) {
+      var deferred = $q.defer();
+      if ($auth.isAuthenticated()) {
+        deferred.reject();
+      } else {
+        deferred.resolve();
+      }
+      return deferred.promise;
+    }
+
+    function loginRequired($q, $location, $auth) {
+      var deferred = $q.defer();
+      if ($auth.isAuthenticated()) {
+        deferred.resolve();
+      } else {
+        $location.path('/login');
+      }
+      return deferred.promise;
+    }
+
 }])
+
+.config(function($authProvider) {
+
+    // Optional: For client-side use (Implicit Grant), set responseType to 'token'
+    $authProvider.facebook({
+      clientId: 'Facebook App ID',
+      responseType: 'token'
+    });
+
+    $authProvider.google({
+      clientId: 'Google Client ID'
+    });
+
+    // No additional setup required for Twitter
+
+    $authProvider.oauth2({
+      name: 'foursquare',
+      url: '/auth/foursquare',
+      clientId: 'Foursquare Client ID',
+      redirectUri: window.location.origin,
+      authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
+    });
+
+})
+
 
 .run(function() {
   

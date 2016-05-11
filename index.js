@@ -1,3 +1,4 @@
+
 var log4js  = require('log4js');
 log4js.configure({
   appenders: [
@@ -11,20 +12,27 @@ log4js.configure({
     }
   ]
 });
-
 var logger = log4js.getLogger();
+
 var express = require('express');
 var app = express();
-var passport = require('passport');
+
+//var flash        = require('connect-flash');
+var morgan       = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser   = require('body-parser');
+var cors         = require('cors');
+//var session      = require('express-session');
+//var passport     = require('passport');
+var mongoose     = require('mongoose');
+//var jwt          = require('jsonwebtoken');
 //var expressSession = require('express-session');
 
 var ENV   = require('./config.js'); // load configuration data
 
-var mongoose = require('mongoose');
 mongoose.connect(ENV.mongodb.MONGODB_URL); // connect to our database
 
 
-var jwt = require('jsonwebtoken');
 
 // init logging
 var logCon  = log4js.getLogger();
@@ -38,26 +46,46 @@ logCon.debug('Starting server');
 
 /*
 app.use(expressSession({
-		  				secret: 'mySecretKey',
-  						resave: false,
-  						saveUninitialized: true,
-			  			cookie: { secure: true }
-						}));
+              secret: 'mySecretKey',
+              resave: false,
+              saveUninitialized: true,
+              cookie: { secure: true }
+            }));
 */
-app.use(passport.initialize());
-//app.use(passport.session());
 
+// set up our express application
+
+app.use(cors());
+app.use(morgan('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+/*
+app.set('view engine', 'ejs'); // set up ejs for templating
+app.use(session({ secret: ENV.secret,
+                  resave: false,
+                  saveUninitialized: true,
+                  cookie: { secure: true }
+})); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages sto
 
 // Initialize Passport
 var initPassport = require('./models/passport/init');
 initPassport(passport);
-
-
-app.use(express.static('client/'));
-
 var loginr = require('./routes/loginr')(passport);
 app.use('/api/auth', loginr);
+*/
 
+var Sloginr = require('./routes/Sloginr')();
+app.use('/auth', Sloginr);
+
+var Smer = require('./routes/Smer')();
+app.use('/api', Smer);
+
+app.use(express.static('client/'));
 
 app.get('/test', function (req, res) {
   res.send('Hello World!');
@@ -66,5 +94,5 @@ app.get('/test', function (req, res) {
 
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+  console.log('Listening on port 3000');
 });

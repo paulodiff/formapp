@@ -506,6 +506,4 @@ angular.module('myApp.controllers')
         $uibModalInstance.dismiss('cancel');
     };
 
-}])
-
-;
+}]);

@@ -1,0 +1,130 @@
+angular.module('myApp.controllers')
+  .controller('SLoginCtrl', 
+           ['$scope', 'dialogs', '$auth', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log',
+    function($scope,   dialogs,   $auth,   $rootScope,   AuthService,   Session,   Restangular,  $state,  ENV ,  $log ) {
+
+    $scope.login = function() {
+      $auth.login($scope.user)
+        .then(function() {
+          dialogs.notify('ok','You have successfully signed in!');
+          $state.go('home');
+        })
+        .catch(function(error) {
+          $log.debug(error);
+          dialogs.error(error);
+        });
+    };
+
+    $scope.authenticate = function(provider) {
+      $auth.authenticate(provider)
+        .then(function() {
+          dialogs.notify('ok','You have successfully signed in with ' + provider + '!');
+          $state.go('home');
+        })
+        .catch(function(error) {
+          if (error.error) {
+            // Popup error - invalid redirect_uri, pressed cancel button, etc.
+            $log.error(error);
+            dialogs.error(error);
+          } else if (error.data) {
+            // HTTP response error from server
+            $log.error(error);
+            dialogs.error(error);
+          } else {
+            $log.error(error);
+            dialogs.error(error);
+          }
+        });
+    };
+  }])
+
+  .controller('SLogoutCtrl', 
+
+           ['$scope', 'dialogs', '$auth', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log',
+    function($scope,   dialogs,   $auth,   $rootScope,   AuthService,   Session,   Restangular,  $state,  ENV ,  $log ) {
+
+    if (!$auth.isAuthenticated()) { return; }
+    $auth.logout()
+      .then(function() {
+        dialogs.notify('ok','You have been logged out');
+        $state.go('home');
+      });
+  }])
+
+  .controller('SProfileCtrl', 
+
+           ['$scope', 'dialogs', '$auth', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log', 'Account',
+    function($scope,   dialogs,   $auth,   $rootScope,   AuthService,   Session,   Restangular,  $state,  ENV ,  $log, Account ) {
+
+
+    $scope.getProfile = function() {
+      Account.getProfile()
+        .then(function(response) {
+          $scope.user = response.data;
+        })
+        .catch(function(response) {
+          dialogs.error('err', response.data.message + response.status);
+        });
+    };
+    $scope.updateProfile = function() {
+      Account.updateProfile($scope.user)
+        .then(function() {
+          dialogs.notify('Profile has been updated');
+        })
+        .catch(function(response) {
+          dialogs.error('err',response.data.message, response.status);
+        });
+    };
+    $scope.link = function(provider) {
+      $auth.link(provider)
+        .then(function() {
+          dialogs.notify('You have successfully linked a ' + provider + ' account');
+          $scope.getProfile();
+        })
+        .catch(function(response) {
+          dialogs.error(response.data.message, response.status);
+        });
+    };
+    $scope.unlink = function(provider) {
+      $auth.unlink(provider)
+        .then(function() {
+          dialogs.notify('You have unlinked a ' + provider + ' account');
+          $scope.getProfile();
+        })
+        .catch(function(response) {
+          dialogs.error(response.data ? response.data.message : 'Could not unlink ' + provider + ' account', response.status);
+        });
+    };
+
+    $scope.getProfile();
+  }])
+
+
+  .controller('SSignupCtrl', 
+
+           ['$scope', 'dialogs', '$auth', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log',
+    function($scope,   dialogs,   $auth,   $rootScope,   AuthService,   Session,   Restangular,  $state,  ENV ,  $log ) {
+
+    $scope.signup = function() {
+      $auth.signup($scope.user)
+        .then(function(response) {
+          $auth.setToken(response);
+          $location.path('/');
+          dialogs.notify('You have successfully created a new account and have been signed-in');
+        })
+        .catch(function(response) {
+          dialogs.error(response.data.message);
+        });
+    };
+  }])
+
+
+  .controller('SNavbarCtrl',
+
+           ['$scope', 'dialogs', '$auth', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log',
+    function($scope,   dialogs,   $auth,   $rootScope,   AuthService,   Session,   Restangular,  $state,  ENV ,  $log ) {
+
+    $scope.isAuthenticated = function() {
+      return $auth.isAuthenticated();
+    };
+  }]);    
