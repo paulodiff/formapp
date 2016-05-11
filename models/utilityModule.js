@@ -1,5 +1,6 @@
 var jwt = require('jwt-simple');
 var moment = require('moment');
+var ENV   = require('../config.js'); // load configuration data
 
 
 module.exports = {
@@ -18,7 +19,7 @@ module.exports = {
 
           var payload = null;
           try {
-            payload = jwt.decode(token, config.TOKEN_SECRET);
+            payload = jwt.decode(token, ENV.secret);
           }
           catch (err) {
             console.log(err);
@@ -40,7 +41,7 @@ module.exports = {
             iat: moment().unix(),
             exp: moment().add(14, 'days').unix()
           };
-          return jwt.encode(payload, config.TOKEN_SECRET);
+          return jwt.encode(payload, ENV.secret);
     }
 
 

@@ -145,7 +145,7 @@ angular.module('myApp.controllers')
             $log.debug(event);
             $log.debug(next);
 
-            dialogs.error();
+            dialogs.error('errre','sdfsdfsdf');
 /*
     
             var modalInstance = $uibModal.open({

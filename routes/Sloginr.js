@@ -23,7 +23,7 @@ router.post('/login', function(req, res) {
       if (!isMatch) {
         return res.status(401).send({ message: 'Invalid email and/or password' });
       }
-      res.send({ token: UtilityModule.createJWT(user) });
+      res.send({ token: utilityModule.createJWT(user) });
     });
   });
 });
@@ -43,12 +43,14 @@ router.post('/signup', function(req, res) {
       email: req.body.email,
       password: req.body.password
     });
+    console.log('/signup saving user');
+    console.log(user);
     user.save(function(err, result) {
       if (err) {
-      	if(err) console.log(err);
+      	console.log(err);
         res.status(500).send({ message: err.message });
       }
-      res.send({ token: createJWT(result) });
+      res.send({ token: utilityModule.createJWT(result) });
     });
   });
 });

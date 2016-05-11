@@ -24,16 +24,25 @@ var userSchema = mongoose.Schema({
 
 
 userSchema.pre('save', function(next) {
+  console.log('userSchema save');
   var user = this;
   if (!user.isModified('password')) {
     return next();
   }
+
+  
   bcrypt.genSalt(10, function(err, salt) {
-    bcrypt.hash(user.password, salt, function(err, hash) {
+    if(err) console.log(err);
+    console.log(salt);
+    console.log(user.password);
+    bcrypt.hash(user.password, salt, null, function(err, hash) {
+      if(err) console.log(err);
+      console.log(hash);
       user.password = hash;
       next();
     });
   });
+  
 });
 
 userSchema.methods.comparePassword = function(password, done) {

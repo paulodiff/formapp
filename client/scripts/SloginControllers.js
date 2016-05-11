@@ -10,8 +10,10 @@ angular.module('myApp.controllers')
           $state.go('home');
         })
         .catch(function(error) {
+          $log.debug('login error:');
           $log.debug(error);
-          dialogs.error(error);
+          $log.debug(error.data.message);
+          dialogs.error('Errore',error.data.message);
         });
     };
 
@@ -69,7 +71,7 @@ angular.module('myApp.controllers')
     $scope.updateProfile = function() {
       Account.updateProfile($scope.user)
         .then(function() {
-          dialogs.notify('Profile has been updated');
+          dialogs.notify('ok','Profile has been updated');
         })
         .catch(function(response) {
           dialogs.error('err',response.data.message, response.status);
@@ -109,15 +111,33 @@ angular.module('myApp.controllers')
       $auth.signup($scope.user)
         .then(function(response) {
           $auth.setToken(response);
-          $location.path('/');
+          $state.go('home');
           dialogs.notify('You have successfully created a new account and have been signed-in');
         })
         .catch(function(response) {
-          dialogs.error(response.data.message);
+          console.log(response);
+          dialogs.error('Errore','Signup Error');
         });
     };
   }])
 
+
+.controller('SHomeCtrl', function($scope, $http) {
+    $http.jsonp('https://api.github.com/repos/sahat/satellizer?callback=JSON_CALLBACK')
+      .success(function(data) {
+        if (data) {
+          if (data.data.stargazers_count) {
+            $scope.stars = data.data.stargazers_count;
+          }
+          if (data.data.forks) {
+            $scope.forks = data.data.forks;
+          }
+          if (data.data.open_issues) {
+            $scope.issues = data.data.open_issues;
+          }
+        }
+      });
+  })
 
   .controller('SNavbarCtrl',
 
