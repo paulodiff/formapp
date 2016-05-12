@@ -1,0 +1,20 @@
+<div class="container">
+<div>
+      <h1>angular-formly example: {{::vm.exampleTitle}}</h1>
+      <div>
+        This is a small subset of the things that formly can do :-)
+        See the other examples and the documentation for more.
+      </div>
+      <form ng-submit="vm.onSubmit()" name="vm.form" novalidate>
+        <formly-form model="vm.model" fields="vm.fields" options="vm.options" form="vm.form">
+          <button type="submit" class="btn btn-primary submit-button" ng-disabled="vm.form.$invalid">Submit</button>
+          <button type="button" class="btn btn-default" ng-click="vm.options.resetModel()">Reset</button>
+        </formly-form>
+      </form>
+      <p>Form Data</p>
+      <pre>{{vm.model | json}}</pre>
+      <p>Form Error</p>
+      <pre>{{vm.errors | json}}</pre>
+
+    </div>
+</div>    

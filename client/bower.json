@@ -15,7 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "angularjs#^1.5.5",
+    "angular": "^1.5.5",
     "angular-animate": "^1.5.5",
     "angular-touch": "^1.5.5",
     "bootstrap": "^3.3.6",
@@ -26,6 +26,9 @@
     "angular-sanitize": "^1.5.5",
     "angular-ui-router": "^0.2.18",
     "angular-spinner": "^0.8.1",
-    "angular-dialog-service": "^5.3.0"
+    "angular-dialog-service": "^5.3.0",
+    "api-check": "^7.5.5",
+    "angular-formly": "^8.2.0",
+    "angular-formly-templates-bootstrap": "^6.3.2"
   }
 }

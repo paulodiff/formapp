@@ -11,6 +11,13 @@ angular.module('myApp.directives')
     };
   }])
 
+.directive('formlyExampleDirective', function() {
+    return {
+      templateUrl: 'templates/formly-directive-template.html'
+    };
+ })
+
+
 .directive('capitalize', function() {
    return {
      require: 'ngModel',

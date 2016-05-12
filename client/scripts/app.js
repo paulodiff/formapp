@@ -8,6 +8,8 @@ angular.module('myApp', [//'ionic',
                          'ui.bootstrap',   
                          'ui.router',
                          'dialogs.main',
+                         'formly',
+                         'formlyBootstrap',
                          'satellizer',
                          'ngResource',
                          //'ngCordova',
@@ -110,6 +112,18 @@ angular.module('myApp', [//'ionic',
         }
     });
 
+
+      
+    $stateProvider.state('form', {
+        url: '/form',
+        templateUrl: 'templates/formly.html',
+        controller: 'SFormlyCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          loginRequired: loginRequired
+        }
+    });
+
     function skipIfLoggedIn($q, $auth) {
       var deferred = $q.defer();
       if ($auth.isAuthenticated()) {
@@ -156,6 +170,14 @@ angular.module('myApp', [//'ionic',
 
 })
 
+//formly configuration
+.config(function(formlyConfigProvider) {
+    // set templates here
+    formlyConfigProvider.setType({
+      name: 'custom',
+      templateUrl: 'templates/formly-custom-template.html'
+    });
+})
 
 .run(function() {
   
