@@ -1,9 +1,9 @@
 <div class="container">
 <div>
-      <h1>angular-formly example: {{::vm.exampleTitle}}</h1>
+
+      <h1>{{::vm.exampleTitle}}</h1>
       <div>
-        This is a small subset of the things that formly can do :-)
-        See the other examples and the documentation for more.
+      <div class="alert alert-success" role="alert">{{::vm.exampleDescription}}</div>
       </div>
       <form ng-submit="vm.onSubmit()" name="vm.form" novalidate>
         <formly-form model="vm.model" fields="vm.fields" options="vm.options" form="vm.form">

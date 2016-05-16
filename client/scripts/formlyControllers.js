@@ -8,8 +8,8 @@ angular.module('myApp.controllers')
 
 // SFormlyCtrl ---------------------------------------------------------------------------------
 .controller('SFormlyCtrl', 
-          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig',
-     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig ) {
+          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http',
+     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http ) {
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
@@ -17,30 +17,161 @@ angular.module('myApp.controllers')
     var vm = this;
     var unique = 1;
 
+    var testData = [
+      {
+        "id": "LA VELA - Torre Pedrera",
+        "label":"LA VELA - Torre Pedrera"
+      },
+      {
+        "id": "IL VOLO - Rimini Centro",
+        "label":"IL VOLO - Rimini Centro"
+      },
+      {
+        "id": "IL DELFINO - Bellariva",
+        "label":"IL DELFINO - Bellariva"
+      }
+    ];
+
+
+  var attributes = [
+    'date-disabled',
+    'custom-class',
+    'show-weeks',
+    'starting-day',
+    'init-date',
+    'min-mode',
+    'max-mode',
+    'format-day',
+    'format-month',
+    'format-year',
+    'format-day-header',
+    'format-day-title',
+    'format-month-title',
+    'year-range',
+    'shortcut-propagation',
+    'datepicker-popup',
+    'show-button-bar',
+    'current-text',
+    'clear-text',
+    'close-text',
+    'close-on-date-selection',
+    'datepicker-append-to-body'
+  ];
+
+  var bindings = [
+    'datepicker-mode',
+    'min-date',
+    'max-date'
+  ];
+
+  
+  function camelize(string) {
+    string = string.replace(/[\-_\s]+(.)?/g, function(match, chr) {
+      return chr ? chr.toUpperCase() : '';
+    });
+    // Ensure 1st char is always lowercase
+    return string.replace(/^([A-Z])/, function(match, chr) {
+      return chr ? chr.toLowerCase() : '';
+    });
+  };
+
+  function refreshAddresses(address, field) {
+      var promise;
+      if (!address) {
+        promise = $q.when({data: {results: []}});
+      } else {
+        var params = {address: address, sensor: false};
+        var endpoint = '//maps.googleapis.com/maps/api/geocode/json';
+        promise = $http.get(endpoint, {params: params});
+      }
+      return promise.then(function(response) {
+        field.templateOptions.options = response.data.results;
+      });
+  };
+
+  var ngModelAttrs = {};
+
+  angular.forEach(attributes, function(attr) {
+    ngModelAttrs[camelize(attr)] = {attribute: attr};
+  });
+
+  angular.forEach(bindings, function(binding) {
+    ngModelAttrs[camelize(binding)] = {bound: binding};
+  });
+
+  formlyConfig.extras.removeChromeAutoComplete = true;
+  formlyConfig.setWrapper({    
+        name: 'panel',
+        templateUrl: 'templates/formly-wrapper-panel-template.html'
+  });
+   
+    formlyConfig.setType({
+      name: 'ui-select-single',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select-single-template.html'
+    });
+    formlyConfig.setType({
+      name: 'ui-select-single-select2',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select2-single-template.html'
+    });
+    formlyConfig.setType({
+      name: 'ui-select-single-search',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select-single-async-template.html'
+    });
+
+    formlyConfig.setType({
+      name: 'ui-select-multiple',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select-multiple-template.html'
+    });
+
+  formlyConfig.setType({
+    name: 'datepicker',
+    templateUrl:  'templates/formly-datepicker-bootstrap-template.html',
+    wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+    defaultOptions: {
+      ngModelAttrs: ngModelAttrs,
+      templateOptions: {
+        datepickerOptions: {
+          format: 'dd/MM/yyyy',
+          initDate: new Date()
+        }
+      }
+    },
+    controller: ['$scope', function ($scope) {
+      $scope.datepicker = {};
+      $scope.datepicker.opened = false;
+      $scope.datepicker.open = function ($event) {
+        $scope.datepicker.opened = !$scope.datepicker.opened;
+      };
+    }]
+  });
+
 
     formlyConfig.setType({
       name: 'repeatSection',
-      template: `<div>
-        <div class="panel panel-default">
-        <div class="panel-heading">{{to.btnText}}</div>
-        <div class="panel-body">
+      template: `
         <div class="{{hideRepeat}}">
-          <p>{{options.key | json}}</p>
-          <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
+          <p>{{to.help}}</p>
+          <div class="row">
+            <p class="col-md-3">CD<p>
+            <p class="col-md-3">CD<p>
+            <p class="col-md-3">CD<p>
+          </div>
+          <div class="row repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
             <formly-form fields="fields"
                          model="element"
                          form="form">
             </formly-form>
-              <button type="button" class="btn btn-sm btn-danger col-xs-3" ng-click="model[options.key].splice($index, 1)">
-                Remove
+              <button type="button" class="btn btn-danger col-md-1" ng-click="model[options.key].splice($index, 1)">
+                del
               </button>
-            <hr>
          </div>
         <p class="AddNewButton">
           <button type="button" class="btn btn-primary btn-block" ng-click="addNew()" >{{to.btnText}}</button>
         </p>
-        </div>
-       </div>
        </div>`,
       controller: function($scope) {
         $scope.formOptions = {formState: $scope.formState};
@@ -91,7 +222,7 @@ angular.module('myApp.controllers')
     vm.id = 'form01';
     vm.showError = true;
 
-    // funcation assignment
+    // function assignment
     vm.onSubmit = onSubmit;
 
     // variable assignment
@@ -101,7 +232,8 @@ angular.module('myApp.controllers')
       url: 'https://twitter.com/kentcdodds' // a link to your twitter/github/blog/whatever
     };
 
-    vm.exampleTitle = 'Introduction';
+    vm.exampleTitle = 'Modulo centri ricreativi estivi comunali 2016';
+    vm.exampleDescription = 'Descrizione operativa del modulo';
 
     vm.env = {
       angularVersion: angular.version.full,
@@ -128,6 +260,49 @@ angular.module('myApp.controllers')
     };
     
     vm.fields = [
+    /*
+    {
+        key: 'singleOption',
+        type: 'ui-select-single',
+        templateOptions: {
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'Single Select',
+          valueProp: 'id',
+          labelProp: 'label',
+          placeholder: 'Select option',
+          description: 'Template includes the allow-clear option on the ui-select-match element',
+          options: testData
+        }
+      },
+      {
+        key: 'multipleOption',
+        type: 'ui-select-multiple',
+        templateOptions: {
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'Multiple Select',
+          valueProp: 'id',
+          labelProp: 'label',
+          placeholder: 'Select options',
+          options: testData
+        }
+      },
+      {
+        key: 'singleOptionAsync',
+        type: 'ui-select-single-search',
+        templateOptions: {
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'Async Search',
+          valueProp: 'formatted_address',
+          labelProp: 'formatted_address',
+          placeholder: 'Search',
+          options: [],
+          refresh: refreshAddresses,
+          refreshDelay: 0
+        }
+      },
       {
         key: 'text',
         type: 'input',
@@ -154,12 +329,105 @@ angular.module('myApp.controllers')
               required: 'to.label + " is required"'
          }
         }
+      },*/
+      {
+        key: 'DICHIARANTI',
+        wrapper: 'panel',
+        templateOptions: { 
+          label: '1.0 Dichiaranti',
+          info: 'In questa sezione devono essere indicati i dichiaranti',
+          help: 'In questa sezione devono essere indicati i dichiaranti'
+        },
+        fieldGroup: [
+        {
+          key: 'DichiarantePadre',
+          type: 'input',
+          templateOptions: {
+            required: true,
+            type: 'text',
+            label: 'Il sottoscritto (padre)'
+          }
+        },
+        {
+          key: 'DichiaranteMadre',
+          type: 'input',
+          templateOptions: {
+            required: true,
+            type: 'text',
+            label: 'La sottoscritta (madre)'
+          }
+        }
+        ]
+      },
+      {
+        key: 'FATTURAZIONE',
+        wrapper: 'panel',
+        templateOptions: { 
+          label: '2.0 Dati fatturazione',
+          info: 'Inserire in questa sezione i dati relativi alla fatturazione',
+          help: 'Inserire in questa sezione i dati relativi alla fatturazione'
+        },
+        fieldGroup: [
+        {
+          key: 'CodiceFiscale',
+          type: 'input',
+          templateOptions: {
+            required: true,
+            type: 'text',
+            label: 'Codice Fiscale'
+          }
+        },
+        {
+          key: 'Nato a:',
+          type: 'input',
+          templateOptions: {
+            required: true,
+            type: 'text',
+            label: 'Nato A:'
+          }
+        },
+        {
+          key: 'DataNascita:',
+          type: 'input',
+          templateOptions: {
+            required: true,
+            type: 'text',
+            label: 'Data di Nascita'
+          }
+        }
+
+        ]
+      },
+      {
+        key: 'PLESSO',
+        wrapper: 'panel',
+        templateOptions: { 
+          label: '3.0 Scelta del centro estivo',
+          info: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione</br>LA VELA</br>IL VOLO</br>DELFINO',
+          warn: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione',
+          help: 'Inserire in questa sezione i dati relativi alla fatturazione'
+        },
+        fieldGroup: [
+      {
+        key: 'PLESSISELEZIONE',
+        type: 'ui-select-multiple',
+        templateOptions: {
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'Selezionare una o due scuole',
+          valueProp: 'id',
+          labelProp: 'label',
+          placeholder: 'Select options',
+          options: testData
+        }
+      }
+        ]
       },
       {
         key: 'certo',
         type: 'input',
         templateOptions: {
-          label: 'Certo',
+          label: 'CertoLabel',
           placeholder: 'visible se text presente',
           required: true
         },
@@ -214,7 +482,6 @@ angular.module('myApp.controllers')
           }
         }
       },
-
       {
         key: 'whyNot',
         type: 'textarea',
@@ -245,55 +512,68 @@ angular.module('myApp.controllers')
           }
         }
       },
-      
       {
-        key: 'nucleo',
+        key: 'NUCLEOFAMILIARE',
         type: 'repeatSection',
+        wrapper: 'panel',
+        //templateOptions: { label: 'Address', info: 'info!' },
         //templateUrl: 'templates/formly-custom-template.html',
         templateOptions: 
         {
+          label: '4.0 DICHIARAZIONE NUCLEO FAMILIARE', 
+          info: 'A tal fine .... ai sensi della La sceltaInserire in questa sezione i dati relativi alla fatturazione</br>LA VELA</br>IL VOLO</br>DELFINO',
+          warn: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione',
           btnText:'Nuova persona',
+          help: 'help......',
           fields: [
             {
-              className: 'row',
+              //className: 'row',
               fieldGroup: 
               [
-                {
-                  type: 'input',
-                  className: 'col-xs-3',
+              {
                   key: 'CognomeNome',
-                  templateOptions: 
-                  {
-                    label: 'Cognome nome:',
-                    required: true
+                  className: 'col-md-2',
+                  type: 'select',
+                  templateOptions: {
+                    label: '',
+                    options: [
+                      {label: 'DICHIARANTE', id: 'DICHIARANTE'},
+                      {label: 'ALTRO GENITORE', id: 'ALTRO GENITORE'},
+                      {label: 'FIGLIO O AFFIDATO', id: 'FIGLIO O AFFIDATO'}
+                    ],
+                    ngOptions: 'option as option.label group by option.gender for option in to.options'
                   }
                 },
                 {
                   type: 'input',
-                  key: 'DataNascita',
-                  className: 'col-xs-3',
+                  className: 'col-md-3',
+                  key: 'CognomeNome',
                   templateOptions: 
                   {
-                    label: 'DataNascita',
-                    placeholder: 'dd/mm/yyyy such as 20/05/2015',
-                    dateFormat: 'DD, d  MM, yy',
+                    label: '',
                     required: true
+                  }
+                },
+                {
+                  key: 'date1',
+                  type: 'datepicker',
+                  className: 'col-md-3',
+                  templateOptions: {
+                    label: '',
+                    type: 'text',
+                    datepickerPopup: 'dd-MMMM-yyyy'
                   }
                 },
                 {
                   type: 'input',
                   key: 'CodiceFiscale',
-                  className: 'col-xs-3',
+                  className: 'col-md-2',
                   templateOptions: 
                   {
-                        label: 'Codice Fiscale',
+                        label: '',
                         required: true
                   }
-                },
-                {
-                  template: '</div></div>'
                 }
-
               ] // fieldGroup
             }
           ], //fields
@@ -316,8 +596,12 @@ angular.module('myApp.controllers')
       }
     ];
 
+
+    vm.originalFields = angular.copy(vm.fields);
+
     // function definition
     function onSubmit() {
+      vm.options.updateInitialValue();
       alert(JSON.stringify(vm.model), null, 2);
     }
                                  
