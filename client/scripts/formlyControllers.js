@@ -219,6 +219,81 @@ angular.module('myApp.controllers')
     
 
 
+    formlyConfig.setType({
+      name: 'uploadFile',
+      templateUrl: 'templates/formly-file-upload-template.html',
+      controller: function($scope) {
+        $scope.formOptions = {formState: $scope.formState};
+        $scope.addNew = addNew;
+        $scope.copyFields = copyFields;
+        
+        function showEv(f){
+          console.log(f);
+        }
+
+        $scope.onErrorHandler = function (event, reader, fileList, fileObjs, file) {
+          console.log('onErrorHandler');
+          console.log(event);
+          console.log(reader);
+          console.log(fileList);
+          console.log(fileObjs);
+          console.log(file);
+        }
+
+        $scope.onAfterValidateFunc = function (event, fileObjs, fileList) {
+          console.log('onAfterValidate');
+          console.log(event);
+          console.log(fileObjs);
+          console.log(fileList);
+        }
+
+        $scope.onChangeHandlerFunc = function (event, fileList){
+          console.log('onChangeHandlerFunc');
+          console.log(event);
+          console.log(fileList);
+        }
+
+        function copyFields(fields) {
+          fields = angular.copy(fields);
+          addRandomIds(fields);
+          return fields;
+        }
+        
+        function addNew() {
+          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+          var repeatsection = $scope.model[$scope.options.key];
+          var lastSection = repeatsection[repeatsection.length - 1];
+          var newsection = {};
+          if (lastSection) {
+            newsection = angular.copy(lastSection);
+          }
+          repeatsection.push(newsection);
+        }
+        
+        function addRandomIds(fields) {
+          unique++;
+          angular.forEach(fields, function(field, index) {
+            if (field.fieldGroup) {
+              addRandomIds(field.fieldGroup);
+              return; // fieldGroups don't need an ID
+            }
+            
+            if (field.templateOptions && field.templateOptions.fields) {
+              addRandomIds(field.templateOptions.fields);
+            }
+            
+            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
+          });
+        }
+        
+        function getRandomInt(min, max) {
+          return Math.floor(Math.random() * (max - min)) + min;
+        }
+      }
+    });
+    
+
+
     vm.id = 'form01';
     vm.showError = true;
 
@@ -241,6 +316,7 @@ angular.module('myApp.controllers')
     };
 
     vm.model = {
+      /*
       awesome: true,
       nucleo: [
           {
@@ -249,6 +325,7 @@ angular.module('myApp.controllers')
             CodiceFiscale:''
           }
       ]
+      */
     };
 
     vm.errors = {};
@@ -330,9 +407,20 @@ angular.module('myApp.controllers')
          }
         }
       },*/
+      /*
+      {
+        key: 'image',
+        type: 'uploadFile',
+        templateOptions: {
+          label: '',
+          maxsize: '500'
+        }
+      },
+      */
       {
         key: 'DICHIARANTI',
         wrapper: 'panel',
+        className: 'to-uppercase',
         templateOptions: { 
           label: '1.0 Dichiaranti',
           info: 'In questa sezione devono essere indicati i dichiaranti',
@@ -424,6 +512,46 @@ angular.module('myApp.controllers')
         ]
       },
       {
+        key: 'SITUAZIONEPARENTALE',
+        wrapper: 'panel',
+        templateOptions: { 
+          label: '99.0 Situazione parentale',
+          info: '---',
+          warn: '--',
+          help: '---'
+        },
+        fieldGroup: [
+              {
+                key: 'SITUAZIONEPARENTALE_1',
+                type: 'multiCheckbox',
+                templateOptions: {
+                  label: 'Nucleo inco......',
+                  options: [{id: 1, title : "Stato uno"}, 
+                            {id: 2, title : "Stato due "},
+                            {id: 3, title : "Stato tre"}],
+                  valueProp: 'id',
+                  labelProp: 'title'
+                }
+              },
+              {
+                template: '<p>Description ...</p>'
+              },
+              {
+                key: 'SITUAZIONEPARENTALE_2',
+                type: 'multiCheckbox',
+                templateOptions: {
+                  label: 'Presenza altri dati',
+                  options: [{id: 1, title : "Stato 1"}, {id: 2, title : "Stato 2"}],
+                  valueProp: 'id',
+                  labelProp: 'title'
+                }
+              }
+            ]
+      },
+
+
+      /*
+      {
         key: 'certo',
         type: 'input',
         templateOptions: {
@@ -482,36 +610,117 @@ angular.module('myApp.controllers')
           }
         }
       },
+      */
+      /*
       {
-        key: 'whyNot',
-        type: 'textarea',
-        expressionProperties: {
-          'templateOptions.placeholder': function(viewValue, modelValue, scope) {
-            if (scope.formState.awesomeIsForced) {
-              return 'Too bad... It really is awesome! Wasn\'t that cool?';
-            } else {
-              return 'Type in here... I dare you';
+        key: 'UPLOADDATA',
+        type: 'uploadSection',
+        wrapper: 'panel',
+        //templateOptions: { label: 'Address', info: 'info!' },
+        //templateUrl: 'templates/formly-custom-template.html',
+        templateOptions: 
+        {
+          label: 'X.0 CARICAMENTO DATI', 
+          info: 'A tal fine .... ai sensi della La sceltaInserire in questa sezione i dati relativi alla fatturazione</br>LA VELA</br>IL VOLO</br>DELFINO',
+          warn: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione',
+          btnText:'Nuova persona',
+          help: 'help......',
+          fields: [
+            {
+              //className: 'row',
+              fieldGroup: 
+              [
+              {
+                  key: 'TipoDato',
+                  className: 'col-md-2',
+                  type: 'select',
+                  templateOptions: {
+                    label: '',
+                    options: [
+                      {label: 'CI', id: 'CI'},
+                      {label: 'AA', id: 'AA'},
+                      {label: 'FF', id: 'FF'}
+                    ],
+                    ngOptions: 'option as option.label group by option.gender for option in to.options'
+                  }
+                },
+                {
+                  type: 'input',
+                  className: 'col-md-3',
+                  key: 'Description',
+                  templateOptions: 
+                  {
+                    label: '',
+                    required: true
+                  }
+                },
+                {
+                  type: 'input',
+                  key: 'CodiceFiscale',
+                  className: 'col-md-2',
+                  templateOptions: 
+                  {
+                        label: '',
+                        required: true
+                  }
+                },
+
+              ] // fieldGroup
             }
-          },
-          'templateOptions.disabled': 'formState.awesomeIsForced'
-        },
-        hideExpression: 'model.awesome',
-        templateOptions: {
-          label: 'Why Not?',
-          placeholder: 'Type in here... I dare you'
-        },
-        watcher: {
-          listener: function(field, newValue, oldValue, formScope, stopWatching) {
-            if (newValue) {
-              stopWatching();
-              formScope.model.awesome = true;
-              formScope.model.whyNot = undefined;
-              field.hideExpression = null;
-              formScope.options.formState.awesomeIsForced = true;
-            }
-          }
-        }
+          ], //fields
+        } //templateOptions
       },
+      */
+      {
+        key: 'UPLOADFILE',
+        type: 'repeatSection',
+        wrapper: 'panel',
+        //templateOptions: { label: 'Address', info: 'info!' },
+        //templateUrl: 'templates/formly-custom-template.html',
+        templateOptions: 
+        {
+          label: 'X.X upload', 
+          info: '...upload...',
+          warn: '...w...upload',
+          btnText:'Nuovo elemento',
+          help: 'help..upload....',
+          fields: [
+            {
+              //className: 'row',
+              fieldGroup: 
+              [
+              {
+                  key: 'CognomeNome',
+                  className: 'col-md-3',
+                  type: 'select',
+                  templateOptions: {
+                    label: '',
+                    options: [
+                      {label: 'C.I.', id: 'C.I.'},
+                      {label: 'PATENTE', id: 'PATENTE'}
+                    ],
+                    ngOptions: 'option as option.label group by option.gender for option in to.options'
+                  }
+                },
+                {
+                  key: 'image',
+                  className: 'col-md-8',
+                  type: 'uploadFile',
+                  templateOptions: {
+                    label: '',
+                    maxsize: '500'
+                  }
+                }
+              ] // fieldGroup
+            }
+          ], //fields
+        } //templateOptions
+      },
+
+
+
+
+
       {
         key: 'NUCLEOFAMILIARE',
         type: 'repeatSection',
@@ -531,7 +740,7 @@ angular.module('myApp.controllers')
               fieldGroup: 
               [
               {
-                  key: 'CognomeNome',
+                  key: 'TipoMembro',
                   className: 'col-md-2',
                   type: 'select',
                   templateOptions: {
@@ -578,8 +787,9 @@ angular.module('myApp.controllers')
             }
           ], //fields
         } //templateOptions
-      },
-      
+      }
+      /*  
+      ,
       {
         key: 'custom',
         type: 'custom',
@@ -594,6 +804,7 @@ angular.module('myApp.controllers')
           label: 'Example Directive',
         }
       }
+      */
     ];
 
 
