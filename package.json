@@ -24,6 +24,14 @@
     "mongoose": "^4.4.15",
     "morgan": "^1.7.0",
     "passport": "^0.3.2",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "supertest": "^1.2.0",
+    "tape": "^4.5.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "should": "^8.3.2",
+    "supertest": "^1.2.0",
+    "tape": "^4.5.1"
   }
 }

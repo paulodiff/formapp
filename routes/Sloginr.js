@@ -50,7 +50,7 @@ router.post('/signup', function(req, res) {
       	console.log(err);
         res.status(500).send({ message: err.message });
       }
-      res.send({ token: utilityModule.createJWT(result) });
+      res.status(200).send({ token: utilityModule.createJWT(result) });
     });
   });
 });

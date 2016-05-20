@@ -171,6 +171,11 @@ angular.module('myApp', [//'ionic',
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
     });
 
+    $authProvider.baseUrl   = '';
+    $authProvider.loginUrl  = 'auth/login';
+    $authProvider.signupUrl = 'auth/signup';
+    $authProvider.unlinkUrl = 'auth/unlink/';
+
 })
 
 //formly configuration

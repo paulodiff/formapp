@@ -6,8 +6,8 @@
 		{	
 			name:'development',
 			apiEndpoint:'http://localhost:3000/api',
-			apiLogin:'/auth/login',
-			apiLogout:'/auth/logout',
+			apiLogin:'auth/login',
+			apiLogout:'auth/logout',
 			routeAfterLogon:'profile',
 			mapsdemo:false,
 			loginUserName:'',

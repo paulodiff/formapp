@@ -11,8 +11,11 @@ module.exports = function(){
 router.get('/me', utilityModule.ensureAuthenticated, function(req, res) {
   console.log('get /me');
   User.findById(req.user, function(err, user) {
-  	if(err) console.log(err);
-    res.send(user);
+  	if(err){
+  		console.log(err);
+      	return res.status(500).send({ message: 'Error retrieving user' });		
+	}
+    return res.status(200).send(user);
   });
 });
 
@@ -22,12 +25,18 @@ router.put('/me', utilityModule.ensureAuthenticated, function(req, res) {
   	console.log('put /me');
   	if(err) console.log(err);
     if (!user) {
-      return res.status(400).send({ message: 'User not found' });
+      return res.status(400).json({ message: 'User not found' });
     }
     user.displayName = req.body.displayName || user.displayName;
     user.email = req.body.email || user.email;
+    user.description = req.body.description || user.description;
     user.save(function(err) {
-      res.status(200).end();
+      if(err) {
+      	console.log(err);
+      	return res.status(500).json({ message: 'Error updating user' });		
+      } else {
+      	return res.status(200).json({ message: 'User updated!' });
+      }
     });
   });
 });

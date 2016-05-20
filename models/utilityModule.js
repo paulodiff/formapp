@@ -10,18 +10,19 @@ module.exports = {
   },
 
   ensureAuthenticated : function(req, res, next) {
-        console.log('ensureAuthenticated');
+        console.log('ensureAuthenticated ....');
         if (!req.header('Authorization')) {
-            console.log('ensureAuthenticated : 401');
+            console.log('ensureAuthenticated : 401 NO TOKEN');
             return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
         }
         var token = req.header('Authorization').split(' ')[1];
-
+        //console.log(token);
           var payload = null;
           try {
             payload = jwt.decode(token, ENV.secret);
           }
           catch (err) {
+            console.log('ensureAuthenticated decoded error');
             console.log(err);
             return res.status(401).send({ message: err.message });
           }
