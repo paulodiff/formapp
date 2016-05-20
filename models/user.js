@@ -3,10 +3,11 @@ var mongoose = require('mongoose');
 // define the schema for our user model
 var userSchema = mongoose.Schema({
 
-  email: { type: String, unique: true, lowercase: true },
+  email: { type: String, unique: true },
   password: { type: String, select: false },
   displayName: String,
   description: String,
+  toDelete: Boolean,
   picture: String,
   bitbucket: String,
   facebook: String,

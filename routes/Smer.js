@@ -30,6 +30,7 @@ router.put('/me', utilityModule.ensureAuthenticated, function(req, res) {
     user.displayName = req.body.displayName || user.displayName;
     user.email = req.body.email || user.email;
     user.description = req.body.description || user.description;
+    user.toDelete = req.body.toDelete || user.toDelete;
     user.save(function(err) {
       if(err) {
       	console.log(err);

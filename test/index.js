@@ -3,6 +3,9 @@ var assert = require('assert');
 var should = require('should');
 var faker = require('faker');
 var token = '';
+var newUserName = faker.name.findName();
+var newUserEmail = faker.internet.email();
+var newPassword = faker.address.longitude();
 
 // This agent refers to PORT where program is runninng.
 
@@ -29,6 +32,10 @@ describe("Test Api ....",function(){
 */    
     .end(done);
   });
+});
+
+
+describe("Logon Api ....",function(){
 
   it("2.0 logon error bad username/password",function(done){
 
@@ -47,9 +54,6 @@ describe("Test Api ....",function(){
   });
 
 
-  var newUserName = faker.name.findName();
-  var newUserEmail = faker.internet.email();
-  var newPassword = faker.address.longitude();
 
 
   it("2.1 sign up with:" + newUserName + ':' + newUserEmail + ':' + newPassword, function(done){
@@ -89,6 +93,10 @@ describe("Test Api ....",function(){
     .end(done);
 
   });
+
+});
+
+describe("Profile Api ....",function(){
 
 
 it("4.0 get profile page without token",function(done){
@@ -131,7 +139,7 @@ it("5.0 get profile page with token: " + token,function(done){
 
 var newDESCRIPTION = faker.address.state();
 
-it("6.0 put profile with token UPDATE DESCRIPTION: " + newDESCRIPTION ,function(done){
+it("6.0 put profile with token, description, toDelete : " + newDESCRIPTION ,function(done){
 
 
 	//console.log('using token:' + token);
@@ -142,8 +150,9 @@ it("6.0 put profile with token UPDATE DESCRIPTION: " + newDESCRIPTION ,function(
     .put('/api/me')
     .set(base)
     .send({
-    		email : 'ruggero.ruggeri@comune.rimini.it',
-    		description : newDESCRIPTION
+    		email : newUserEmail,
+    		description : newDESCRIPTION,
+    		toDelete : true
 	})
     .expect("Content-type",/json/)
     .expect(200)
