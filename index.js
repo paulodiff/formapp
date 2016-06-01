@@ -170,12 +170,13 @@ var models = require("./modelsSequelize");
 
 app.set('port', process.env.PORT || 9988);
 
-
 models.Person.hasMany(models.Tasks);
+models.Person.hasMany(models.Blobs);
+models.Person.hasMany(models.Nucleos);
 
 
 
-models.sequelize.sync({force:true}).then(function () {
+models.sequelize.sync().then(function () {
   log.log2console('Sequelize sync!');
   var server = app.listen(app.get('port'), function() {
     log.log2console('Express server listening on port ' + server.address().port);

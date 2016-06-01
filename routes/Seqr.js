@@ -28,18 +28,23 @@ router.post('/add-task', function(req, res) {
 });
 
 router.post('/test', function(req, res) {
+  //console.log(req.body);
+  //console.log(req.body.NUCLEOFAMILIARE);
   models.Person
         .build({
-            email: 'email:' + new Date(),
-            title: 'email:' + new Date(),
+            email: req.body.DICHIARANTI.DichiarantePadre,
+            title: req.body.DICHIARANTI.DichiaranteMadre,
             name: 'name',
+            Blobs : req.body.UPLOADFILE,
             Tasks : [
               { title : 't1', completed : false},
               { title : 't2', completed : true}
-              ]
-          },
+              ],
+            
+            Nucleos: req.body.NUCLEOFAMILIARE,
+            },
           {
-             include: [ models.Tasks ]
+             include: [ models.Tasks, models.Nucleos, models.Blobs ]
           })
         .save()
         .then(function() {
@@ -47,7 +52,17 @@ router.post('/test', function(req, res) {
                               include: [{
                                   model: models.Tasks
         //where: { state: Sequelize.col('project.state') }
-                                        }]
+                                        },
+                                      {
+                                  model: models.Nucleos
+        //where: { state: Sequelize.col('project.state') }
+                                        },
+                                      {
+                                  model: models.Blobs
+        //where: { state: Sequelize.col('project.state') }
+                                        },
+
+                                        ]
                               }).then(function(taskList) {
                 return res.status(200).json(taskList);
             });

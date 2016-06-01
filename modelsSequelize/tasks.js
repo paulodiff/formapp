@@ -10,7 +10,6 @@ module.exports = function(sequelize, DataTypes) {
                 // 'this' allows you to access attributes of the instance
                 return this.getDataValue('completed') + ' (' + title + ')';
             }
-
         },
         completed: {
             type: DataTypes.BOOLEAN,
