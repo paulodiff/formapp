@@ -13,12 +13,21 @@ module.exports = {
         name: 'mush.js',  // Category name for logging
     },
 
+    mysql_sequelize : {
+        MYSQLusername: 'protoW',
+        MYSQLpassword: 'protoWpassword',
+        MYSQLdatabase: 'sequelize',
+        MYSQLhost:     '10.10.128.40',
+        MYSQLport: 3306
+    },
+
+
 
     mysql : {
-		MYSQLusername: 'rouser',
-		MYSQLpassword: 'ropass',
-	    MYSQLdatabase: 'rimini',
-	    MYSQLhost:     'srv-sgcdb.comune.rimini.it',
+		MYSQLusername: 'protoW',
+		MYSQLpassword: 'protoWpassword',
+	    MYSQLdatabase: 'protocollo',
+	    MYSQLhost:     '10.10.128.40',
 	    MYSQLport: 3306
     },
 

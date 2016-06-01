@@ -14,6 +14,7 @@ angular.module('myApp', [//'ionic',
                          'satellizer',
                          'ngResource',
                          'ngSanitize',
+                         'ngMessages',
                          'naif.base64',
                          //'ngCordova',
                          'angularSpinner',
@@ -115,12 +116,20 @@ angular.module('myApp', [//'ionic',
         }
     });
 
-
-      
     $stateProvider.state('form', {
         url: '/form',
         templateUrl: 'templates/formly.html',
         controller: 'SFormlyCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          loginRequired: loginRequired
+        }
+    });
+
+    $stateProvider.state('formAsync', {
+        url: '/formAsync',
+        templateUrl: 'templates/formlyAsync.html',
+        controller: 'SFormlyAsyncCtrl',
         controllerAs: 'vm',
         resolve: {
           loginRequired: loginRequired

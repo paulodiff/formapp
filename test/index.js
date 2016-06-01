@@ -102,7 +102,7 @@ describe("Profile Api ....",function(){
 it("4.0 get profile page without token",function(done){
 
     server
-    .get('/api/me')
+    .get('/api/s/me')
     .send({token : 'fake'})
     .expect("Content-type",/json/)
     .expect(401)
@@ -123,7 +123,7 @@ it("5.0 get profile page with token: " + token,function(done){
 	//console.log('using token:' + token);
 
     server
-    .get('/api/me')
+    .get('/api/s/me')
     .set(base)
     .send({msg : 'test'})
     .expect("Content-type",/json/)
@@ -147,7 +147,7 @@ it("6.0 put profile with token, description, toDelete : " + newDESCRIPTION ,func
 	var base = {'Authorization': 'Bearer ' +token, 'Content-Type': 'application/json'};
 
     server
-    .put('/api/me')
+    .put('/api/s/me')
     .set(base)
     .send({
     		email : newUserEmail,
@@ -171,7 +171,7 @@ it("7.0 get profile and Verify Description change: " + token,function(done){
 	//console.log('using token:' + token);
 
     server
-    .get('/api/me')
+    .get('/api/s/me')
     .set(base)
     .send({msg : 'test'})
     .expect("Content-type",/json/)
@@ -186,5 +186,72 @@ it("7.0 get profile and Verify Description change: " + token,function(done){
     });
 });
 
+});
+
+
+
+describe("Tdemo Api ... NO auth token",function(){
+
+var txt2test = faker.random.words();
+var lastId = 0;
+
+it("Create put tdemo row" ,function(done){
+
+    var base = {'Authorization': 'Bearer ' +token, 'Content-Type': 'application/json'};
+
+    server
+    .post('/api/m/tdemo')
+    .set(base)
+    .send({
+        date : faker.date.future(),
+        time : faker.date.recent(),
+        datetime : faker.date.past(),
+        text : txt2test,
+        number : faker.random.number()
+    })
+    .expect("Content-type",/json/)
+    .expect(200)
+    .expect(function(res) {
+      //assert(res.body.prev, "Expected prev link");
+      //assert(res.body.next, "Expected next link");
+      console.log(res.body);
+      lastId = res.body.lastId;
+      //token = res.body.token;
+    })
+    .end(done);
+});
+
+it("Get tdemo row id:" + lastId ,function(done){
+
+    var base = {'Authorization': 'Bearer ' +token, 'Content-Type': 'application/json'};
+
+    server
+    .get('/api/m/tdemo/' + lastId)
+    .set(base)
+    //.send({
+    //    date : faker.date.future(),
+    //    time : faker.date.recent(),
+    //    datetime : faker.date.past(),
+    //    text : txt2test,
+    //    number : faker.random.number()
+    //})
+    .expect("Content-type",/json/)
+    .expect(200)
+    .end(function(err, res) {
+        console.log(res.body);
+        if (err) {throw err;}
+        res.body.should.have.property('message');
+        res.body.message.should.have.property('text');
+        res.body.message.text.should.equal(txt2test);
+        //res.body.lastName.should.equal('Berd');                    
+        //res.body.creationDate.should.not.equal(null);
+        //user.should.be.an.instanceOf(Object).and.have.property('name', 'tj');
+        //user.pets.should.be.instanceof(Array).and.have.lengthOf(4);
+        done();
+    });
+});
+
+
 
 });
+

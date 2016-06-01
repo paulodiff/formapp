@@ -132,3 +132,9 @@
 .to-uppercase {
     text-transform: uppercase;
 }
+
+.formly-validation {
+  position: absolute;
+  font-size: .8em;
+  color: #a94442;
+}

@@ -31,6 +31,7 @@
     "angular-formly": "^8.2.0",
     "angular-formly-templates-bootstrap": "^6.3.2",
     "angular-ui-select": "^0.17.0",
-    "angular-base64-upload": "^0.1.19"
+    "angular-base64-upload": "^0.1.19",
+    "angular-messages": "^1.5.6"
   }
 }

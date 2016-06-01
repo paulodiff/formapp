@@ -8,8 +8,8 @@ angular.module('myApp.controllers')
 
 // SFormlyCtrl ---------------------------------------------------------------------------------
 .controller('SFormlyCtrl', 
-          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http',
-     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http ) {
+          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages',
+     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages ) {
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
@@ -17,7 +17,7 @@ angular.module('myApp.controllers')
     var vm = this;
     var unique = 1;
 
-    var testData = [
+    var ElencoPlessi = [
       {
         "id": "LA VELA - Torre Pedrera",
         "label":"LA VELA - Torre Pedrera"
@@ -100,21 +100,44 @@ angular.module('myApp.controllers')
   });
 
   formlyConfig.extras.removeChromeAutoComplete = true;
+
   formlyConfig.setWrapper({    
         name: 'panel',
         templateUrl: 'templates/formly-wrapper-panel-template.html'
   });
+
+
+  formlyConfig.setWrapper([
+      {
+        templateUrl: 'templates/formly-input-with-error-template.html',
+        types: 'inputWithError'
+      },
+      {
+        template: [
+          '<div class="checkbox formly-template-wrapper-for-checkboxes form-group">',
+          '<label for="{{::id}}">',
+          '<formly-transclude></formly-transclude>',
+          '</label>',
+          '</div>'
+        ].join(' '),
+        types: 'checkbox'
+      }
+    ]);
+  
+
    
     formlyConfig.setType({
       name: 'ui-select-single',
       extends: 'select',
       templateUrl: 'templates/formly-ui-select-single-template.html'
     });
+
     formlyConfig.setType({
       name: 'ui-select-single-select2',
       extends: 'select',
       templateUrl: 'templates/formly-ui-select2-single-template.html'
     });
+
     formlyConfig.setType({
       name: 'ui-select-single-search',
       extends: 'select',
@@ -152,27 +175,7 @@ angular.module('myApp.controllers')
 
     formlyConfig.setType({
       name: 'repeatSection',
-      template: `
-        <div class="{{hideRepeat}}">
-          <p>{{to.help}}</p>
-          <div class="row">
-            <p class="col-md-3">CD<p>
-            <p class="col-md-3">CD<p>
-            <p class="col-md-3">CD<p>
-          </div>
-          <div class="row repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
-            <formly-form fields="fields"
-                         model="element"
-                         form="form">
-            </formly-form>
-              <button type="button" class="btn btn-danger col-md-1" ng-click="model[options.key].splice($index, 1)">
-                del
-              </button>
-         </div>
-        <p class="AddNewButton">
-          <button type="button" class="btn btn-primary btn-block" ng-click="addNew()" >{{to.btnText}}</button>
-        </p>
-       </div>`,
+      templateUrl: 'templates/formly-repeatSection-template.html',
       controller: function($scope) {
         $scope.formOptions = {formState: $scope.formState};
         $scope.addNew = addNew;
@@ -292,8 +295,12 @@ angular.module('myApp.controllers')
       }
     });
     
-
-
+    formlyValidationMessages.messages.required = 'to.label + " è obbligatorio"';
+    formlyValidationMessages.messages.email = '$viewValue + " is not a valid email address"';
+    formlyValidationMessages.addTemplateOptionValueMessage('minlength', 'minlength', '', '#### is the minimum length', '**** Too short');
+    formlyValidationMessages.addTemplateOptionValueMessage('maxlength', 'maxlength', '', '## is the maximum length', '** **Too long');
+/*
+*/
     vm.id = 'form01';
     vm.showError = true;
 
@@ -303,11 +310,11 @@ angular.module('myApp.controllers')
     // variable assignment
 
     vm.author = { // optionally fill in your info below :-)
-      name: 'Kent C. Dodds',
-      url: 'https://twitter.com/kentcdodds' // a link to your twitter/github/blog/whatever
+      name: 'RR',
+      url: 'https://www.comune.rimini.it' // a link to your twitter/github/blog/whatever
     };
 
-    vm.exampleTitle = 'Modulo centri ricreativi estivi comunali 2016';
+    vm.exampleTitle = 'Modulo di test 2016';
     vm.exampleDescription = 'Descrizione operativa del modulo';
 
     vm.env = {
@@ -316,6 +323,7 @@ angular.module('myApp.controllers')
     };
 
     vm.model = {
+      showErrorState: true
       /*
       awesome: true,
       nucleo: [
@@ -430,15 +438,19 @@ angular.module('myApp.controllers')
         {
           key: 'DichiarantePadre',
           type: 'input',
+          wrapper: 'inputWithError',
           templateOptions: {
             required: true,
-            type: 'text',
-            label: 'Il sottoscritto (padre)'
+            placeholder: 'This is required min 3 max 8 ...',
+            label: 'Il sottoscritto (padre)',
+            maxlength: 8,
+            minlength: 3
           }
         },
         {
           key: 'DichiaranteMadre',
           type: 'input',
+          wrapper: 'inputWithError',
           templateOptions: {
             required: true,
             type: 'text',
@@ -447,6 +459,7 @@ angular.module('myApp.controllers')
         }
         ]
       },
+      /*
       {
         key: 'FATTURAZIONE',
         wrapper: 'panel',
@@ -466,7 +479,7 @@ angular.module('myApp.controllers')
           }
         },
         {
-          key: 'Nato a:',
+          key: 'NatoA',
           type: 'input',
           templateOptions: {
             required: true,
@@ -475,17 +488,18 @@ angular.module('myApp.controllers')
           }
         },
         {
-          key: 'DataNascita:',
-          type: 'input',
+          key: 'DataNascita',
+          type: 'datepicker',
           templateOptions: {
-            required: true,
-            type: 'text',
-            label: 'Data di Nascita'
-          }
-        }
+              label: 'Data Nascita',
+              type: 'text',
+              datepickerPopup: 'dd-MMMM-yyyy'
+            }
+         }
 
         ]
       },
+      */
       {
         key: 'PLESSO',
         wrapper: 'panel',
@@ -499,18 +513,40 @@ angular.module('myApp.controllers')
       {
         key: 'PLESSISELEZIONE',
         type: 'ui-select-multiple',
+        wrapper: 'inputWithError',
+         validators: {
+          conteggio: {
+            expression: function(viewValue, modelValue) {
+              console.log(modelValue);
+              console.log(viewValue);
+              var value = modelValue || viewValue;
+              if(modelValue){
+                if ((modelValue.length > 0) && (modelValue.length < 3))  {
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                return false;
+              }
+            },
+            message: '$viewValue + " o uno o due"'
+          }
+        },
         templateOptions: {
+          required: true,
           optionsAttr: 'bs-options',
           ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
-          label: 'Selezionare una o due scuole',
+          label: 'Selezionare una o due scuole in ordine di scelta',
           valueProp: 'id',
           labelProp: 'label',
-          placeholder: 'Select options',
-          options: testData
+          placeholder: 'Cliccare qui per selezionare',
+          options: ElencoPlessi
         }
       }
         ]
       },
+      /*
       {
         key: 'SITUAZIONEPARENTALE',
         wrapper: 'panel',
@@ -548,7 +584,7 @@ angular.module('myApp.controllers')
               }
             ]
       },
-
+      */
 
       /*
       {
@@ -679,27 +715,27 @@ angular.module('myApp.controllers')
         //templateUrl: 'templates/formly-custom-template.html',
         templateOptions: 
         {
-          label: 'X.X upload', 
-          info: '...upload...',
-          warn: '...w...upload',
-          btnText:'Nuovo elemento',
-          help: 'help..upload....',
+          label: 'labelUpload', 
+          info: 'infoUpload',
+          warn: 'wUpload',
+          btnText:'Nuovo elemento btn',
+          help: 'helpUpload',
           fields: [
             {
               //className: 'row',
               fieldGroup: 
               [
               {
-                  key: 'CognomeNome',
+                  key: 'TipoDocumento',
                   className: 'col-md-3',
                   type: 'select',
                   templateOptions: {
-                    label: '',
+                    required: true,
+                    label: 'Tipo documento',
                     options: [
-                      {label: 'C.I.', id: 'C.I.'},
-                      {label: 'PATENTE', id: 'PATENTE'}
-                    ],
-                    ngOptions: 'option as option.label group by option.gender for option in to.options'
+                      {name: 'Carta Identità', value: 'Carta Identità'},
+                      {name: 'Patente', value: 'Patente'}
+                    ]
                   }
                 },
                 {
@@ -707,7 +743,8 @@ angular.module('myApp.controllers')
                   className: 'col-md-8',
                   type: 'uploadFile',
                   templateOptions: {
-                    label: '',
+                    //required: true,
+                    label: 'Selezione file:',
                     maxsize: '500'
                   }
                 }
@@ -730,9 +767,9 @@ angular.module('myApp.controllers')
         templateOptions: 
         {
           label: '4.0 DICHIARAZIONE NUCLEO FAMILIARE', 
-          info: 'A tal fine .... ai sensi della La sceltaInserire in questa sezione i dati relativi alla fatturazione</br>LA VELA</br>IL VOLO</br>DELFINO',
+          info: 'La sceltaInserire in questa sezione i dati rela',
           warn: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione',
-          btnText:'Nuova persona',
+          btnText:'Aggiungi nuovo membro del nucleo familiare',
           help: 'help......',
           fields: [
             {
@@ -741,45 +778,34 @@ angular.module('myApp.controllers')
               [
               {
                   key: 'TipoMembro',
-                  className: 'col-md-2',
+                  className: 'col-md-3',
                   type: 'select',
                   templateOptions: {
-                    label: '',
+                    label: 'Tipo dichiarante',
                     options: [
-                      {label: 'DICHIARANTE', id: 'DICHIARANTE'},
-                      {label: 'ALTRO GENITORE', id: 'ALTRO GENITORE'},
-                      {label: 'FIGLIO O AFFIDATO', id: 'FIGLIO O AFFIDATO'}
-                    ],
-                    ngOptions: 'option as option.label group by option.gender for option in to.options'
+                      {name: 'DICHIARANTE', value: 'DICHIARANTE'},
+                      {name: 'ALTRO GENITORE', value: 'ALTRO GENITORE'},
+                      {name: 'FIGLIO O AFFIDATO', value: 'FIGLIO O AFFIDATO'}
+                    ]
                   }
                 },
                 {
                   type: 'input',
-                  className: 'col-md-3',
+                  className: 'col-md-4',
                   key: 'CognomeNome',
                   templateOptions: 
                   {
-                    label: '',
+                    label: 'Cognome Nome',
                     required: true
-                  }
-                },
-                {
-                  key: 'date1',
-                  type: 'datepicker',
-                  className: 'col-md-3',
-                  templateOptions: {
-                    label: '',
-                    type: 'text',
-                    datepickerPopup: 'dd-MMMM-yyyy'
                   }
                 },
                 {
                   type: 'input',
                   key: 'CodiceFiscale',
-                  className: 'col-md-2',
+                  className: 'col-md-4',
                   templateOptions: 
                   {
-                        label: '',
+                        label: 'Codice Fiscale',
                         required: true
                   }
                 }
@@ -812,8 +838,10 @@ angular.module('myApp.controllers')
 
     // function definition
     function onSubmit() {
-      vm.options.updateInitialValue();
-      alert(JSON.stringify(vm.model), null, 2);
+       if (vm.form.$valid) {
+          vm.options.updateInitialValue();
+          alert(JSON.stringify(vm.model), null, 2);
+        }
     }
                                  
 }]);
