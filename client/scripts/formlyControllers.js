@@ -8,8 +8,8 @@ angular.module('myApp.controllers')
 
 // SFormlyCtrl ---------------------------------------------------------------------------------
 .controller('SFormlyCtrl', 
-          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages',
-     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages ) {
+          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs',
+     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages, FormlyService,usSpinnerService,dialogs ) {
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
@@ -81,7 +81,7 @@ angular.module('myApp.controllers')
         promise = $q.when({data: {results: []}});
       } else {
         var params = {address: address, sensor: false};
-        var endpoint = '//maps.googleapis.com/maps/api/geocode/json';
+        var endpoint = '/api/seq/map';
         promise = $http.get(endpoint, {params: params});
       }
       return promise.then(function(response) {
@@ -288,7 +288,79 @@ angular.module('myApp.controllers')
             field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
           });
         }
+
+      }
+
+  });        
+
+formlyConfig.setType({
+      name: 'uploaderFile',
+      templateUrl: 'templates/formly-file-uploader-template.html',
+      controller: function($scope) {
+        $scope.formOptions = {formState: $scope.formState};
+        $scope.addNew = addNew;
+        $scope.copyFields = copyFields;
         
+        function showEv(f){
+          console.log(f);
+        }
+
+        $scope.onErrorHandler = function (event, reader, fileList, fileObjs, file) {
+          console.log('onErrorHandler');
+          console.log(event);
+          console.log(reader);
+          console.log(fileList);
+          console.log(fileObjs);
+          console.log(file);
+        }
+
+        $scope.onAfterValidateFunc = function (event, fileObjs, fileList) {
+          console.log('onAfterValidate');
+          console.log(event);
+          console.log(fileObjs);
+          console.log(fileList);
+        }
+
+        $scope.onChangeHandlerFunc = function (event, fileList){
+          console.log('onChangeHandlerFunc');
+          console.log(event);
+          console.log(fileList);
+        }
+
+        function copyFields(fields) {
+          fields = angular.copy(fields);
+          addRandomIds(fields);
+          return fields;
+        }
+        
+        function addNew() {
+          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+          var repeatsection = $scope.model[$scope.options.key];
+          var lastSection = repeatsection[repeatsection.length - 1];
+          var newsection = {};
+          if (lastSection) {
+            newsection = angular.copy(lastSection);
+          }
+          repeatsection.push(newsection);
+        }
+        
+        function addRandomIds(fields) {
+          unique++;
+          angular.forEach(fields, function(field, index) {
+            if (field.fieldGroup) {
+              addRandomIds(field.fieldGroup);
+              return; // fieldGroups don't need an ID
+            }
+            
+            if (field.templateOptions && field.templateOptions.fields) {
+              addRandomIds(field.templateOptions.fields);
+            }
+            
+            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
+          });
+        }
+
+
         function getRandomInt(min, max) {
           return Math.floor(Math.random() * (max - min)) + min;
         }
@@ -299,8 +371,9 @@ angular.module('myApp.controllers')
     formlyValidationMessages.messages.email = '$viewValue + " is not a valid email address"';
     formlyValidationMessages.addTemplateOptionValueMessage('minlength', 'minlength', '', '#### is the minimum length', '**** Too short');
     formlyValidationMessages.addTemplateOptionValueMessage('maxlength', 'maxlength', '', '## is the maximum length', '** **Too long');
-/*
-*/
+
+    /*  ---  */
+
     vm.id = 'form01';
     vm.showError = true;
 
@@ -436,7 +509,7 @@ angular.module('myApp.controllers')
         },
         fieldGroup: [
         {
-          key: 'DichiarantePadre',
+          key: 'dichiarantePadre',
           type: 'input',
           wrapper: 'inputWithError',
           templateOptions: {
@@ -448,7 +521,7 @@ angular.module('myApp.controllers')
           }
         },
         {
-          key: 'DichiaranteMadre',
+          key: 'dichiaranteMadre',
           type: 'input',
           wrapper: 'inputWithError',
           templateOptions: {
@@ -456,7 +529,22 @@ angular.module('myApp.controllers')
             type: 'text',
             label: 'La sottoscritta (madre)'
           }
+        },
+        {
+        key: 'cittaDichiaranti',
+        type: 'ui-select-single-search',
+        templateOptions: {
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'GMap Async Search via proxy',
+          valueProp: 'formatted_address',
+          labelProp: 'formatted_address',
+          placeholder: 'Search',
+          options: [],
+          refresh: refreshAddresses,
+          refreshDelay: 10
         }
+      },
         ]
       },
       /*
@@ -726,7 +814,7 @@ angular.module('myApp.controllers')
               fieldGroup: 
               [
               {
-                  key: 'TipoDocumento',
+                  key: 'tipoDocumento',
                   className: 'col-md-3',
                   type: 'select',
                   templateOptions: {
@@ -741,7 +829,7 @@ angular.module('myApp.controllers')
                 {
                   key: 'image',
                   className: 'col-md-8',
-                  type: 'uploadFile',
+                  type: 'uploaderFile',
                   templateOptions: {
                     //required: true,
                     label: 'Selezione file:',
@@ -777,7 +865,7 @@ angular.module('myApp.controllers')
               fieldGroup: 
               [
               {
-                  key: 'TipoMembro',
+                  key: 'tipoMembro',
                   className: 'col-md-3',
                   type: 'select',
                   templateOptions: {
@@ -792,7 +880,7 @@ angular.module('myApp.controllers')
                 {
                   type: 'input',
                   className: 'col-md-4',
-                  key: 'CognomeNome',
+                  key: 'cognomeNome',
                   templateOptions: 
                   {
                     label: 'Cognome Nome',
@@ -801,7 +889,7 @@ angular.module('myApp.controllers')
                 },
                 {
                   type: 'input',
-                  key: 'CodiceFiscale',
+                  key: 'codiceFiscale',
                   className: 'col-md-4',
                   templateOptions: 
                   {
@@ -840,8 +928,27 @@ angular.module('myApp.controllers')
     function onSubmit() {
        if (vm.form.$valid) {
           vm.options.updateInitialValue();
-          alert(JSON.stringify(vm.model), null, 2);
+          //alert(JSON.stringify(vm.model), null, 2);
+          usSpinnerService.spin('spinner-1');
+          FormlyService.createFormly(vm.model)
+            .then(function() {
+              usSpinnerService.stop('spinner-1');
+              dialogs.notify('ok','Form has been updated');
+            })
+            .catch(function(response) {
+              usSpinnerService.stop('spinner-1');
+              dialogs.error('500 - Errore server',response.data.message, response.status);
+            });
         }
     }
+
+    // spinner test control
+    $scope.startSpin = function(){
+        usSpinnerService.spin('spinner-1');
+    }
+    $scope.stopSpin = function(){
+        usSpinnerService.stop('spinner-1');
+    }
+
                                  
 }]);

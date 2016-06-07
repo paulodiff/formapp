@@ -16,26 +16,19 @@ var mongoose     = require('mongoose');
 // gestione delle sicurezza
 var frameguard = require('frameguard');
 var helmet = require('helmet');
+/*
 app.use(helmet.contentSecurityPolicy({
   // Specify directives as normal.
   directives: {
-    defaultSrc: ["'self'", 'd-efault.com'],
+    defaultSrc: ["'self'", 'd-efault.com','maps.googleapis.com'],
     scriptSrc: ["'self'", 
-                "'unsafe-inline'",
-                "'sha256-1PxuDsPyGK6n+LZsMv0gG4lMX3i3XigG6h0CzPIjwrE='"
+                //"'unsafe-inline'",
+                'maps.googleapis.com',
                 ],
     styleSrc: ["'self'",
-                "'sha256-1PxuDsPyGK6n+LZsMv0gG4lMX3i3XigG6h0CzPIjwrE='",
-                "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
-                "'sha256-PDYg/vkWbGnl+ya8uasRQlyo8wGc+3ANz5x3d3aNWUI='",
-                "'sha256-UtUbbZ5pLwzvjGTHwLTsbIxr5p5bX60ndOEI8wF3bo4='",
-                "'sha256-QG3Eg3DGi8tPwqt0K2eUwBqB1GNl19PjW/3Ex5i5mPk='",
-                "'sha256-j3gGPuXMDPpU+BxRYg+qUVF0TSGtFEKcp1muBBATanE='",
-                "'sha256-3RgHoWfZTUIYaaqXpyMi4osn0e3W0oyKtFnPAFo1uvI='",
-                "'sha256-n9t4cSjdGHb1Hj8yhaCQy3nxaXjPnaDbPkrwYo97sdI='",
-                "'sha256-pSJ3mKkpKCRMub/4VC+QXgZS+y+3+5w9EMRavXs3s38='",
-
+                //"'unsafe-inline'",
                 'fonts.googleapis.com',
+                'maps.googleapis.com',
                 'maxcdn.bootstrapcdn.com',
                 'code.ionicframework.com'],
     fontSrc: ["'self'",
@@ -65,6 +58,7 @@ app.use(helmet.contentSecurityPolicy({
   // This defaults to `true`.
   browserSniff: true
 }));
+*/
 app.use(helmet.xssFilter({ setOnOldIE: true }));
 app.use(frameguard({ action: 'deny' }));
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
@@ -111,7 +105,8 @@ app.use(expressSession({
 app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json({
-  type: ['json', 'application/csp-report']
+  type: ['json', 'application/csp-report'],
+  limit: '50mb'
 }))
 app.use(bodyParser.urlencoded({ extended: true }));
 
