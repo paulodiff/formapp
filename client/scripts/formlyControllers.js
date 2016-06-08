@@ -13,7 +13,16 @@ angular.module('myApp.controllers')
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
- 
+    var rFlow = new Flow({
+            target: '/upload',
+            chunkSize: 1024*1024,
+            testChunks: false
+          });
+
+     if (!rFlow.support) {
+            console.log('Flow not supported');
+            return ;
+          }
     var vm = this;
     var unique = 1;
 
@@ -220,7 +229,121 @@ angular.module('myApp.controllers')
       }
     });
     
+    formlyConfig.setType({
+      name: 'repeatUploadSection',
+      templateUrl: 'templates/formly-repeatUploadSection-template.html',
+      controller: function($scope) {
+        $scope.formOptions = {formState: $scope.formState};
+                
+        $scope.openSelectFile = function(){
+              console.log('openSelectFile............');
+              document.getElementById("upfile").click();
+          }
 
+        $scope.copyFields = function(fields) {
+          fields = angular.copy(fields);
+          addRandomIds(fields);
+          return fields;
+        }
+
+        $scope.delItem = function(itemId) {
+          console.log('delItem');
+          console.log(itemId);
+          $scope.model[$scope.options.key].splice(itemId, 1);
+        }
+        
+        $scope.addNew = function () {
+          console.log('repeatUploadSection addNew');
+          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+          console.log($scope.options.key);
+          console.log($scope.model[$scope.options.key]);
+          var repeatsection = $scope.model[$scope.options.key];
+          var lastSection = repeatsection[repeatsection.length - 1];
+          console.log(lastSection);
+          var newsection = {};
+          if (lastSection) {
+            newsection = angular.copy(lastSection);
+            newsection.fileSize = "9999";
+          } else {
+            newsection.fileName = 'Nuovo';
+          }
+          repeatsection.push(newsection);
+        }
+        
+
+        $scope.startUpload = function (){
+          console.log('startUpload ...');
+          rFlow.upload();
+        }
+
+        $scope.addFiles = function(files, errFiles) {
+            console.log('addFiles ...');
+            var files = event.target.files;
+            console.log(files);
+            
+            var fileInfo = [];
+            var i = 0;
+            for(i=0;i<files.length;i++){
+              console.log('adding file ..', files[i].name);
+              addNewFile(files[i]);
+              rFlow.addFile(files[i]);
+              fileInfo[i]  = {
+                  'name' : files[i].name,
+                  'error' : '',
+                  'paused' : '',
+                  'type' : files[i].type,
+                  'size' : files[i].size,
+                  'uniqueIdentifier' : '',
+                  '_prevProgress' : ''
+                }
+            }
+
+            //$scope.userData.Files = fileInfo;
+            //$scope.$apply();
+            //HelloWorldService.doWorkF(files);
+
+            //console.log($scope.fFiles);
+            //console.log($scope.userData.Files);
+            $scope.$apply();
+      }
+
+      function addNewFile(fileInfo){
+          console.log('addNewFile');
+          console.log(fileInfo);
+          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+          var repeatsection = $scope.model[$scope.options.key];
+          var lastSection = repeatsection[repeatsection.length - 1];
+          var newsection = {};
+          
+          newsection.tipoDocumento = 'CI';
+          newsection.fileName = fileInfo.name;
+          newsection.fileSize = fileInfo.size;
+          
+          repeatsection.push(newsection);
+      }
+
+
+        function addRandomIds(fields) {
+          unique++;
+          angular.forEach(fields, function(field, index) {
+            if (field.fieldGroup) {
+              addRandomIds(field.fieldGroup);
+              return; // fieldGroups don't need an ID
+            }
+            
+            if (field.templateOptions && field.templateOptions.fields) {
+              addRandomIds(field.templateOptions.fields);
+            }
+            
+            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
+          });
+        }
+        
+        function getRandomInt(min, max) {
+          return Math.floor(Math.random() * (max - min)) + min;
+        }
+      }
+    });
 
     formlyConfig.setType({
       name: 'uploadFile',
@@ -498,6 +621,54 @@ formlyConfig.setType({
         }
       },
       */
+{
+        key: 'UPLOADFILE',
+        type: 'repeatUploadSection',
+        wrapper: 'panel',
+        //templateOptions: { label: 'Address', info: 'info!' },
+        //templateUrl: 'templates/formly-custom-template.html',
+        templateOptions: 
+        {
+          label: 'labelUpload', 
+          info: 'infoUpload',
+          warn: 'wUpload',
+          btnText:'Nuovo elemento btn',
+          help: 'helpUpload',
+          fields: [
+            {
+              //className: 'row',
+              fieldGroup: 
+              [
+               {
+                key: 'tipoDocumento',
+                type: 'input',
+                templateOptions: {
+                  required: false,
+                  label: 'tipo_Documento_label'
+                }
+              },
+              {
+                key: 'fileName',
+                type: 'input',
+                templateOptions: {
+                  required: false,
+                  label: 'fileName'
+                }
+              },
+              {
+                key: 'fileSize',
+                type: 'input',
+                templateOptions: {
+                  required: false,
+                  label: 'fileSize'
+                }
+              }
+              ] // fieldGroup
+            }
+          ], //fields
+        } //templateOptions
+      },
+
       {
         key: 'DICHIARANTI',
         wrapper: 'panel',
@@ -795,57 +966,7 @@ formlyConfig.setType({
         } //templateOptions
       },
       */
-      {
-        key: 'UPLOADFILE',
-        type: 'repeatSection',
-        wrapper: 'panel',
-        //templateOptions: { label: 'Address', info: 'info!' },
-        //templateUrl: 'templates/formly-custom-template.html',
-        templateOptions: 
-        {
-          label: 'labelUpload', 
-          info: 'infoUpload',
-          warn: 'wUpload',
-          btnText:'Nuovo elemento btn',
-          help: 'helpUpload',
-          fields: [
-            {
-              //className: 'row',
-              fieldGroup: 
-              [
-              {
-                  key: 'tipoDocumento',
-                  className: 'col-md-3',
-                  type: 'select',
-                  templateOptions: {
-                    required: true,
-                    label: 'Tipo documento',
-                    options: [
-                      {name: 'Carta Identità', value: 'Carta Identità'},
-                      {name: 'Patente', value: 'Patente'}
-                    ]
-                  }
-                },
-                {
-                  key: 'image',
-                  className: 'col-md-8',
-                  type: 'uploaderFile',
-                  templateOptions: {
-                    //required: true,
-                    label: 'Selezione file:',
-                    maxsize: '500'
-                  }
-                }
-              ] // fieldGroup
-            }
-          ], //fields
-        } //templateOptions
-      },
-
-
-
-
-
+      
       {
         key: 'NUCLEOFAMILIARE',
         type: 'repeatSection',
