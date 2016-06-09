@@ -8,8 +8,8 @@ angular.module('myApp.controllers')
 
 // SFormlyCtrl ---------------------------------------------------------------------------------
 .controller('SFormlyCtrl', 
-          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs',
-     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages, FormlyService,usSpinnerService,dialogs ) {
+          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs','UtilsService',
+     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages, FormlyService,usSpinnerService,dialogs,UtilsService ) {
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
@@ -299,30 +299,12 @@ angular.module('myApp.controllers')
           repeatsection.push(newsection);
         }
         
-        function getFormattedTimeStampRnd() {
-          // Create a date object with the current time
-          var now = new Date();
-          var date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
-          var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
-          var suffix = ( time[0] < 12 ) ? "AM" : "PM";
-          time[0] = ( time[0] < 12 ) ? time[0] : time[0] - 12;
-          time[0] = time[0] || 12;
-
-          // If seconds and minutes are less than 10, add a zero
-            for ( var i = 1; i < 3; i++ ) {
-              if ( time[i] < 10 ) {
-                time[i] = "0" + time[i];
-              }
-            }
-
-          // Return the formatted string
-          return date.join("") + "" + time.join("") + "" + suffix;
-        }
         
+
         $scope.startUpload = function (){
           console.log('##startUpload ...');
 
-          flow.opts.query = {transactionId : getFormattedTimeStampRnd()};
+          flow.opts.query = {transactionId : vm.model.transactionId};
           flow.upload();
           console.log('endUpload ...');
           return;
@@ -574,7 +556,8 @@ formlyConfig.setType({
     };
 
     vm.model = {
-      showErrorState: true
+      showErrorState: true,
+      transactionId : UtilsService.getTimestampPlusRandom()
       /*
       awesome: true,
       nucleo: [
