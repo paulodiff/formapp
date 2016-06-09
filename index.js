@@ -141,6 +141,8 @@ app.use('/api/m', Mdata);
 var SeqData = require('./routes/Seqr')();
 app.use('/api/seq', SeqData);
 
+var UploadData = require('./routes/Uploadr')();
+app.use('/uploadmgr', UploadData);
 
 app.use(express.static('client/'));
 

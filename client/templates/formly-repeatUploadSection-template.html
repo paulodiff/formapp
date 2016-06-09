@@ -6,25 +6,20 @@
                          form="form">
             </formly-form>
             <div class="col-md-1 form-group">  
-              <label></label>
-              <button type="button" class="btn btn-danger" ng-click="model[options.key].splice($index, 1)">
-                  Elimina
-              </button>
+              <label>___</label>
                <button type="button" class="btn btn-danger" ng-click="delItem($index)">
-                  DelItem
+               <span class="glyphicon glyphicon-remove-sign"></span>
               </button>
-              <button class="button button-block button-primary"
-                       ng-click="uploadSelectFile()">Upload file..</button>   
+
             </div>
          </div>
         <p class="AddNewButton">
-          <button type="button" class="btn btn-primary btn-block" ng-click="addNew()" >{{to.btnText}}</button>
+          <button type="button" class="btn btn-primary btn-block" ng-click="openSelectFile()" >{{to.btnText}}</button>
         </p>
-        <button class="button button-block button-positive"
-                        ng-click="openSelectFile()">Add file..</button>
-                     
-        <input id="upfile" type="file" class="upload" multiple custom-on-change="addFiles" />
-        <button class="button button-block button-positive"
+        <div style='height: 0px;width:0px; overflow:hidden;'>
+          <input id="upfile" type="file" class="btn-file" multiple custom-on-change="addFiles" />
+        </div>
+        <button class="btn btn-danger btn-block"
                         ng-click="startUpload()">Upload..</button>
 
  </div>

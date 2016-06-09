@@ -13,16 +13,45 @@ angular.module('myApp.controllers')
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
-    var rFlow = new Flow({
-            target: '/upload',
+    var flow = new Flow({
+            target: '/uploadmgr/upload',
             chunkSize: 1024*1024,
-            testChunks: false
+            testChunks: false,
+            query: 'ok'
           });
 
-     if (!rFlow.support) {
+      if (!flow.support) {
             console.log('Flow not supported');
             return ;
           }
+
+      flow.on('fileAdded', function(file, event){
+        console.log('on fileAdded : ',flow.files.length);
+        console.log(file, event);
+      });
+
+      flow.on('fileRetry', function(file, event){
+        console.log('fileRetry');
+        console.log(file, event);
+      });
+
+      flow.on('fileSuccess', function(file, message, chunk){
+        console.log('fileSuccess');
+        console.log(file,message, chunk);
+      });
+
+      flow.on('fileError', function(file, message){
+        console.log('fileErrorUpload');
+        console.log(file, message);
+      });
+
+      flow.on('fileProgress', function(file, chunk){
+        console.log('fileProgress');
+        console.log(file, chunk);
+      });
+
+
+
     var vm = this;
     var unique = 1;
 
@@ -270,10 +299,33 @@ angular.module('myApp.controllers')
           repeatsection.push(newsection);
         }
         
+        function getFormattedTimeStampRnd() {
+          // Create a date object with the current time
+          var now = new Date();
+          var date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
+          var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+          var suffix = ( time[0] < 12 ) ? "AM" : "PM";
+          time[0] = ( time[0] < 12 ) ? time[0] : time[0] - 12;
+          time[0] = time[0] || 12;
 
+          // If seconds and minutes are less than 10, add a zero
+            for ( var i = 1; i < 3; i++ ) {
+              if ( time[i] < 10 ) {
+                time[i] = "0" + time[i];
+              }
+            }
+
+          // Return the formatted string
+          return date.join("") + "" + time.join("") + "" + suffix;
+        }
+        
         $scope.startUpload = function (){
-          console.log('startUpload ...');
-          rFlow.upload();
+          console.log('##startUpload ...');
+
+          flow.opts.query = {transactionId : getFormattedTimeStampRnd()};
+          flow.upload();
+          console.log('endUpload ...');
+          return;
         }
 
         $scope.addFiles = function(files, errFiles) {
@@ -286,7 +338,7 @@ angular.module('myApp.controllers')
             for(i=0;i<files.length;i++){
               console.log('adding file ..', files[i].name);
               addNewFile(files[i]);
-              rFlow.addFile(files[i]);
+              flow.addFile(files[i]);
               fileInfo[i]  = {
                   'name' : files[i].name,
                   'error' : '',
@@ -344,7 +396,7 @@ angular.module('myApp.controllers')
         }
       }
     });
-
+/*
     formlyConfig.setType({
       name: 'uploadFile',
       templateUrl: 'templates/formly-file-upload-template.html',
@@ -415,7 +467,7 @@ angular.module('myApp.controllers')
       }
 
   });        
-
+*/
 formlyConfig.setType({
       name: 'uploaderFile',
       templateUrl: 'templates/formly-file-uploader-template.html',
@@ -487,6 +539,9 @@ formlyConfig.setType({
         function getRandomInt(min, max) {
           return Math.floor(Math.random() * (max - min)) + min;
         }
+
+
+
       }
     });
     
@@ -641,6 +696,7 @@ formlyConfig.setType({
               [
                {
                 key: 'tipoDocumento',
+                className: 'col-md-3',
                 type: 'input',
                 templateOptions: {
                   required: false,
@@ -650,6 +706,7 @@ formlyConfig.setType({
               {
                 key: 'fileName',
                 type: 'input',
+                className: 'col-md-6',
                 templateOptions: {
                   required: false,
                   label: 'fileName'
@@ -658,6 +715,7 @@ formlyConfig.setType({
               {
                 key: 'fileSize',
                 type: 'input',
+                className: 'col-md-2',
                 templateOptions: {
                   required: false,
                   label: 'fileSize'

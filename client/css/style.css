@@ -111,11 +111,12 @@
  */
 
 .btn-file {
-    position: relative;
-    overflow: hidden;
+    /*position: relative;
+    overflow: hidden;*/
+    display: none;
 }
 .btn-file input[type=file] {
-    position: absolute;
+    /*position: absolute;
     top: 0;
     right: 0;
     min-width: 100%;
@@ -126,9 +127,12 @@
     opacity: 0;
     outline: none;
     background: white;
-    cursor: inherit;
-    display: block;
+    cursor: inherit;*/
+    display: none;
 }
+
+
+
 .to-uppercase {
     text-transform: uppercase;
 }
