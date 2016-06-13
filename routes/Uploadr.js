@@ -21,7 +21,34 @@ var DW_PATH = './storage';
 
 module.exports = function(){
 
+
 router.post('/upload', multipartMiddleware, function(req, res) {
+  console.log('/uploading.....');
+  console.log(req.files);
+  console.log('/body.....');
+  console.log(req.body);
+
+  var transactionId = req.body.fields.transactionId;
+  var dir = DW_PATH + "/" +  transactionId;
+  if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
+
+  if (req.files && req.files.files && req.files.files.length) {
+    for (var i = 0; i < req.files.files.length; i++) {
+      console.log(req.files.files[i].path);
+      console.log(req.files.files[i].originalFilename);
+      console.log(req.files.files[i].size);
+
+      fs.renameSync(req.files.files[i].path, dir + "/" + req.files.files[i].originalFilename);
+
+    }
+  }
+  
+
+  res.status(200).send();
+
+});
+
+router.post('/uploadOld', multipartMiddleware, function(req, res) {
   console.log('/upload call $flow.post ...');
   console.log(req);
   var transactionId = req.body.transactionId;

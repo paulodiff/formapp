@@ -8,52 +8,16 @@ angular.module('myApp.controllers')
 
 // SFormlyCtrl ---------------------------------------------------------------------------------
 .controller('SFormlyCtrl', 
-          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs','UtilsService',
-     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages, FormlyService,usSpinnerService,dialogs,UtilsService ) {
+          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs','UtilsService', 'Upload',
+     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages, FormlyService,usSpinnerService,dialogs, UtilsService, Upload ) {
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
-
-    var flow = new Flow({
-            target: '/uploadmgr/upload',
-            chunkSize: 1024*1024,
-            testChunks: false,
-            query: 'ok'
-          });
-
-      if (!flow.support) {
-            console.log('Flow not supported');
-            return ;
-          }
-
-      flow.on('fileAdded', function(file, event){
-        console.log('on fileAdded : ',flow.files.length);
-        console.log(file, event);
-      });
-
-      flow.on('fileRetry', function(file, event){
-        console.log('fileRetry');
-        console.log(file, event);
-      });
-
-      flow.on('fileSuccess', function(file, message, chunk){
-        console.log('fileSuccess');
-        console.log(file,message, chunk);
-      });
-
-      flow.on('fileError', function(file, message){
-        console.log('fileErrorUpload');
-        console.log(file, message);
-      });
-
-      flow.on('fileProgress', function(file, chunk){
-        console.log('fileProgress');
-        console.log(file, chunk);
-      });
 
 
 
     var vm = this;
     var unique = 1;
+    var _progress = 0;
 
     var ElencoPlessi = [
       {
@@ -210,7 +174,6 @@ angular.module('myApp.controllers')
     }]
   });
 
-
     formlyConfig.setType({
       name: 'repeatSection',
       templateUrl: 'templates/formly-repeatSection-template.html',
@@ -262,6 +225,7 @@ angular.module('myApp.controllers')
       name: 'repeatUploadSection',
       templateUrl: 'templates/formly-repeatUploadSection-template.html',
       controller: function($scope) {
+
         $scope.formOptions = {formState: $scope.formState};
                 
         $scope.openSelectFile = function(){
@@ -279,6 +243,8 @@ angular.module('myApp.controllers')
           console.log('delItem');
           console.log(itemId);
           $scope.model[$scope.options.key].splice(itemId, 1);
+          vm.options.data.fileList.splice(itemId,1);
+          console.log(vm.options.data.fileList);
         }
         
         $scope.addNew = function () {
@@ -302,10 +268,6 @@ angular.module('myApp.controllers')
         
 
         $scope.startUpload = function (){
-          console.log('##startUpload ...');
-
-          flow.opts.query = {transactionId : vm.model.transactionId};
-          flow.upload();
           console.log('endUpload ...');
           return;
         }
@@ -314,13 +276,14 @@ angular.module('myApp.controllers')
             console.log('addFiles ...');
             var files = event.target.files;
             console.log(files);
+            console.log($scope.parent);
+            console.log($scope);
             
             var fileInfo = [];
             var i = 0;
             for(i=0;i<files.length;i++){
               console.log('adding file ..', files[i].name);
               addNewFile(files[i]);
-              flow.addFile(files[i]);
               fileInfo[i]  = {
                   'name' : files[i].name,
                   'error' : '',
@@ -352,6 +315,8 @@ angular.module('myApp.controllers')
           newsection.tipoDocumento = 'CI';
           newsection.fileName = fileInfo.name;
           newsection.fileSize = fileInfo.size;
+          vm.options.data.fileList.push(fileInfo);
+          console.log(vm.options.data.fileList);
           
           repeatsection.push(newsection);
       }
@@ -575,7 +540,11 @@ formlyConfig.setType({
     vm.options = {
       formState: {
         awesomeIsForced: false
-      }
+      },
+      data: {
+            fileCount: 0,
+            fileList: []
+        }
     };
     
     vm.fields = [
@@ -704,6 +673,7 @@ formlyConfig.setType({
                   label: 'fileSize'
                 }
               }
+
               ] // fieldGroup
             }
           ], //fields
@@ -725,7 +695,7 @@ formlyConfig.setType({
           type: 'input',
           wrapper: 'inputWithError',
           templateOptions: {
-            required: true,
+            required: false,
             placeholder: 'This is required min 3 max 8 ...',
             label: 'Il sottoscritto (padre)',
             maxlength: 8,
@@ -737,7 +707,7 @@ formlyConfig.setType({
           type: 'input',
           wrapper: 'inputWithError',
           templateOptions: {
-            required: true,
+            required: false,
             type: 'text',
             label: 'La sottoscritta (madre)'
           }
@@ -800,6 +770,7 @@ formlyConfig.setType({
         ]
       },
       */
+      /*
       {
         key: 'PLESSO',
         wrapper: 'panel',
@@ -846,6 +817,7 @@ formlyConfig.setType({
       }
         ]
       },
+      */
       /*
       {
         key: 'SITUAZIONEPARENTALE',
@@ -1092,6 +1064,34 @@ formlyConfig.setType({
           vm.options.updateInitialValue();
           //alert(JSON.stringify(vm.model), null, 2);
           usSpinnerService.spin('spinner-1');
+
+
+          var dlg = dialogs.wait(undefined,undefined,_progress);
+
+          console.log('upload!!');
+
+        Upload.upload({
+            url: 'uploadmgr/upload',
+            method: 'POST',
+            //files: vm.options.data.fileList
+            data: {files : vm.options.data.fileList, fields: { transactionId : vm.model.transactionId } }
+        }).then(function (resp) {
+            console.log('Success ');
+            usSpinnerService.stop('spinner-1');
+        }, function (resp) {
+            console.log('Error status: ' + resp.status);
+        }, function (evt) {
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ');
+            if (progressPercentage < 100) {
+              _progress = progressPercentage
+              $rootScope.$broadcast('dialogs.wait.progress',{'progress' : _progress});
+            }else{
+              $rootScope.$broadcast('dialogs.wait.complete');
+            }
+        });
+          
+          /*
           FormlyService.createFormly(vm.model)
             .then(function() {
               usSpinnerService.stop('spinner-1');
@@ -1101,6 +1101,8 @@ formlyConfig.setType({
               usSpinnerService.stop('spinner-1');
               dialogs.error('500 - Errore server',response.data.message, response.status);
             });
+
+          */
         }
     }
 
@@ -1108,9 +1110,26 @@ formlyConfig.setType({
     $scope.startSpin = function(){
         usSpinnerService.spin('spinner-1');
     }
+
     $scope.stopSpin = function(){
         usSpinnerService.stop('spinner-1');
     }
+
+   
+/*
+      flow.on('fileSuccess', function(file, message, chunk){
+        console.log('fileSuccess');
+        console.log(file,message, chunk);
+      });
+
+      flow.on('fileError', function(file, message){
+        console.log('fileErrorUpload');
+        console.log(file, message);
+      });
+
+*/
+
+
 
                                  
 }]);

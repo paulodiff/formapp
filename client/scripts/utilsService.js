@@ -4,9 +4,15 @@ angular.module('myApp.services')
       getTimestampPlusRandom: function() {
 
           // Create a date object with the current time
-          var now = new Date();
-          var date = [ now.getDate(), now.getMonth() + 1, now.getFullYear() ];
-          var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+          var d = new Date(),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+          if (month.length < 2) month = '0' + month;
+          if (day.length < 2) day = '0' + day;
+    
+          var time = [ d.getHours(), d.getMinutes(), d.getSeconds() ];
           var suffix = ( time[0] < 12 ) ? "AM" : "PM";
           time[0] = ( time[0] < 12 ) ? time[0] : time[0] - 12;
           time[0] = time[0] || 12;
@@ -19,7 +25,8 @@ angular.module('myApp.services')
             }
 
           // Return the formatted string
-          return date.join("") + "@" + time.join("") + "@" + suffix;
+          return [year, month, day].join('') + "@" + time.join("") + "@" + suffix;
+          //return date.join("") + "@" + time.join("") + "@" + suffix;
         },
 
       updateProfile: function(profileData) {

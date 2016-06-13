@@ -23,6 +23,7 @@ angular-dialog-service
 angular-spinner
 Formly ui-select angular-base64-upload
 satellizer.js autenticazione Auth2.0
+https://github.com/danialfarid/ng-file-upload
 restangular ???
 ngStorage.js
 service-worker
