@@ -1063,7 +1063,7 @@ formlyConfig.setType({
        if (vm.form.$valid) {
           vm.options.updateInitialValue();
           //alert(JSON.stringify(vm.model), null, 2);
-          usSpinnerService.spin('spinner-1');
+          //usSpinnerService.spin('spinner-1');
 
 
           var dlg = dialogs.wait(undefined,undefined,_progress);
@@ -1077,7 +1077,20 @@ formlyConfig.setType({
             data: {files : vm.options.data.fileList, fields: { transactionId : vm.model.transactionId } }
         }).then(function (resp) {
             console.log('Success ');
-            usSpinnerService.stop('spinner-1');
+
+          FormlyService.createFormly(vm.model)
+            .then(function() {
+              //usSpinnerService.stop('spinner-1');
+              dialogs.notify('ok','Form has been updated');
+            })
+            .catch(function(response) {
+              //usSpinnerService.stop('spinner-1');
+              dialogs.error('500 - Errore server',response.data.message, response.status);
+            });
+
+
+
+            //usSpinnerService.stop('spinner-1');
         }, function (resp) {
             console.log('Error status: ' + resp.status);
         }, function (evt) {

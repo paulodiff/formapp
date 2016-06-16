@@ -23,6 +23,8 @@ angular.module('myApp', [//'ionic',
                          //'ngMockE2E',
                          'ngStorage',
                          'ngFileUpload',
+                         'ui.grid',
+                         'ui.grid.selection',
                          //'uiGmapgoogle-maps',
                          'myApp.filters',
                          'myApp.services',
@@ -136,6 +138,17 @@ angular.module('myApp', [//'ionic',
           loginRequired: loginRequired
         }
     });
+
+    $stateProvider.state('uigrid', {
+        url: '/uigrid',
+        templateUrl: 'templates/uiGrid.html',
+        controller: 'UiGridCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          loginRequired: loginRequired
+        }
+    });
+
 
     function skipIfLoggedIn($q, $auth) {
       var deferred = $q.defer();
