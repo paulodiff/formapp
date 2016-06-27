@@ -340,6 +340,7 @@ angular.module('myApp.controllers')
 
 
   $scope.login = function (credentials) {
+      
       usSpinnerService.spin('spinner-1');
       //$ionicLoading.show({template: 'Attendere...' });
       $log.debug('login:calling .. AuthService. ..');

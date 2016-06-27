@@ -9,7 +9,7 @@ angular.module('myApp.controllers')
 // SFormlyCtrl ---------------------------------------------------------------------------------
 .controller('SFormlyCtrl', 
           ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs','UtilsService', 'Upload',
-     function($rootScope, $scope,  $state, $location,     Session,   $log,   $timeout, ENV, formlyConfig,$q, $http,formlyValidationMessages, FormlyService,usSpinnerService,dialogs, UtilsService, Upload ) {
+   function($rootScope,  $scope,   $state,   $location,   Session,   $log,   $timeout,  ENV,  formlyConfig,  $q,  $http,  formlyValidationMessages,   FormlyService,  usSpinnerService,  dialogs,   UtilsService,  Upload ) {
     
   $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
@@ -415,6 +415,7 @@ angular.module('myApp.controllers')
 
   });        
 */
+
 formlyConfig.setType({
       name: 'uploaderFile',
       templateUrl: 'templates/formly-file-uploader-template.html',
@@ -482,16 +483,97 @@ formlyConfig.setType({
           });
         }
 
+        function getRandomInt(min, max) {
+          return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+      }
+    });
+    
+// imageUpload blocco per selezionare una foto da archivio o fotocamera
+
+formlyConfig.setType({
+      name: 'imageUpload',
+      templateUrl: 'templates/formly-image-upload-template.html',
+      controller: function($scope) {
+        $scope.formOptions = {formState: $scope.formState};
+        $scope.addNew = addNew;
+        $scope.copyFields = copyFields;
+        
+        function showEv(f){
+          console.log(f);
+        }
+
+        // attiva il 
+        $scope.selectImageFile = function(){
+              console.log('selectImageFile............');
+              document.getElementById("idImageFileInput").click();
+        }
+
+        $scope.onErrorHandler = function (event, reader, fileList, fileObjs, file) {
+          console.log('onErrorHandler');
+          console.log(event);
+          console.log(reader);
+          console.log(fileList);
+          console.log(fileObjs);
+          console.log(file);
+        }
+
+        $scope.onAfterValidateFunc = function (event, fileObjs, fileList) {
+          console.log('onAfterValidate');
+          console.log(event);
+          console.log(fileObjs);
+          console.log(fileList);
+        }
+
+        $scope.onChangeHandlerFunc = function (event, fileList){
+          console.log('onChangeHandlerFunc');
+          console.log(event);
+          console.log(fileList);
+        }
+
+        function copyFields(fields) {
+          fields = angular.copy(fields);
+          addRandomIds(fields);
+          return fields;
+        }
+        
+        function addNew() {
+          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+          var repeatsection = $scope.model[$scope.options.key];
+          var lastSection = repeatsection[repeatsection.length - 1];
+          var newsection = {};
+          if (lastSection) {
+            newsection = angular.copy(lastSection);
+          }
+          repeatsection.push(newsection);
+        }
+        
+        function addRandomIds(fields) {
+          unique++;
+          angular.forEach(fields, function(field, index) {
+            if (field.fieldGroup) {
+              addRandomIds(field.fieldGroup);
+              return; // fieldGroups don't need an ID
+            }
+            
+            if (field.templateOptions && field.templateOptions.fields) {
+              addRandomIds(field.templateOptions.fields);
+            }
+            
+            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
+          });
+        }
+
 
         function getRandomInt(min, max) {
           return Math.floor(Math.random() * (max - min)) + min;
         }
 
-
-
       }
     });
     
+
     formlyValidationMessages.messages.required = 'to.label + " è obbligatorio"';
     formlyValidationMessages.messages.email = '$viewValue + " is not a valid email address"';
     formlyValidationMessages.addTemplateOptionValueMessage('minlength', 'minlength', '', '#### is the minimum length', '**** Too short');
@@ -537,10 +619,13 @@ formlyConfig.setType({
 
     vm.errors = {};
 
+    // dati globali del form  
+
     vm.options = {
       formState: {
         awesomeIsForced: false
       },
+      // contiene i dati dei file da upload di per usare il componente esternamente a due passaggi
       data: {
             fileCount: 0,
             fileList: []
@@ -770,7 +855,7 @@ formlyConfig.setType({
         ]
       },
       */
-      /*
+      
       {
         key: 'PLESSO',
         wrapper: 'panel',
@@ -817,7 +902,31 @@ formlyConfig.setType({
       }
         ]
       },
-      */
+      
+
+      {
+        key: 'IMMAGINE_SINGOLA',
+        wrapper: 'panel',
+        templateOptions: { 
+          label: '99.0 Immagine Singola',
+          info: '99 La sceltaInserire in questa sezione i dati relativi alla fatturazione</br>LA VELA</br>IL VOLO</br>DELFINO',
+          warn: '99 La sceltaInserire in questa sezione i dati relativi alla fatturazione',
+          help: '99 Inserire in questa sezione i dati relativi alla fatturazione'
+        },
+        fieldGroup: [
+       {
+          key: 'IMMAGINE_1',
+          type: 'imageUpload',
+          wrapper: 'inputWithError',
+          templateOptions: {
+            required: false,
+            placeholder: 'This is required min 3 max 8 ...',
+            label: 'Il sottoscritto (padre)'
+          }
+        },
+        ]
+      },
+
       /*
       {
         key: 'SITUAZIONEPARENTALE',

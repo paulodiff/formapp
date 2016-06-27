@@ -3,8 +3,8 @@ var mongoose = require('mongoose');
 // define the schema for our user model
 var userSchema = mongoose.Schema({
 
-  email: { type: String, unique: true },
-  password: { type: String, select: false },
+  email: { type: String },
+  password: { type: String },
   displayName: String,
   description: String,
   toDelete: Boolean,

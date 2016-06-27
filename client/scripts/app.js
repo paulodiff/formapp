@@ -125,7 +125,7 @@ angular.module('myApp', [//'ionic',
         controller: 'SFormlyCtrl',
         controllerAs: 'vm',
         resolve: {
-          loginRequired: loginRequired
+          //loginRequired: loginRequired
         }
     });
 
@@ -172,6 +172,9 @@ angular.module('myApp', [//'ionic',
 
 }])
 
+
+// satellizer
+
 .config(function($authProvider) {
 
     // Optional: For client-side use (Implicit Grant), set responseType to 'token'
@@ -180,8 +183,14 @@ angular.module('myApp', [//'ionic',
       responseType: 'token'
     });
 
+    $authProvider.github({
+      clientId: '57c6b2d67e6e3cb24640',
+      scope: ['user:email']
+    });
+
     $authProvider.google({
-      clientId: 'Google Client ID'
+      //clientId: 'Google Client ID'
+      clientId: 'AIzaSyAr0dAxr4BRApJmv2ZmWPBUXIONja5-SH0'
     });
 
     // No additional setup required for Twitter
