@@ -188,6 +188,12 @@ angular.module('myApp', [//'ionic',
       scope: ['user:email']
     });
 
+    $authProvider.linkedin({
+      clientId: '77dsl1x9v4htxt'
+    });
+
+    //77dsl1x9v4htxt linkedin
+
     $authProvider.google({
       //clientId: 'Google Client ID'
       clientId: 'AIzaSyAr0dAxr4BRApJmv2ZmWPBUXIONja5-SH0'
