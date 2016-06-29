@@ -264,8 +264,7 @@ angular.module('myApp.controllers')
           }
           repeatsection.push(newsection);
         }
-        
-        
+    
 
         $scope.startUpload = function (){
           console.log('endUpload ...');

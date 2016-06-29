@@ -29,6 +29,16 @@ ngStorage.js
 service-worker
 push notification
 
+IONIC IMAGE list full screen
+https://devdactic.com/images-videos-fullscreen-ionic/
+
+Building a FileReader Service For AngularJS: The Service
+Here is an Angular service that wraps the FileReader and transforms an evented API into a promise API.
+http://odetocode.com/blogs/scott/archive/2013/07/03/building-a-filereader-service-for-angularjs-the-service.aspx
+
+GeoLocation
+https://franciskim.co/2015/07/15/use-html5-geolocation-google-maps-api-angularjs/
+
 Note:
 
 Passpord authentication

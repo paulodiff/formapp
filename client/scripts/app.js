@@ -149,6 +149,52 @@ angular.module('myApp', [//'ionic',
         }
     });
 
+// mobile signal
+
+
+    $stateProvider.state('sigPhoto', {
+        url: '/sigPhoto',
+        templateUrl: 'templates/sigPhoto.html',
+        controller: 'sigPhotoController',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+
+    $stateProvider.state('sigPosition', {
+        url: '/sigPosition',
+        templateUrl: 'templates/sigPosition.html',
+        controller: 'sigPositionController',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+
+    $stateProvider.state('sigType', {
+        url: '/sigType',
+        templateUrl: 'templates/sigType.html',
+        controller: 'sigTypeController',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+
+    $stateProvider.state('sigSend', {
+        url: '/sigSend',
+        templateUrl: 'templates/sigSend.html',
+        controller: 'sigSendController',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
 
     function skipIfLoggedIn($q, $auth) {
       var deferred = $q.defer();
@@ -196,7 +242,7 @@ angular.module('myApp', [//'ionic',
 
     $authProvider.google({
       //clientId: 'Google Client ID'
-      clientId: 'AIzaSyAr0dAxr4BRApJmv2ZmWPBUXIONja5-SH0'
+      clientId: '572820000251-dqu77iuc6t37c5jm2r3p8fug6j0mbjh7.apps.googleusercontent.com'
     });
 
     // No additional setup required for Twitter

@@ -165,7 +165,7 @@ router.post('/github', function(req, res) {
 });
 
 
-//Login with Google
+// Login with Google
 router.post('/google', function(req, res) {
   var accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
   var peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
@@ -177,42 +177,55 @@ router.post('/google', function(req, res) {
     grant_type: 'authorization_code'
   };
 
+ console.log('Google auth...1');
+
  
   // Step 1. Exchange authorization code for access token.
   request.post(accessTokenUrl, { json: true, form: params }, function(err, response, token) {
     var accessToken = token.access_token;
     var headers = { Authorization: 'Bearer ' + accessToken };
 
+    console.log('Google auth...POST');
+
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(err, response, profile) {
       if (profile.error) {
+        console.log('Google auth ERR');
+        console.log(profile.error.message);
         return res.status(500).send({message: profile.error.message});
       }
+      console.log('Google 3a');
       // Step 3a. Link user accounts.
       if (req.header('Authorization')) {
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
+            console.log('Google existingUser');
+            console.log(existingUser);
             return res.status(409).send({ message: 'There is already a Google account that belongs to you' });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, ENV.secret);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
+              console.log('Google !user');
               return res.status(400).send({ message: 'User not found' });
             }
             user.google = profile.sub;
             user.picture = user.picture || profile.picture.replace('sz=50', 'sz=200');
             user.displayName = user.displayName || profile.name;
             user.save(function() {
+              console.log('Google user saved!');
               var token = utilityModule.createJWT(user);
               res.send({ token: token });
             });
           });
         });
       } else {
+        console.log('Google 3b');
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
+
             return res.send({ token: utilityModule.createJWT(existingUser) });
           }
           var user = new User();
