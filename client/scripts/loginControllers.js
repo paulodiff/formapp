@@ -17,6 +17,7 @@ angular.module('myApp.controllers')
         $scope.currentUser = null;
         $scope.userRoles = ENV.USER_ROLES;
         $scope.isAuthorized = AuthService.isAuthorized;
+        $scope.isCollapsed = false;
     
         $scope.go = function ( path ) {
             $log.debug("AppCtrl ... go");
@@ -340,7 +341,7 @@ angular.module('myApp.controllers')
 
 
   $scope.login = function (credentials) {
-      
+
       usSpinnerService.spin('spinner-1');
       //$ionicLoading.show({template: 'Attendere...' });
       $log.debug('login:calling .. AuthService. ..');

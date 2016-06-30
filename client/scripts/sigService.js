@@ -30,11 +30,14 @@ angular.module('myApp.services')
 
     this.onProgress = function(reader, scope) {
         return function (event) {
-            scope.$broadcast("fileProgress",
+            /*
+            console.log(event.loaded);
+            scope.$broadcast("imageProgressLoading",
                 {
                     total: event.total,
                     loaded: event.loaded
                 });
+            */
         };
     };
 

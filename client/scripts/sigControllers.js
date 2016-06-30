@@ -6,12 +6,13 @@
 angular.module('myApp.controllers')
 
 .controller("sigPhotoController", 
-                    ['$scope', 'dialogs', '$state', '$log', 'sigService',
-            function($scope,    dialogs,   $state,   $log,   sigService) {
+                    ['$scope', 'dialogs', '$state', '$log', 'sigService', 'usSpinnerService',
+            function($scope,    dialogs,   $state,   $log,   sigService ,  usSpinnerService) {
 
                 
         $log.debug("sigPhoto  start");
         $scope.imagSrc = '';
+        $scope.singleModel = 1;
           
         $scope.selectImageFile = function(){
               console.log('selectImageFile............');
@@ -32,26 +33,36 @@ angular.module('myApp.controllers')
        $scope.getFile = function () {
          $scope.progress = 0;
          console.log('getFile');
+         usSpinnerService.spin('spinner-1');
             sigService.fileReader.readAsDataUrl($scope.file, $scope)
                       .then(function(result) {
                           $scope.imageSrc = result;
+                          usSpinnerService.stop('spinner-1');
                       });
         };
- 
-        $scope.$on("fileProgress", function(e, progress) {
+      
+        /*
+        $scope.$on("imageProgressLoading", function(e, progress) {
+            console.log(progress);
             $scope.progress = progress.loaded / progress.total;
+            $scope.$apply;
         });
+        */
        
         $scope.addImagesOnChange = function(files, errFiles) {
             console.log('addImagesOnChange ...');
             var files = event.target.files;
             console.log(files[0]);
+            usSpinnerService.spin('spinner-1');
 
             //sigService.addNewFile(files[0]);
+
             sigService.readAsDataURL(files[0], $scope)
                       .then(function(result) {
                           $scope.imageSrc = result;
+                          usSpinnerService.stop('spinner-1');
                       });
+            
 
             /*
             var fileInfo = [];
@@ -67,8 +78,8 @@ angular.module('myApp.controllers')
 }])
 
 .controller('sigPositionController', 
-                    ['$scope', 'dialogs', '$state', '$log', 'sigService',
-            function($scope,    dialogs,   $state,   $log,   sigService) {
+                    ['$scope', 'dialogs', '$state', '$log', 'sigService', 'usSpinnerService',
+            function($scope,    dialogs,   $state,   $log,   sigService ,  usSpinnerService) {
                 
     $log.debug('sigPosition...');
 
@@ -87,6 +98,7 @@ angular.module('myApp.controllers')
 
         $scope.getLocationGPS = function(params) {
             console.log('getPositionGPS............');
+            usSpinnerService.spin('spinner-1');
             sigService.getCurrentPosition({
             enableHighAccuracy: true,
             timeout: 60000
@@ -96,6 +108,7 @@ angular.module('myApp.controllers')
                 console.log(address);
                 $scope.addresses = address.data.results;
                 $scope.$apply;
+                usSpinnerService.stop('spinner-1');
             });
 
          });

@@ -1,42 +1,30 @@
+
+<div class="container">
+
 <p>Photo</p>
 
 <!-- <img ng-repeat="image in allImages" ng-src="{{image.src}}" ng-click="showImages($index)" class="image-list-thumb"/> -->
 <i ng-hide="imageSrc">No image choosed</i>
-<img ng-src="{{imageSrc}}" /><br/>
-<progress value="{{progress}}"></progress>
-<div class="input-group">
-	<span class="input-group-btn">
-          <span class="btn btn-primary btn-file">Sfoglia &hellip;
-          <input type="file" 
-          		 ng-model="model[options.key]" 
-          		 name="files" 
-          		 accept="image/*" 
-          		 maxsize="{{to.maxsize}}" 
-          		 required="required" 
-          		 onerror="onErrorHandler"
-          		 onabort="onErrorHandler"
-          		 onload="onErrorHandler"
-          		 onloadstart="onErrorHandler"
-          		 onloadend="onErrorHandler"
-          		 onprogress="onErrorHandler"
-          		 on-change="onChangeHandlerFunc"
-                 on-after-validate="onAfterValidateFunc"
-               />
-      </span>
-    </span>
-    <ul>
-    	<li>{{model.image.filename}}</li>
-    	<li>{{model.image.filetype}}</li>
-    	<li>{{model.image.filesize}}</li>
-    </ui>
-</div>
+<img ng-src="{{imageSrc}}" class="img-responsive" /><br/>
 
-<button type="button" class="btn btn-primary btn-block" ng-click="selectImageFile()" >SelectImageFile</button>
+
+
+
 <div style='height: 0px;width:0px; overflow:hidden;'>
    <!-- <input id="idImageFileInput" type="file" class="btn-file" multiple custom-on-change="addImagesOnChange" /> -->
-   <input id="idImageFileInput" type="file" class="btn-file" custom-on-change="addImagesOnChange" />
+    <!-- <input id="idImageFileInput" type="file" class="btn-file" custom-on-change="addImagesOnChange" /> -->
+   <input id="idImageFileInput" type="file" class="btn-file" custom-on-change="addImagesOnChange" accept="image/*">
 </div>
-<button class="btn btn-danger btn-block" ng-click="nextStep()">Next..</button>
-<button class="btn btn-danger btn-block" ng-click="testService()">Test Service</button>
 
+<button type="button" class="btn btn-primary btn-block  btn-lg" ng-click="selectImageFile()" >SelectImageFile</button>
+<br/>
+<button class="btn btn-success btn-block  btn-lg" ng-click="nextStep()">Next..</button>
+<button class="btn btn-danger btn-block  btn-lg" ng-click="testService()">Test Service</button>
+<button type="button" class="btn btn-primary" ng-model="singleModel" uib-btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+        Single Toggle
+</button>
 
+<pre>{{singleModel}}</pre>
+<pre>{{isCollapsed}}</pre>
+
+</div>
