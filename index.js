@@ -146,6 +146,8 @@ app.use('/uploadmgr', UploadData);
 
 app.use(express.static('client/'));
 
+app.use('/ionic', express.static(__dirname + '/ionicclient/www/'));
+
 app.get('/test', function (req, res) {
   res.send('Hello World!');
 });

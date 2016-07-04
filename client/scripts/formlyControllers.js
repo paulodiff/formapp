@@ -593,7 +593,7 @@ formlyConfig.setType({
       url: 'https://www.comune.rimini.it' // a link to your twitter/github/blog/whatever
     };
 
-    vm.exampleTitle = 'Modulo di test 2016';
+    vm.exampleTitle = 'Iscrizioni Nidi Comunali 2016';
     vm.exampleDescription = 'Descrizione operativa del modulo';
 
     vm.env = {
@@ -712,57 +712,7 @@ formlyConfig.setType({
         }
       },
       */
-{
-        key: 'UPLOADFILE',
-        type: 'repeatUploadSection',
-        wrapper: 'panel',
-        //templateOptions: { label: 'Address', info: 'info!' },
-        //templateUrl: 'templates/formly-custom-template.html',
-        templateOptions: 
-        {
-          label: 'labelUpload', 
-          info: 'infoUpload',
-          warn: 'wUpload',
-          btnText:'Nuovo elemento btn',
-          help: 'helpUpload',
-          fields: [
-            {
-              //className: 'row',
-              fieldGroup: 
-              [
-               {
-                key: 'tipoDocumento',
-                className: 'col-md-3',
-                type: 'input',
-                templateOptions: {
-                  required: false,
-                  label: 'tipo_Documento_label'
-                }
-              },
-              {
-                key: 'fileName',
-                type: 'input',
-                className: 'col-md-6',
-                templateOptions: {
-                  required: false,
-                  label: 'fileName'
-                }
-              },
-              {
-                key: 'fileSize',
-                type: 'input',
-                className: 'col-md-2',
-                templateOptions: {
-                  required: false,
-                  label: 'fileSize'
-                }
-              }
 
-              ] // fieldGroup
-            }
-          ], //fields
-        } //templateOptions
-      },
 
       {
         key: 'DICHIARANTI',
@@ -859,7 +809,7 @@ formlyConfig.setType({
         key: 'PLESSO',
         wrapper: 'panel',
         templateOptions: { 
-          label: '3.0 Scelta del centro estivo',
+          label: '2.0 Scelta del centro estivo',
           info: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione</br>LA VELA</br>IL VOLO</br>DELFINO',
           warn: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione',
           help: 'Inserire in questa sezione i dati relativi alla fatturazione'
@@ -902,6 +852,57 @@ formlyConfig.setType({
         ]
       },
       
+      {
+        key: 'UPLOADFILE',
+        type: 'repeatUploadSection',
+        wrapper: 'panel',
+        //templateOptions: { label: 'Address', info: 'info!' },
+        //templateUrl: 'templates/formly-custom-template.html',
+        templateOptions: 
+        {
+          label: 'labelUpload', 
+          info: 'infoUpload',
+          warn: 'wUpload',
+          btnText:'Nuovo elemento btn',
+          help: 'helpUpload',
+          fields: [
+            {
+              //className: 'row',
+              fieldGroup: 
+              [
+               {
+                key: 'tipoDocumento',
+                className: 'col-md-3',
+                type: 'input',
+                templateOptions: {
+                  required: false,
+                  label: 'tipo_Documento_label'
+                }
+              },
+              {
+                key: 'fileName',
+                type: 'input',
+                className: 'col-md-6',
+                templateOptions: {
+                  required: false,
+                  label: 'fileName'
+                }
+              },
+              {
+                key: 'fileSize',
+                type: 'input',
+                className: 'col-md-2',
+                templateOptions: {
+                  required: false,
+                  label: 'fileSize'
+                }
+              }
+
+              ] // fieldGroup
+            }
+          ], //fields
+        } //templateOptions
+      },
 
       {
         key: 'IMMAGINE_SINGOLA',

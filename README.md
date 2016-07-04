@@ -39,6 +39,10 @@ http://odetocode.com/blogs/scott/archive/2013/07/03/building-a-filereader-servic
 GeoLocation
 https://franciskim.co/2015/07/15/use-html5-geolocation-google-maps-api-angularjs/
 
+
+Form
+https://form.io/
+
 Note:
 
 Passpord authentication
