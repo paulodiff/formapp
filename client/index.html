@@ -133,7 +133,7 @@
 
 
 
-<nav class="navbar navbar-default navbar-static-top navbar-inner">
+<nav ng-controller="SNavbarCtrl" class="navbar navbar-default navbar-static-top navbar-inner">
     <div class="container">
         
         <div class="navbar-header">
@@ -159,12 +159,12 @@
           </ul>
 
           <ul ng-if="!isAuthenticated()" class="nav navbar-nav pull-right">
-            <li><a href="#/login">Login</a></li>
-            <li><a href="#/signup">Sign up</a></li>
+            <li><a href="#/login">@Login</a></li>
+            <li><a href="#/signup">@Sign up</a></li>
           </ul>
 
           <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
-            <li><a href="#/logout">Logout</a></li>
+            <li><a href="#/logout">@Logout</a></li>
           </ul>
         </nav>
         
@@ -175,14 +175,15 @@
                 <li><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form1</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/profile" ng-click="isCollapsed = !isCollapsed">Profile</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form</a></li>
-                <li><a href="#/login"  ng-click="isCollapsed = !isCollapsed">Login</a></li>
+                <li><a href="#/login"  ng-click="isCollapsed = !isCollapsed">@@Login</a></li>
+                <li ng-if="isAuthenticated()"><a href="#/logout">@@Logout</a></li>
             </ul>
         </nav>
 
 
     </div>
 </nav>
-
+<p>{{isAuthenticated()}}</p>
 <!--
 <header class="navbar navbar-default navbar-fixed-top navbar-inner">
     <div class="container">    

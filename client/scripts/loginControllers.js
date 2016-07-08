@@ -279,7 +279,7 @@ angular.module('myApp.controllers')
 // LoginController ------------------------------------------------------------------------------------
 .controller('LoginController', 
                     [ '$scope', 'usSpinnerService', '$localStorage', '$rootScope', 'ENV', 'AuthService','$state', '$log',
-            function ( $scope,   usSpinnerService, $localStorage,   $rootScope,   ENV,   AuthService,  $state,   $log) {
+            function ( $scope,   usSpinnerService,   $localStorage,   $rootScope,   ENV,   AuthService,  $state,   $log) {
                 
     $log.debug('LoginController...');
     $log.debug('LoginController...currentUser:' + $scope.currentUser );

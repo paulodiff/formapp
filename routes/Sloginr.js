@@ -15,16 +15,26 @@ module.exports = function(){
  // Log in with Email
 router.post('/login', function(req, res) {
   console.log('/login');
-  utilityModule.test();
-  User.findOne({ email: req.body.email }, '+password', function(err, user) {
-  	if(err) console.log(err);
+  //utilityModule.test();
+  console.log('email:' + req.body.email );
+  //User.findOne({ email: req.body.email }, '+password', function(err, user) {
+  User.findOne({ email: req.body.email }, function(err, user) {
+
+  	if(err){
+      console.log('User.findOne error ...');
+      console.log(err);
+    } 
     if (!user) {
       console.log('NOT user..');
       return res.status(401).send({ message: 'Invalid email and/or password' });
     }
     user.comparePassword(req.body.password, function(err, isMatch) {
-      if(err) console.log(err);
+      if(err) {
+        console.log('user.comparePassword error ...');
+        console.log(err);
+      }
       if (!isMatch) {
+        console.log('user.comparePassword not Match');
         return res.status(401).send({ message: 'Invalid email and/or password' });
       }
       res.send({ token: utilityModule.createJWT(user) });
