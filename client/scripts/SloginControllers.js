@@ -12,7 +12,6 @@ angular.module('myApp.controllers')
         .catch(function(error) {
           $log.debug('login error:');
           $log.debug(error);
-          $log.debug(error.data.message);
           dialogs.error('Errore',error.data.message);
         });
     };
