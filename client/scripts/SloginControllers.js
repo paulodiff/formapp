@@ -12,7 +12,10 @@ angular.module('myApp.controllers')
         .catch(function(error) {
           $log.debug('login error:');
           $log.debug(error);
-          dialogs.error('Errore',error.data.message);
+          if (error.data) {
+            dialogs.error('Errore',error.data.message);
+          } else
+            dialogs.error('Errore','Errore generico di accesso');
         });
     };
 
