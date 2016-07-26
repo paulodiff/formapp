@@ -10,6 +10,8 @@ var cors         = require('cors');
 //var session      = require('express-session');
 //var passport     = require('passport');
 var mongoose     = require('mongoose');
+//var MongoClient = require('mongodb').MongoClient;
+var mongocli = require('./models/mongocli');
 //var mysql        = require('mysql');
 //var jwt          = require('jsonwebtoken');
 //var expressSession = require('express-session');
@@ -111,6 +113,21 @@ app.use(bodyParser.json({
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+
+// MongoDb pool create
+// Initialize connection once
+log.log2console('MongoDb building pool');
+var dbMONGO;
+mongocli.connect(ENV.mongodb.MONGODB_URL, function(err, database) {
+  if(err) {
+    res.status(500).json({ error: 'authenticateMONGO : Connection error' });
+    return console.dir(err); 
+  }
+  log.log2console('MongoDb pool builded!');
+  dbMONGO = database;
+});
+
+
 /*
 app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(session({ secret: ENV.secret,
@@ -143,6 +160,10 @@ app.use('/api/seq', SeqData);
 
 var UploadData = require('./routes/Uploadr')();
 app.use('/uploadmgr', UploadData);
+
+
+var Segnalazioni = require('./routes/Segnalazionir')();
+app.use('/segnalazioni', Segnalazioni);
 
 app.use(express.static('client/'));
 
