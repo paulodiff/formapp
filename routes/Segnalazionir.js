@@ -19,9 +19,30 @@ var utilityModule  = require('../models/utilityModule.js'); // load configuratio
 var ACCESS_CONTROLL_ALLOW_ORIGIN = false;
 //var DW_PATH = (path.join(__dirname, './storage'));
 var DW_PATH = './storage';
+var _ = require('lodash');
 
 
 module.exports = function(){
+
+
+router.get('/getList', function(req, res) {
+    console.log('/getList');
+    var collection = mongocli.get().collection('segnalazioni');
+    var rand = Math.floor(Math.random()*100000000).toString();
+
+      collection.find().toArray(function(err, docs) {
+        console.log("Found the following records ... ");
+        //console.dir(err);
+        console.log(err);
+        if(err){
+            res.status(500).json(err);
+        }else{
+            res.status(201).json(docs);
+        }
+      });      
+
+});
+
 
 
 router.post('/upload', multipartMiddleware, function(req, res) {
@@ -32,7 +53,14 @@ router.post('/upload', multipartMiddleware, function(req, res) {
 
   //var transactionId = req.body.fields.transactionId;
   var transactionId = 'segnalazioni';
+  var ts = utilityModule.getTimestampPlusRandom();
   var dir = DW_PATH + "/" +  transactionId;
+
+  
+
+
+  var listOfFiles = [];
+
   if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
 
   if (req.files && req.files.files && req.files.files.length) {
@@ -41,13 +69,29 @@ router.post('/upload', multipartMiddleware, function(req, res) {
       console.log(req.files.files[i].originalFilename);
       console.log(req.files.files[i].size);
 
-      fs.renameSync(req.files.files[i].path, dir + "/" + req.files.files[i].originalFilename);
+      fs.renameSync(req.files.files[i].path, dir + "/" + ts + "-" + req.files.files[i].originalFilename);
+
+      var oneFile = {
+          path : dir,
+          ts : ts,
+          originalFilename: req.files.files[i].originalFilename,
+          type: req.files.files[i].type,
+          size :  req.files.files[i].size
+      };
+
+      console.log(oneFile);
+
+      listOfFiles.push(oneFile);
 
     }
   }
   
+  console.log(listOfFiles);
+
+ var fullObj = _.merge(req.body.fields, listOfFiles);
+
   var collection = mongocli.get().collection('segnalazioni'); 
- collection.update( { type : 'segnalazione' }, req.body.fields ,
+ collection.update( { type : 'segnalazione' }, fullObj ,
                         { upsert: true } , function(err, result) {
       if(err){
         logger.error(err);
@@ -57,10 +101,7 @@ router.post('/upload', multipartMiddleware, function(req, res) {
       }
 
     });
-
     
-
-
 });
 
 router.post('/uploadOld', multipartMiddleware, function(req, res) {

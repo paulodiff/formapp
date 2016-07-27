@@ -5,7 +5,7 @@
 .constant('ENV', 
 		{	
 			name:'development',
-			apiEndpoint:'http://localhost:3000/api',
+			apiEndpoint:'http://localhost:9988/segnalazioni/upload',
 			apiLogin:'auth/login',
 			apiLogout:'auth/logout',
 			routeAfterLogon:'profile',

@@ -2,6 +2,12 @@ var jwt = require('jwt-simple');
 var moment = require('moment');
 var ENV   = require('../config.js'); // load configuration data
 
+function addZero(x,n) {
+      while (x.toString().length < n) {
+        x = "0" + x;
+      }
+    return x;
+}
 
 module.exports = {
 
@@ -43,9 +49,40 @@ module.exports = {
             exp: moment().add(14, 'days').unix()
           };
           return jwt.encode(payload, ENV.secret);
-    }
+    },
 
+    getTimestampPlusRandom: function() {
 
+          var d = new Date(),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+          if (month.length < 2) month = '0' + month;
+          if (day.length < 2) day = '0' + day;
+    
+          var time = [ d.getHours(), d.getMinutes(), d.getSeconds() ];
+          var ms = addZero(d.getMilliseconds(), 3);
+
+          console.log('UtilsService');
+          console.log(time);
+
+          var suffix = Math.floor(Math.random()*90000) + 10000;
+
+            for ( var i = 1; i < 3; i++ ) {
+              if ( time[i] < 10 ) {
+                time[i] = "0" + time[i];
+              }
+            }
+
+          
+
+          console.log(time.join(""));  
+
+          // Return the formatted string
+          return [year, month, day].join('') + "@" + time.join("") + "@" + ms + "@" + suffix;
+          //return date.join("") + "@" + time.join("") + "@" + suffix;
+        }
 }
 
 /*

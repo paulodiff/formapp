@@ -460,8 +460,8 @@ angular.module('myApp.controllers')
 
 // HelpController ------------------------------------------------------------------------------------
 .controller('HelpController', 
-            [ '$scope', 'Restangular', '$rootScope', 'ENV', 'AuthService','Session','$location','$ionicLoading','$http', '$ionicPopup','$ionicSlideBoxDelegate','$state','$log',
-            function ($scope, Restangular, $rootScope, ENV, AuthService, Session, $location, $ionicLoading, $http, $ionicPopup,$ionicSlideBoxDelegate,$state,$log ) {
+                   [ '$scope', 'Restangular', '$rootScope', 'ENV', 'AuthService','Session','$location','$ionicLoading','$http', '$ionicPopup','$ionicSlideBoxDelegate','$state','$log',
+            function ($scope,   Restangular,   $rootScope,   ENV,   AuthService,  Session,  $location,  $ionicLoading,  $http,   $ionicPopup,  $ionicSlideBoxDelegate,  $state,$log ) {
     $log.debug('HelpController...');
     
     //Restangular.setBaseUrl($rootScope.base_url); 
@@ -474,7 +474,7 @@ angular.module('myApp.controllers')
     };            
     
     $scope.change_Api1 = function() {
-        $scope.UrlApi = "http://localhost/api/";
+        $scope.UrlApi = "http://localhost:9988/segnalazioni/upload";
         $rootScope.base_url = $scope.UrlApi;
         Restangular.setBaseUrl($rootScope.base_url); 
     }
