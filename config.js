@@ -49,6 +49,7 @@ module.exports = {
         //url: 'http://10.10.128.63/ulisse/iride/web_services/wsprotocollodm/wsprotocollodm.asmx?wsdl'
     },
 
+    storagePath : './storage',
     
     // OAuth 2.0
     FACEBOOK_SECRET: process.env.FACEBOOK_SECRET || 'YOUR_FACEBOOK_CLIENT_SECRET',

@@ -165,9 +165,11 @@ app.use('/uploadmgr', UploadData);
 var Segnalazioni = require('./routes/Segnalazionir')();
 app.use('/segnalazioni', Segnalazioni);
 
-app.use(express.static('client/'));
 
-app.use('/ionic', express.static(__dirname + '/ionicclient/www/'));
+//default serving html data
+app.use(express.static('ionicclient/www/'));
+//app.use(express.static('client/'));
+//app.use('/ionic', express.static(__dirname + '/ionicclient/www/'));
 app.use('/poc', express.static(__dirname + '/poc'));
 app.use('/swagger', express.static(__dirname + '/swagger'));
 

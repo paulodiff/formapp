@@ -2,6 +2,7 @@
 //var redis = require('redis');
 //https://www.terlici.com/2015/04/03/mongodb-node-express.html
 var MongoClient = require('mongodb').MongoClient;
+var MongoDb = require('mongodb');
 var log4js  = require('log4js');
 var logger  = log4js.getLogger();
 
@@ -23,6 +24,10 @@ exports.connect = function(url, done) {
 
 exports.get = function() {
   return state.db;
+}
+
+exports.ObjectID = function(params) {
+  return new MongoDb.ObjectID(params); 
 }
 
 exports.close = function(done) {

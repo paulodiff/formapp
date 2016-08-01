@@ -18,19 +18,75 @@ var utilityModule  = require('../models/utilityModule.js'); // load configuratio
 
 var ACCESS_CONTROLL_ALLOW_ORIGIN = false;
 //var DW_PATH = (path.join(__dirname, './storage'));
-var DW_PATH = './storage';
+//var DW_PATH = './storage';
+var DW_PATH = ENV.storagePath;
 var _ = require('lodash');
 
 
 module.exports = function(){
 
 
-router.get('/getList', function(req, res) {
-    console.log('/getList');
+router.get('/getImage', function(req, res) {
+
+    /*
+     var img = fs.readFileSync('./logo.gif');
+     res.writeHead(200, {'Content-Type': 'image/gif' });
+     res.end(img, 'binary');
+
+   */
+
+    console.log('/getImage');
+    console.log(req.query.id);
+    var o_id = new mongocli.ObjectID(req.query.id);
+    console.log(o_id);
     var collection = mongocli.get().collection('segnalazioni');
     var rand = Math.floor(Math.random()*100000000).toString();
+      //db.users.find().skip(pagesize*(n-1)).limit(pagesize)
 
-      collection.find().toArray(function(err, docs) {
+      collection.find({ "_id":o_id }).toArray(function(err, docs) {
+        if(err){
+            res.status(500).json(err);
+        }else{
+
+          if(docs){
+            console.log("Found the following records ... ");
+            //console.log(docs);
+ 
+            //console.dir(err);
+            console.log(docs[0].fileUploaded);
+            //console.log(docs[0].0);
+
+            
+
+            var fName = DW_PATH + '/segnalazioni/' + docs[0].fileUploaded.ts + "-" + docs[0].fileUploaded.originalFilename;
+            console.log(fName);
+            var img = fs.readFileSync(fName);
+            res.writeHead(200, {'Content-Type': docs[0].fileUploaded.type });
+            res.end(img, 'binary');
+            
+            //res.status(201).json(docs);
+
+          } else {
+            console.log("NOt found");
+            res.status(404).json({'msg':'notFound'});
+          }
+
+        }
+      });      
+});
+
+
+
+router.get('/getList', function(req, res) {
+    console.log('/getList');
+    console.log(req.query);
+    var pagesize = parseInt(req.query.pageSize); 
+    var n =  parseInt(req.query.currentPage);
+    var collection = mongocli.get().collection('segnalazioni');
+    var rand = Math.floor(Math.random()*100000000).toString();
+      //db.users.find().skip(pagesize*(n-1)).limit(pagesize)
+
+      collection.find().skip(pagesize*(n-1)).limit(pagesize).toArray(function(err, docs) {
         console.log("Found the following records ... ");
         //console.dir(err);
         console.log(err);
@@ -40,9 +96,7 @@ router.get('/getList', function(req, res) {
             res.status(201).json(docs);
         }
       });      
-
 });
-
 
 
 router.post('/upload', multipartMiddleware, function(req, res) {
@@ -55,10 +109,6 @@ router.post('/upload', multipartMiddleware, function(req, res) {
   var transactionId = 'segnalazioni';
   var ts = utilityModule.getTimestampPlusRandom();
   var dir = DW_PATH + "/" +  transactionId;
-
-  
-
-
   var listOfFiles = [];
 
   if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
@@ -88,7 +138,9 @@ router.post('/upload', multipartMiddleware, function(req, res) {
   
   console.log(listOfFiles);
 
- var fullObj = _.merge(req.body.fields, listOfFiles);
+  var fileUploadedObj = { "fileUploaded" : oneFile}
+
+  var fullObj = _.merge(req.body.fields, fileUploadedObj);
 
   var collection = mongocli.get().collection('segnalazioni'); 
  collection.update( { type : 'segnalazione' }, fullObj ,
