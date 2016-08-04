@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="theme-color" content="#4285f4">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>SegnalazioniApp</title>
+
+    <link href="lib/please-wait/build/please-wait.css" rel="stylesheet">
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <!-- <script src="lib/ionic/js/ionic.bundle.js"></script> -->
+
+    <!-- endbower -->
+    <!-- endbuild -->
+
+
+    <!-- ngStorage -->
+    <!-- cordova script (this will be a 404 during development) -->
+    <!-- <script src="cordova.js"></script> -->
+
+    <!-- your app's js -->
+  </head>
+
+  <body ng-app="myApp" ng-controller="AppCtrl">
+    <!-- loader http://pathgather.github.io/please-wait/ START -->
+    <div class="inner" ng-view=""></div>
+    <script type="text/javascript" src="lib/please-wait/build/please-wait.min.js"></script>
+    <script type="text/javascript">
+      window.loading_screen = window.pleaseWait({
+        logo: "images/logo_comune_80x80.gif",
+        backgroundColor: '#FFFFFF',
+        loadingHtml: "<p class='loading-message'>Attendere...</p>"
+      });
+    </script>
+    <!-- loader http://pathgather.github.io/please-wait/ END -->
+
+
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="lib/angular-animate/angular-animate.min.js"></script>
+    <script src="lib/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="lib/ionic/js/ionic.min.js"></script>
+    <script src="lib/ionic/js/ionic-angular.min.js"></script>
+    <script src="lib/angular-resource/angular-resource.min.js"></script>
+    <script src="lib/lodash/dist/lodash.min.js"></script>
+    <script src="lib/restangular/dist/restangular.min.js"></script> 
+    <script src="lib/angular-simple-logger/dist/angular-simple-logger.min.js"></script> 
+    <script src="lib/angular-google-maps/dist/angular-google-maps.min.js"></script>
+    <script src="lib/ngstorage/ngStorage.min.js"></script> 
+    <script src="lib/ng-file-upload/ng-file-upload.min.js"></script>
+    <script src="lib/satellizer/dist/satellizer.js"></script>  
+
+    <!-- WebRTC adapter -->
+    <script src="scripts/adapter-latest.js"></script>
+
+    <script src="scripts/app.js"></script>
+    <script src="scripts/configuration.js"></script>
+    <script src="scripts/rootServices.js"></script>
+    <script src="scripts/authService.js"></script>
+    <script src="scripts/sigService.js"></script>
+    <script src="scripts/qReaderService.js"></script>
+    <script src="scripts/rootControllers.js"></script>
+    <script src="scripts/loginControllers.js"></script>
+    <script src="scripts/satellizerControllers.js"></script>
+    <script src="scripts/segnalazioniSosteControllers.js"></script>
+    <!-- <script src="scripts/brogliaccioControllers.js"></script> -->
+    <!-- <script src="scripts/reportControllers.js"></script> -->
+    <script src="scripts/sigControllers.js"></script>
+    <!-- <script src="scripts/veloxControllers.js"></script> --> 
+    <script src="scripts/mapsControllers.js"></script>
+    <!-- <script src="scripts/heatControllers.js"></script> -->
+    <!-- <script src="scripts/cordovaControllers.js"></script> -->
+    <script src="scripts/filters.js"></script>
+    <script src="scripts/directives.js"></script>  
+
+    <ion-nav-view></ion-nav-view>
+
+    <script type="text/ng-template" id="mapLocationModalTemplate.html">
+              <ion-modal-view>
+            <ion-header-bar ng-class="modalData.cssTitle">
+                <h1 class="title">{{modalData.txtTitle}}</h1>
+            </ion-header-bar>
+            <ion-content has-header="true">
+            <div class="card" ng-repeat="item in modalData.cardTxt">
+                    <div class="item item-text-wrap">{{item}}</div>
+              </div>
+                  <div class="item item-input-inset" ng-if="modalData.btnClose">
+                      <button class="button button-calm button-block" ng-click="mapLocationModalClose()">{{modalData.btnCloseTxt}}</button>
+                  </div>
+                  <div class="item item-input-inset" ng-if="modalData.btnReload">
+                    <button class="button button-calm button-block" ng-click="mapLocationModalCloseReload()">{{modalData.btnReloadTxt}}</button>
+                  </div>        
+                </div>
+            </ion-content>
+        </ion-modal-view>
+    </script>
+
+  </body>
+
+</html>
+
+

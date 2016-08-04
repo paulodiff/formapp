@@ -1,0 +1,82 @@
+<ion-view>
+
+
+  <ion-nav-bar class="bar-royal">
+	<ion-nav-title class="bar-dark">Localizzazione GPS</ion-nav-title>
+    <ion-nav-buttons side="left">
+       <button class="button button-icon button-clear ion-navicon" ng-click="toggleLeft()"></button>
+    </ion-nav-buttons>
+      <ion-nav-buttons side="right" >
+        <!-- <button class="button button-icon ion-refresh" ng-click="getLocationGPS()"></button> -->
+        <!-- <button class="button button-icon ion-ios-book" ng-click="openSortModal()"></button> -->
+      </ion-nav-buttons>
+  </ion-nav-bar>
+
+
+
+<ion-content>
+      <ui-gmap-google-map center='map.center' zoom='map.zoom' draggable="true" options="'options'">
+
+      <!-- test -->
+      <!-- <ui-gmap-layer  type="TrafficLayer" show='filterCriteria.infoTraffico'></ui-gmap-layer> -->
+
+
+      <!--
+      	<ui-gmap-marker coords="staticMarker.coords" 
+                        options="staticMarker.options" 
+                        events="staticMarker.events" 
+                        idKey="staticMarker.id">
+        </ui-gmap-marker>
+       --> 
+        <ui-gmap-markers models="randomMarkers" 
+                         coords="'self'" 
+                         options="'options'"
+                         click="onMarkerClicked"
+                         doRebuildAll="true">
+<!--
+            <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+                <div>
+                    <p ng-non-bindable>{{text2display}}</p>
+                </div>
+            </ui-gmap-windows>
+-->
+        </ui-gmap-markers>
+      
+<!--
+        <ui-gmap-polyline ng-repeat="p in polylines" 
+                          path="p.path" 
+                          stroke="p.stroke" 
+                          visible='p.visible'
+                          geodesic='p.geodesic' 
+                          fit="false" 
+                          editable="p.editable" 
+                          draggable="p.draggable" icons='p.icons'>
+        </ui-gmap-polyline>
+-->
+
+      </ui-gmap-google-map>
+</ion-content>
+
+
+
+<ion-footer-bar align-title="left" class="bar-success">
+    <div class="button-bar">
+        <a class="button button-positive" ng-click="getLocationGPS()">Tocca per riprovare GPS</a>
+        <!-- <a class="button button-balanced pull-right" ng-click="nextStep()">Prosegui</a> -->
+    </div>
+</ion-footer-bar>
+
+
+<!--
+<div class="bar bar-footer bar-success">
+  <div class="button-bar">
+    <a class="button button-positive" ng-click="getLocationGPS()">Riprova localizzazione GPS!</a>
+    <a class="button button-balanced pull-right">Prosegui</a>
+  </div>
+</div>
+-->
+
+
+
+
+</ion-view>

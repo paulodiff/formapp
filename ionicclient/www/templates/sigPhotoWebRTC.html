@@ -1,0 +1,22 @@
+<ion-view title="Foto segnalazione" id="page12" class=" ">
+    <ion-nav-bar class="bar-royal">
+      <!-- <ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Back</ion-nav-back-button> -->
+      <ion-nav-buttons side="right" >
+        <!-- <button class="button button-icon ion-more" ng-click="popover.show($event)"></button> -->
+        <!-- <button class="button button-icon ion-gear-b" ng-click="openSortModal()"></button> -->
+      </ion-nav-buttons>
+    </ion-nav-bar>
+<ion-content>
+    <video autoplay id="webcam" ng-show="showVideo"></video>
+    <canvas id="canvas" ng-show="showCanvas"></canvas>
+    <img id="canvasImg" ng-show="showImage" />
+</ion-content>
+<ion-footer-bar align-title="left" class="bar-success">
+    <div class="button-bar bar-success">
+        <!-- <a class="button button-positive" ng-show="showImage" ng-click="restartCamera()">Riprova</a> -->
+        <a class="button button-calm pull-right" ng-show="showVideo" ng-click="scatta()">SCATTA</a> 
+        <!-- <a class="button button-balanced pull-right" ng-show="showImage" ng-click="nextStep()">Avanti</a> -->
+    </div>
+</ion-footer-bar>
+</ion-view>
+

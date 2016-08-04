@@ -1,0 +1,20 @@
+<ion-view title="Tipologia segnalazione" id="page14" class=" ">
+
+    <ion-nav-bar class="bar-royal">
+      <!-- <ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Indietro</ion-nav-back-button> -->
+      <ion-nav-buttons side="right" >
+        <!-- <button class="button button-icon ion-more" ng-click="popover.show($event)"></button> -->
+        <!-- <button class="button button-icon ion-gear-b" ng-click="openSortModal()"></button> -->
+      </ion-nav-buttons>
+    </ion-nav-bar>
+
+    <ion-content padding="true" class="has-header">
+        <p id="tipoPasso3Di3-markdown7" style="color:#000000;" class=" ">Selezionare l'oggetto (tipo) della segnalazione</p>
+        
+         <ion-checkbox ng-repeat="item in typeList"  ng-model="item.checked"     ng-checked="item.checked">
+          {{ item.text }}
+        </ion-checkbox>
+
+        <a id="tipoPasso3Di3-button20" class=" button button-balanced  button-block" ng-click="sigSendData()">Invia la segnalazione!</a>
+    </ion-content>
+</ion-view>

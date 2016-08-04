@@ -1,0 +1,63 @@
+<ion-view title="Foto segnalazione" id="page12" class=" ">
+
+    <ion-nav-bar class="bar-royal">
+      <!-- <ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Back</ion-nav-back-button> -->
+
+    <ion-nav-buttons side="left">
+       <button class="button button-icon button-clear ion-navicon" ng-click="toggleLeft()"></button>
+    </ion-nav-buttons>
+
+     <ion-nav-buttons side="right" >
+        
+        <!-- <button class="button button-icon ion-more" ng-click="popover.show($event)"></button> -->
+        <!-- <button class="button button-icon ion-gear-b" ng-click="openSortModal()"></button> -->
+      </ion-nav-buttons>
+    </ion-nav-bar>
+
+    <ion-content padding="true" class="has-header">
+        <p id="fotoPasso1Di3-markdown6" style="color:#000000;" class=" ">Fare una foto per la segnalazione</p>
+
+<!-- <img ng-repeat="image in allImages" ng-src="{{image.src}}" ng-click="showImages($index)" class="image-list-thumb"/> -->
+
+<!--
+<div style="margin: 0px; text-align: center; background-color: rgb(232, 235, 239);">
+    <img ng-src="{{imageSrc}}" class="ion-image" style="width: 100%; height: 200px;"/>
+</div>
+-->
+
+<div class="imgContainer">
+  <img ng-src="{{imageSrc}}" />
+</div>
+
+
+<div style='height: 0px;width:0px; overflow:hidden;'>
+   <!-- <input id="idImageFileInput" type="file" class="btn-file" multiple custom-on-change="addImagesOnChange" /> -->
+    <!-- <input id="idImageFileInput" type="file" class="btn-file" custom-on-change="addImagesOnChange" /> -->
+   <input id="idImageFileInput" type="file" class="btn-file" custom-on-change="addImagesOnChange" accept="image/*">
+</div>
+
+<button id="fotoPasso1Di3-button13" class="button button-positive button-block" ng-click="selectImageFile()">Scatta o scegli la foto</button>
+<a ui-sref="menu.type" id="fotoPasso1Di3-button16" class=" button button-balanced  button-block" >Prosegui</a>
+<a  id="aaafotoPasso1Di3-button16" class=" button button-balanced  button-block" ng-click="testService()" >TEST</a>
+
+
+
+<!--
+<ion-footer-bar align-title="left" class="bar-assertive">
+        <button class="button button-block  button-large button-positive" ng-click="getLocationGPS()">Riprova localizzazione GPS!</button>
+        <button class="button button-block button-balanced pull-right">Prosegui</button>
+</ion-footer-bar>
+-->
+
+<!--
+<div class="bar bar-footer bar-success">
+  <div class="button-bar">
+    <a class="button button-positive">First</a>
+    <a class="button button-balanced pull-right">Prosegui</a>
+  </div>
+</div>
+-->
+
+</ion-content>
+
+</ion-view>

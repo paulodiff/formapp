@@ -1,0 +1,29 @@
+<ion-view title="Posizione: passo 2 di 3" id="page13" class=" ">
+      <ion-nav-bar class="bar-royal">
+      <ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Back</ion-nav-back-button>
+      <ion-nav-buttons side="right" >
+        <!-- <button class="button button-icon ion-more" ng-click="popover.show($event)"></button> -->
+        <!-- <button class="button button-icon ion-gear-b" ng-click="openSortModal()"></button> -->
+      </ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-content padding="true" class="has-header">
+        <p id="posizionePasso2Di3-markdown4" style="color:#000000;" class=" ">Digitare l'indirizzo della segnalazione:</p>
+        <form id="posizionePasso2Di3-form10" class="list ">
+            <label class="item item-input">
+                <input type="text" ng-model="location">
+            </label>
+        </form>
+        <p id="posizionePasso2Di3-markdown4" style="color:#000000;" class=" ">Oppure:</p>
+
+
+        <button id="pbutton14" class="button icon-left ion-star button-positive button-block" ng-click="getLocationGPS()">Posizione GPS</button>
+        <a ui-sref="menu.type" id="posizionePasso2Di3-button15" class=" button button-balanced  button-block ">Prosegui al passo 3 di 3</a>
+
+<ul>
+    <div ng-repeat="address in addresses ">
+            {{address.formatted_address}}
+    </div>
+</ul>
+
+    </ion-content>
+</ion-view>

@@ -1,0 +1,43 @@
+ <ion-view view-title="Intro">
+        <ion-nav-buttons side="left">
+          <button class="button button-positive button-clear no-animation"
+                  ng-click="startApp()" ng-show="!slideIndex">Salta Intro</button>
+          <button class="button button-positive button-clear no-animation"
+                  ng-click="previous()" ng-show="slideIndex > 0"><<</button>
+        </ion-nav-buttons>
+        <ion-nav-buttons side="right"> 
+          <button class="button button-positive button-clear no-animation"
+                  ng-click="next()" ng-show="slideIndex != 2">>></button>
+          <button class="button button-positive button-clear no-animation"
+                  ng-click="startApp()" ng-show="slideIndex == 2">Inizia</button>
+        </ion-nav-buttons>
+        <ion-slide-box on-slide-changed="slideChanged(index)">
+          <ion-slide>
+              <div class="box blue">
+            <h3>Segnalazioni</h3>
+            <img  class="center" src="images/logo_rimini.png">
+            <p>E' la web app del Comune ecc. ec.. e..c</p>
+            <p>Altre informazioni ed immagini</p>
+            </div>
+          </ion-slide>
+          <ion-slide>
+            <h3>Ricorda di autorizzare</h3>
+            
+            <div id="list">
+              <h5>fare le seguenti 2 azioni:</h5>
+              <ol>
+                <li>Accesso al GPS</li>
+                <li>Accesso alla fotocamera</li>
+              </ol>
+            </div>
+          </ion-slide>
+          <ion-slide>
+            <h3>Ok finito</h3>
+            <p>
+              Si può iniziare
+            </p>
+            <button class="button button-positive button-clear no-animation"
+                  ng-click="startApp()" >Inizia</button>
+          </ion-slide>
+        </ion-slide-box>
+</ion-view>
