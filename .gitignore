@@ -10,7 +10,6 @@ www
 .sass-cache
 client/bower_components
 app/config.js
-tmp
 coverage
 platforms
 plugins
