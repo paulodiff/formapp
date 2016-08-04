@@ -56,13 +56,31 @@ router.get('/getImage', function(req, res) {
             console.log(docs[0].fileUploaded);
             //console.log(docs[0].0);
 
-            
+            if (docs[0].fileUploaded) {
+              console.log('fileUploaded!');
+              var fName = DW_PATH + '/segnalazioni/' + docs[0].fileUploaded.ts + "-" + docs[0].fileUploaded.originalFilename;
+              console.log(fName);
+              var img = fs.readFileSync(fName);
+              res.writeHead(200, {'Content-Type': docs[0].fileUploaded.type });
+              res.end(img, 'binary');
+            } else {
+              if(docs[0].image64){
+                  console.log('image64!');
+                  var base64result = docs[0].image64.substr(docs[0].image64.indexOf(',') + 1);
+                  var img = new Buffer(base64result, 'base64');
+                  //console.log(docs[0].image64);
+                  res.writeHead(200, {
+                    'Content-Type': 'image/png',
+                    'Content-Length': img.length
+                  });
+                  res.end(img);
+              } else {
+                  console.log('img not found!');
+                  res.status(404).json({'msg':'notFound'});
+              }
+              
+            }
 
-            var fName = DW_PATH + '/segnalazioni/' + docs[0].fileUploaded.ts + "-" + docs[0].fileUploaded.originalFilename;
-            console.log(fName);
-            var img = fs.readFileSync(fName);
-            res.writeHead(200, {'Content-Type': docs[0].fileUploaded.type });
-            res.end(img, 'binary');
             
             //res.status(201).json(docs);
 
@@ -103,7 +121,7 @@ router.post('/upload', multipartMiddleware, function(req, res) {
   console.log('/uploading.....');
   console.log(req.files);
   console.log('/body.....');
-  console.log(req.body);
+  //console.log(req.body);
 
   //var transactionId = req.body.fields.transactionId;
   var transactionId = 'segnalazioni';
@@ -158,7 +176,7 @@ router.post('/upload', multipartMiddleware, function(req, res) {
 
 router.post('/uploadOld', multipartMiddleware, function(req, res) {
   console.log('/upload call $flow.post ...');
-  console.log(req);
+  //console.log(req);
   var transactionId = req.body.transactionId;
   flow.post(req, function(status, filename, original_filename, identifier) {
     console.log('callback POST', status, original_filename, identifier);

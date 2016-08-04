@@ -79,7 +79,7 @@ router.post('/signup', function(req, res) {
 router.post('/github', function(req, res) {
 
   var accessTokenUrl = 'https://github.com/login/oauth/access_token';
-  var userApiUrl = 'https://api.github.com/user';
+  var userApiUrl = 'https://api.github.com/user/emails';
   var params = {
     code: req.body.code,
     client_id: req.body.clientId,
@@ -93,6 +93,8 @@ router.post('/github', function(req, res) {
   request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
 
     console.log('GitHub exchange ...');
+    console.log(userApiUrl);
+
 
     accessToken = qs.parse(accessToken);
     var headers = { 'User-Agent': 'Satellizer' };
@@ -101,6 +103,7 @@ router.post('/github', function(req, res) {
     request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(err, response, profile) {
 
       console.log('Github retrieve profile information');
+      console.log(response);
       
       if(err) {
         console.log(err);
@@ -136,7 +139,8 @@ router.post('/github', function(req, res) {
             user.picture = user.picture || profile.avatar_url;
             user.displayName = user.displayName || profile.name;
             user.save(function() {
-              console.log('Github saving user');              console.log(user);
+              console.log('Github saving user');             
+              console.log(user);
               var token = utilityModule.createJWT(user);
               res.send({ token: token });
             });

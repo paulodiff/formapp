@@ -169,7 +169,8 @@ app.use('/segnalazioni', Segnalazioni);
 //default serving html data
 app.use(express.static('ionicclient/www/'));
 //app.use(express.static('client/'));
-//app.use('/ionic', express.static(__dirname + '/ionicclient/www/'));
+app.use('/cli', express.static(__dirname + '/client'));
+app.use('/i2',express.static(__dirname + '/ionic2/www'));
 app.use('/poc', express.static(__dirname + '/poc'));
 app.use('/swagger', express.static(__dirname + '/swagger'));
 
