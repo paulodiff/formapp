@@ -1,4 +1,4 @@
-var jwt = require('jwt-simple');
+var jwt = require('jsonwebtoken');
 var moment = require('moment');
 var ENV   = require('../config.js'); // load configuration data
 
@@ -44,11 +44,30 @@ module.exports = {
 
     createJWT: function(user) {
           var payload = {
-            sub: user._id,
+            sub: user,
             iat: moment().unix(),
             exp: moment().add(14, 'days').unix()
           };
-          return jwt.encode(payload, ENV.secret);
+          return jwt.sign(payload, ENV.secret);
+    },
+
+    decodeJWT : function(token) {
+        //console.log(token);
+          var payload = null;
+          try {
+            payload = jwt.decode(token, ENV.secret);
+            if (payload.exp <= moment().unix()) {
+              console.log('token expired');
+            }
+            return payload;
+          }
+          catch (err) {
+            console.log('ensureAuthenticated decoded error');
+            console.log(err);
+            return {};
+          }
+
+          console.log(payload);
     },
 
     getTimestampPlusRandom: function() {

@@ -1,13 +1,16 @@
 angular.module('myApp.controllers')
   .controller('SLoginCtrl', 
-           ['$scope', '$auth', '$rootScope', '$state','ENV', '$log',
-    function($scope,   $auth,   $rootScope,   $state,  ENV ,  $log ) {
+           ['$scope', '$auth', '$state', '$rootScope', 'sigService', '$state','ENV', '$log',
+    function($scope,   $auth,   $state,  $rootScope,   sigService,  $state,  ENV ,  $log ) {
+
+    $scope.profileInfo = {};
 
     $scope.login = function() {
         $log.debug('login');
       $auth.login($scope.user)
         .then(function() {
           //dialogs.notify('ok','You have successfully signed in!');
+          //$log.debug($scope.user);
           $log.debug('You have successfully signed in!');
           $state.go('home');
         })
@@ -29,6 +32,13 @@ angular.module('myApp.controllers')
         .then(function() {
           //dialogs.notify('ok','You have successfully signed in with ' + provider + '!');
           $log.debug('You have successfully signed in with ' + provider + '!');
+
+          $log.debug('Get Profile info');
+
+          $scope.profileInfo  = $auth.getPayload();
+          $log.debug('Get segnaòazopmo');
+
+
           //$state.go('home');
         })
         .catch(function(error) {
@@ -49,6 +59,8 @@ angular.module('myApp.controllers')
     
     $scope.logout = function(){
         $log.debug('logout');
+        console.log($auth.getToken());
+        console.log($auth.getPayload());
         $auth.logout()
             .then(function() {
                 $log.debug('You have been logged out');
@@ -64,6 +76,9 @@ angular.module('myApp.controllers')
       return $auth.isAuthenticated();
     };
 
+    $scope.nuovaSegnalazione = function (){
+        $state.go('menu.map');
+    }
 
   }])
 
@@ -83,7 +98,7 @@ angular.module('myApp.controllers')
   .controller('SProfileCtrl', 
 
            ['$scope', '$auth', '$rootScope', 'AuthService', 'Session', '$state','ENV', '$log', 'Account',
-    function($scope,   $auth,   $rootScope,   AuthService,   Session,   $state,  ENV ,  $log, Account ) {
+    function($scope,   $auth,   $rootScope,   AuthService,   Session,   $state,  ENV ,  $log,   Account ) {
 
 
     $scope.getProfile = function() {

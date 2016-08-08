@@ -156,15 +156,16 @@ router.post('/upload', multipartMiddleware, function(req, res) {
   
   console.log(listOfFiles);
 
-  var fileUploadedObj = { "fileUploaded" : oneFile}
+  var fileUploadedObj = { "fileUploaded" : oneFile};
+  var tsObj = { "ts" : new Date()};
 
-  var fullObj = _.merge(req.body.fields, fileUploadedObj);
+  var fullObj = _.merge(req.body.fields, fileUploadedObj, tsObj);
 
   var collection = mongocli.get().collection('segnalazioni'); 
  collection.update( { type : 'segnalazione' }, fullObj ,
                         { upsert: true } , function(err, result) {
       if(err){
-        logger.error(err);
+        console.log(err);
         return res.status(500).json({ message: 'Error insert segnalazione' });
       } else {
        return res.status(200).json({ message: 'Segnalazione inserted!' }); 

@@ -75,6 +75,12 @@ this.getUserData =  function(){
     return this.userData;
 }
 
+this.getUserInfo =  function(){
+    console.log(this.userData);
+    return this.userData;
+}
+
+
   this.setAddress = function(a){
     console.log(a);
     this.Address = a;

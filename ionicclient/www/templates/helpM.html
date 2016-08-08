@@ -11,9 +11,7 @@
                 <h3>Guida</h3>
                 <p>Qui di seguito si trovano un elenco delle schermate principali dell'applicazione con la descrizione delle funzioni principali</p>
 
-
-                <h3>** Versione Beta **</h3>
-                <p>{{UrlApi}}</p>
+                <h3>Profilo</h3>
                 <!--
                     <img style="width:100%; height:100%;" src="images/guida1ok.jpg">
                 <h3>Visualizzazione liste</h3>
@@ -22,14 +20,31 @@
                 <img style="width:100%; height:100%;" src="images/guida3ok.jpg">
 
                     -->
+
+                <!--    
                 <button class="button button-block button-positive"  ng-click="goto_login()">Vai alla pagina di inizio</button>
                 <button class="button button-block button-positive"  ng-click="change_Api1()">ChApi1</button>
                 <button class="button button-block button-positive"  ng-click="change_Api2()">ChApi2</button>
-                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('github')">Accedi con GitHub</button>
-                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('google')">Accedi con Google</button>
-                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('instagram')">Accedi con Instagram</button>
-                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('twitter')">Accedi con Twitter</button>
-                <button class="button button-calm button-block icon-left ion-social-github" 
+                -->
+                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('github')"    ng-if="!isAuthenticated()">Accedi con GitHub</button>
+                <button class="button button-assertive button-block icon-left ion-social-google" ng-click="authenticate('google')"    ng-if="!isAuthenticated()">Accedi con Google</button>
+                <button class="button button-positive button-block icon-left ion-social-instagram" ng-click="authenticate('instagram')" ng-if="!isAuthenticated()">Accedi con Instagram</button>
+                <button class="button button-balanced button-block icon-left ion-social-twitter" ng-click="authenticate('twitter')"   ng-if="!isAuthenticated()">Accedi con Twitter</button>
+                <button class="button button-royal button-block icon-left ion-social-facebook" ng-click="authenticate('facebook')"  ng-if="!isAuthenticated()">Accedi con Facebook</button>
+                <button class="button button-calm button-block icon-left ion-android-exit" 
                         ng-click="logout()" ng-if="isAuthenticated()">Logout</button>
+                <div ng-if="isAuthenticated()">
+                        <p>Profile info</p>
+                        <b>Provider: {{profileInfo.sub.userProvider}}</b> <br/>
+                        <b>UserId: {{profileInfo.sub.userId}}</b>
+                </div>
+
+                <button class="button button-energized button-large button-block icon-left ion-plus-circled" 
+                        ng-click="nuovaSegnalazione()" ng-if="isAuthenticated()">Nuova segnalazione</button>
+               <div ng-if="isAuthenticated()">
+                        <p>Lista segnalazioni</p>
+                </div>       
+
+
     </ion-content>
 </ion-view>

@@ -186,7 +186,7 @@ angular.module('myApp.controllers')
                                             { text: '<i class="icon ion-android-exit assertive"></i> <b>Si proseguo</b>' }
                                 ],
                                 //destructiveText: 'Delete',
-                                titleText: '<b>Lo scatto va bene ?</b>',
+                                titleText: '<b>Lo foto va bene ?</b>',
                                 cancelText: '<i class="icon ion-android-exit assertive"></i> No scatto ancora',
                                 destructiveText: (ionic.Platform.isAndroid() ? '<i class="icon ion-android-exit assertive"></i>Scatta ancora': null),
                                 cancel: function() {
@@ -661,8 +661,8 @@ angular.module('myApp.controllers')
 
 // sigType ------------------------------------------------------------------------------------
 .controller('sigTypeController', 
-                   [ '$scope', '$rootScope', '$log', 'sigService', '$ionicLoading', '$ionicPopup', 'Upload',
-            function ($scope,   $rootScope,   $log,   sigService ,  $ionicLoading,   $ionicPopup,   Upload  ) {
+                   [ '$scope', '$state','$rootScope', '$log', 'sigService', '$ionicLoading', '$ionicPopup', 'Upload',
+            function ($scope,   $state , $rootScope,   $log,   sigService ,  $ionicLoading,   $ionicPopup,   Upload  ) {
 
     $log.debug('sigType...');
 
@@ -673,13 +673,24 @@ angular.module('myApp.controllers')
         { text: "Tipo4", checked: false }
     ];
 
+
+    $scope.send2profile = function (){
+         $state.go('menu.login');
+    };
+
     $scope.sigSendData = function(){
             $log.debug('sigSendData...');
             var posObj = sigService.getCurrentSavedPosition();
             //var myTypedList = _.filter($scope.typeList, function(o) { return o.checked; });
             //console.log(myTypedList);
             console.log(posObj); 
-            //console.log($scope.typeList);
+            console.log($scope.typeList);
+
+            var doc2 = _.filter($scope.typeList, function(o) { 	return o.checked; });
+            var typeObj = _.flatMap(doc2, function(o) {	return { "type" : o.text };	});
+            
+            console.log(typeObj);
+
             console.log($rootScope.base_url);
             $ionicLoading.show({template: 'Invio segnalazione'});
                     Upload.upload({
@@ -688,14 +699,14 @@ angular.module('myApp.controllers')
                         method: 'POST',
                         //files: vm.options.data.fileList
                         data: {files : sigService.getFileList(), fields: { 
-                                                                   timestamp : {},
                                                                    userData : sigService.getUserData(),
                                                                    image64 : sigService.getImgBase64(),
                                                                    position : { 
                                                                                    latitude : posObj.coords.latitude,
                                                                                    longitude : posObj.coords.longitude
-                                                                               }, 
-                                                                    typeList : JSON.stringify($scope.typeList)
+                                                                               },
+                                                                    typeList : typeObj                                                                                
+                                                                    //typeList : JSON.stringify($scope.typeList)
                                                                  } 
                              }
                     }).then(function (resp) {

@@ -25,7 +25,7 @@ angular.module('myApp.controllers')
   $scope.currentPage = 1; 
   $scope.currentItemDetail = null;
   $scope.totalItems = 0;
-  $scope.pageSize = 5; // impostato al massimo numero di elementi
+  $scope.pageSize = 15; // impostato al massimo numero di elementi
   $scope.startPage = 0;         
   $scope.openedPopupDate = false;    
   $scope.utentiList = [];

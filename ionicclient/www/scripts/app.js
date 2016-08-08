@@ -40,8 +40,9 @@ angular.module('myApp', ['ionic',
     
     // Optional: For client-side use (Implicit Grant), set responseType to 'token'
     $authProvider.facebook({
-      clientId: 'Facebook App ID',
-      responseType: 'token'
+      clientId: '820048644763023',
+      url: 'https://pmlab.comune.rimini.it/SostaSelvaggia/auth/facebook',
+      //responseType: 'token'
     });
 
     $authProvider.github({
@@ -181,6 +182,7 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
             accessLogged: false 
     });
  
+ /*
 
     $stateProvider.state('menu.location', {
             url: "/location",
@@ -192,6 +194,8 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
             },
             accessLogged: false 
     });
+
+*/
 
     $stateProvider.state('menu.type', {
             url: "/type",

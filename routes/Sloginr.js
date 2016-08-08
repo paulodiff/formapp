@@ -3,6 +3,7 @@ var router = express.Router();
 var jwt = require('jwt-simple');
 var ENV   = require('../config.js'); // load configuration data
 var User  = require('../models/user.js'); // load configuration data
+var UserLogin  = require('../models/userLogin.js'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); // load configuration data
 var request = require('request');
 var qs = require('querystring');
@@ -103,7 +104,7 @@ router.post('/github', function(req, res) {
     request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(err, response, profile) {
 
       console.log('Github retrieve profile information');
-      console.log(response);
+      //console.log(response);
       
       if(err) {
         console.log(err);
@@ -112,9 +113,66 @@ router.post('/github', function(req, res) {
 
       console.log(profile);
 
+        var user = {};
+        user.id = profile[0].email;
+        user.email = profile[0].email;
+        user.provider = 'github';
+        console.log(user);
+
+        var userLogin = new UserLogin();
+        userLogin.userId = user.id;
+        userLogin.userEmail = user.email;
+        userLogin.userProvider = user.provider;
+
+        userLogin.save(function(err, userl) {
+
+              if(err) {
+                res.status(500).send({ msg: err });  
+              }
+
+              console.log('Github saving userLogin');             
+              console.log(userl);
+              var token = utilityModule.createJWT(userl);
+              console.log(token);
+              res.send({ token: token });
+         });
+
+
+/*
+
+
       // Step 3a. Link user accounts.
       if (req.header('Authorization')) {
-        console.log('Github **Authorization** search:' + profile.id);
+        console.log('Github 3a **Authorization** search:' + profile.id);
+
+        var user = {};
+        user.id = profile[0].email;
+        user.email = profile[0].email;
+        user.provider = 'github';
+        console.log(user);
+        var token = utilityModule.createJWT(user);
+        console.log('Github **send TOKEN');
+        
+        
+        var userLogin = new UserLogin();
+        userLogin.userId = user.id;
+        userLogin.userEmail = user.email;
+        userLogin.userProvider = user.provider;
+
+        userLogin.save(function(err, userl) {
+
+              if(err) {
+                res.status(500).send({ msg: err });  
+              }
+
+              console.log('Github saving userLogin');             
+              console.log(userl);
+              var token = utilityModule.createJWT(userl);
+              console.log(token);
+              res.send({ token: token });
+         });
+
+  
         User.findOne({ github: profile.id }, function(err, existingUser) {
 
           if(err) {
@@ -136,6 +194,7 @@ router.post('/github', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.github = profile.id;
+            user.provider = 'github';
             user.picture = user.picture || profile.avatar_url;
             user.displayName = user.displayName || profile.name;
             user.save(function() {
@@ -146,10 +205,33 @@ router.post('/github', function(req, res) {
             });
           });
         });
+
+ 
       } else {
         // Step 3b. Create a new user account or return an existing one.
-        console.log('GitHub find ...' );
-        console.log(profile.id);
+        console.log('GitHub 3b find ...' );
+        console.log(profile);
+
+        var user = {};
+        user.id = profile[0].email;
+        user.email = profile[0].email;
+        user.provider = 'github';
+        console.log(user);
+        
+        
+        var userLogin = new UserLogin();
+        userLogin.userId = user.id;
+        userLogin.userEmail = user.email;
+        userLogin.userProvider = user.provider;
+
+        userLogin.save(function(user) {
+              console.log(user);
+              console.log('Github **send TOKEN');
+              var token = utilityModule.createJWT(user);
+              res.send({ token: token });
+         });
+
+
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
             console.log('Github existing User..');
@@ -173,7 +255,9 @@ router.post('/github', function(req, res) {
             }
           });
         });
-      }
+
+
+      }  */
     });
   });
 });
@@ -203,14 +287,48 @@ router.post('/google', function(req, res) {
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(err, response, profile) {
+
+      console.log(profile);
+      console.log('.........................................................');
+
       if (profile.error) {
         console.log('Google auth ERR');
         console.log(profile.error.message);
         return res.status(500).send({message: profile.error.message});
       }
-      console.log('Google 3a');
+
+      var user = {};
+      user.id = profile.sub;
+      user.email = profile.email;
+      user.provider = 'google';
+      console.log(user);
+                
+      var userLogin = new UserLogin();
+      userLogin.userId = user.id;
+      userLogin.userEmail = user.email;
+      userLogin.userProvider = user.provider;
+
+       userLogin.save(function(err, userl) {
+
+              if(err) {
+                res.status(500).send({ msg: err });  
+              }
+
+              console.log(' GOOGLE saving userLogin');             
+              console.log(userl);
+              var token = utilityModule.createJWT(userl);
+              console.log(token);
+              res.send({ token: token });
+         });
+
+
+/*
+
       // Step 3a. Link user accounts.
       if (req.header('Authorization')) {
+
+        console.log('Google 3a');
+
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
             console.log('Google existingUser');
@@ -219,7 +337,17 @@ router.post('/google', function(req, res) {
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, ENV.secret);
-          User.findById(payload.sub, function(err, user) {
+
+          var user = {};
+          user.id = profile.sub;
+          user.email = profile.email;
+          user.provider = 'google';
+          console.log(user);
+          var token = utilityModule.createJWT(user);
+          console.log('Google **send TOKEN');
+          res.send({ token: token });
+
+          /*User.findById(payload.sub, function(err, user) {
             if (!user) {
               console.log('Google !user');
               return res.status(400).send({ message: 'User not found' });
@@ -233,10 +361,13 @@ router.post('/google', function(req, res) {
               res.send({ token: token });
             });
           });
+          
         });
       } else {
         console.log('Google 3b');
         // Step 3b. Create a new user account or return an existing one.
+
+
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
 
@@ -252,6 +383,8 @@ router.post('/google', function(req, res) {
           });
         });
       }
+*/
+
     });
   });
 });
@@ -265,6 +398,8 @@ router.post('/twitter', function(req, res) {
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
   var profileUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name=';
+
+  console.log('TWITTER auth...*');
 
   // Part 1 of 2: Initial request from Satellizer.
   if (!req.body.oauth_token || !req.body.oauth_verifier) {
@@ -307,6 +442,9 @@ router.post('/twitter', function(req, res) {
         oauth: profileOauth,
         json: true
       }, function(err, response, profile) {
+
+
+      console.log(profile);
 
         // Step 5a. Link user accounts.
         if (req.header('Authorization')) {
@@ -375,10 +513,112 @@ router.post('/unlink', utilityModule.ensureAuthenticated, function(req, res) {
 });
 
 
+
+/*
+ |--------------------------------------------------------------------------
+ | Login with Facebook
+ |--------------------------------------------------------------------------
+ */
+router.post('/facebook', function(req, res) {
+  var fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name'];
+  var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
+  var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
+  var params = {
+    code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: ENV.FACEBOOK_SECRET,
+    redirect_uri: req.body.redirectUri
+  };
+
+  console.log('Facebook auth ...' + accessTokenUrl);
+
+
+  // Step 1. Exchange authorization code for access token.
+  request.get({ url: accessTokenUrl, qs: params, json: true }, function(err, response, accessToken) {
+
+    console.log('Step 1');
+
+    if (response.statusCode !== 200) {
+      return res.status(500).send({ message: accessToken.error.message });
+    }
+
+    // Step 2. Retrieve profile information about the current user.
+    request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
+
+      console.log('Step 2');
+
+      if (response.statusCode !== 200) {
+        return res.status(500).send({ message: profile.error.message });
+      }
+
+      console.log(profile);
+
+      if (req.header('Authorization')) {
+        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Facebook account that belongs to you' });
+          }
+          var token = req.header('Authorization').split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+          User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
+            user.facebook = profile.id;
+            user.picture = user.picture || 'https://graph.facebook.com/v2.3/' + profile.id + '/picture?type=large';
+            user.displayName = user.displayName || profile.name;
+            user.save(function() {
+              var token = createJWT(user);
+              res.send({ token: token });
+            });
+          });
+        });
+      } else {
+        // Step 3. Create a new user account or return an existing one.
+        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            var token = createJWT(existingUser);
+            return res.send({ token: token });
+          }
+          var user = new User();
+          user.facebook = profile.id;
+          user.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
+          user.displayName = profile.name;
+          user.save(function() {
+            var token = createJWT(user);
+            res.send({ token: token });
+          });
+        });
+      }
+    });
+  });
+});
+
+
+
 router.all('/test', function(req,res){
 	console.log('test');
 	res.status(500).json({'mgs':'pong'});
 });
+
+
+router.get('/decodeProfile', function(req,res){
+	console.log('decodeProfile');
+  console.log(req.query.token);
+  
+  var p = utilityModule.decodeJWT(req.query.token);
+
+  console.log(p);
+
+  if ( p.sub && p.sub.userProvider && p.sub.userId  ) {
+    res.status(200).json({'provider': p.sub.userProvider, 'userId' : p.sub.userId });
+  } else {
+    res.status(500).json({'mgs':'profile not decoded!'});
+  }
+
+	
+});
+
 
 /*
 	router.all('/login', function(req, res, next) {
