@@ -38,9 +38,22 @@ router.post('/login', function(req, res) {
         console.log('user.comparePassword not Match');
         return res.status(401).send({ message: 'Invalid email and/or password' });
       }
-      res.send({ token: utilityModule.createJWT(user) });
+
+      console.log('login ok');
+      console.log(user);
+
+      var userLogin = { 
+          'userProvider' : 'email',
+          'userId' : req.body.email,
+          'userEmail' : req.body.email
+      };
+
+      console.log(userLogin);
+      res.send({ token: utilityModule.createJWT(userLogin) });
     });
+
   });
+
 });
 
 

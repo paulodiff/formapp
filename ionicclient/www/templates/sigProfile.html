@@ -1,4 +1,4 @@
-<ion-view class="item-dark" title="Guida" left-buttons="leftButtons" right-buttons="rightButtons">
+<ion-view class="item-dark" title="Accesso" left-buttons="leftButtons" right-buttons="rightButtons">
         
     <ion-nav-bar class="bar-royal">
         <ion-nav-buttons side="left">
@@ -26,7 +26,9 @@
                 <button class="button button-block button-positive"  ng-click="goto_login()">Vai alla pagina di inizio</button>
                 <button class="button button-block button-positive"  ng-click="change_Api1()">ChApi1</button>
                 <button class="button button-block button-positive"  ng-click="change_Api2()">ChApi2</button>
+                
                 -->
+                <button class="button button-energized button-block icon-left ion-social-github" ng-click="login()"    ng-if="!isAuthenticated()">Accedi Comune di Rimini</button>
                 <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('github')"    ng-if="!isAuthenticated()">Accedi con GitHub</button>
                 <button class="button button-assertive button-block icon-left ion-social-google" ng-click="authenticate('google')"    ng-if="!isAuthenticated()">Accedi con Google</button>
                 <button class="button button-positive button-block icon-left ion-social-instagram" ng-click="authenticate('instagram')" ng-if="!isAuthenticated()">Accedi con Instagram</button>

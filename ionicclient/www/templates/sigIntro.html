@@ -1,4 +1,4 @@
- <ion-view view-title="Intro">
+ <ion-view view-title="Info">
         <ion-nav-buttons side="left">
           <button class="button button-positive button-clear no-animation"
                   ng-click="startApp()" ng-show="!slideIndex">Salta Intro</button>
@@ -16,27 +16,25 @@
               <div class="box blue">
             <h3>Segnalazioni</h3>
             <img  class="center" src="images/logo_rimini.png">
-            <p>E' la web app del Comune ecc. ec.. e..c</p>
-            <p>Altre informazioni ed immagini</p>
+            <p>E' la web app del Comune che permette la segnalazione di un evento ....</p>
+            <p>Le segnalazioni sono catalogate ...</p>
+            <p>Il cittadino sono catalogate ...</p>
             </div>
-          </ion-slide>
-          <ion-slide>
-            <h3>Ricorda di autorizzare</h3>
-            
-            <div id="list">
-              <h5>fare le seguenti 2 azioni:</h5>
-              <ol>
-                <li>Accesso al GPS</li>
-                <li>Accesso alla fotocamera</li>
-              </ol>
-            </div>
-          </ion-slide>
-          <ion-slide>
-            <h3>Ok finito</h3>
-            <p>
-              Si può iniziare
-            </p>
             <button class="button button-positive button-clear no-animation"
+                  ng-click="next()" ng-show="slideIndex != 2">Prossimo</button>
+          </ion-slide>
+          <ion-slide>
+            <h3>Ricorda di autorizzare quando richiesto:</h3>
+            <h4>l'accesso al GPS</h4>
+            <img class="imgResponsive imgShadow" src="images/auth_gps.jpg">
+            <h4>e l'accesso alla fotocamera</h4>
+            <img class="imgResponsive imgShadow" src="images/auth_camera.jpg">
+<button class="button button-positive button-clear no-animation"
+                  ng-click="next()" ng-show="slideIndex != 2">Prossimo</button>
+          </ion-slide>
+          <ion-slide>
+            <h3>Si può iniziare</h3>
+            <button class="button button-calm"
                   ng-click="startApp()" >Inizia</button>
           </ion-slide>
         </ion-slide-box>

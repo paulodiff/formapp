@@ -7,12 +7,21 @@ angular.module('myApp.controllers')
 
     $scope.login = function() {
         $log.debug('login');
+
+        var user = { 'email' : 'tom@tim.it', 'password' : '12345' };
+
+        $scope.user = user;
       $auth.login($scope.user)
         .then(function() {
           //dialogs.notify('ok','You have successfully signed in!');
           //$log.debug($scope.user);
           $log.debug('You have successfully signed in!');
-          $state.go('home');
+
+          $scope.profileInfo  = $auth.getPayload();
+          sigService.setUserData($auth.getPayload());
+          
+
+          
         })
         .catch(function(error) {
           $log.debug('login error:');
@@ -37,6 +46,7 @@ angular.module('myApp.controllers')
 
           $scope.profileInfo  = $auth.getPayload();
           $log.debug('Get segnaòazopmo');
+          sigService.setUserData($auth.getPayload());
 
 
           //$state.go('home');
@@ -79,6 +89,10 @@ angular.module('myApp.controllers')
     $scope.nuovaSegnalazione = function (){
         $state.go('menu.map');
     }
+
+    // init
+    $scope.profileInfo  = $auth.getPayload();
+    sigService.setUserData($auth.getPayload());
 
   }])
 

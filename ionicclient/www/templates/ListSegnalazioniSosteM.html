@@ -77,22 +77,24 @@
                     <h2>Modificare le impostazioni di ricerca</h2>
                 </ion-item>
 
+class="item-avatar"
+
 -->
 
 
 
-    <ion-item class="item-avatar" ng-repeat="item in items track by $index">
+    <ion-item class="item item-thumbnail-left" ng-repeat="item in items track by $index">
         <img src="{{item.img}}" />
-		<h2>{{item.id}}</h2>
-        <h3>asdasdasd</h3>
-	</ion-item>
+		    <h2>{{item.id}}</h2>
+        <h3>{{item.ts}}</h3>
+	  </ion-item>
 
-            </ion-list>
+    </ion-list>
 
             <ion-infinite-scroll
                 ng-if="moreDataCanBeLoaded" 
                 on-infinite="loadMore()" 
-                distance="1%"></ion-infinite-scroll>
+                distance="10%"></ion-infinite-scroll>
         
     </ion-content>
 </ion-view>   

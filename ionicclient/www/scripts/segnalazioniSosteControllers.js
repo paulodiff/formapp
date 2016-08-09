@@ -155,7 +155,8 @@ angular.module('myApp.controllers')
             response.data.forEach(function (idata) {
                 var obj = {
                     "id" : idata._id,
-                    "img" : 'segnalazioni/getImage?id=' + idata._id 
+                    "img" : 'segnalazioni/getImage?id=' + idata._id,
+                    "ts" : idata.ts
                 }
                 fast_array.push(obj);
                 console.log(obj);

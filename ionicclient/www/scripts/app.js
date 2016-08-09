@@ -137,7 +137,7 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
     //.when('/c?id', '/contacts/:id')
     //.when('/user/:id', '/contacts/:id')
     // If the url is ever invalid, e.g. '/asdf', then redirect to '/' aka the home state
-    $urlRouterProvider.otherwise('/menu/login');
+    $urlRouterProvider.otherwise('/menu/intro');
     
     $stateProvider.state('menu', {
             url: "/menu",
@@ -437,6 +437,18 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
          views: {
                 'menuContent' :{
                     templateUrl: "templates/helpM.html",
+                    controller: "SLoginCtrl"
+                }
+            },
+        accessLogged: false, 
+        configAction: 'view'
+  });
+
+  $stateProvider.state('menu.profile',{
+        url: '/profile',
+         views: {
+                'menuContent' :{
+                    templateUrl: "templates/sigProfile.html",
                     controller: "SLoginCtrl"
                 }
             },

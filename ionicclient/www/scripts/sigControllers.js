@@ -232,7 +232,7 @@ angular.module('myApp.controllers')
 
 
         $scope.startApp = function() {
-            $state.go('menu.login');
+            $state.go('menu.profile');
         };
         $scope.next = function() {
             $ionicSlideBoxDelegate.next();
@@ -684,12 +684,16 @@ angular.module('myApp.controllers')
             //var myTypedList = _.filter($scope.typeList, function(o) { return o.checked; });
             //console.log(myTypedList);
             console.log(posObj); 
-            console.log($scope.typeList);
+            console.log($scope.typeList); 
+            
 
             var doc2 = _.filter($scope.typeList, function(o) { 	return o.checked; });
             var typeObj = _.flatMap(doc2, function(o) {	return { "type" : o.text };	});
-            
             console.log(typeObj);
+
+
+            var userDataObj = sigService.getUserData();
+            console.log(userDataObj);
 
             console.log($rootScope.base_url);
             $ionicLoading.show({template: 'Invio segnalazione'});
@@ -699,7 +703,7 @@ angular.module('myApp.controllers')
                         method: 'POST',
                         //files: vm.options.data.fileList
                         data: {files : sigService.getFileList(), fields: { 
-                                                                   userData : sigService.getUserData(),
+                                                                   userData : userDataObj.sub,
                                                                    image64 : sigService.getImgBase64(),
                                                                    position : { 
                                                                                    latitude : posObj.coords.latitude,
@@ -715,10 +719,11 @@ angular.module('myApp.controllers')
                         console.log('Success ');
                             var alertPopup = $ionicPopup.alert({
                                 title: 'Segnalazione',
-                                template: 'Richiesta inviata!. Grazie.'
+                                template: 'Richiesta inviata!. Grazie. Ritorno alla pagina del profilo.'
                         });
                         alertPopup.then(function(res) {
                             $log.debug('Quit popup');
+                            $state.go('menu.profile');
                         });
                     }, function (resp) {
                         $ionicLoading.hide();

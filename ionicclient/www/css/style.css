@@ -122,6 +122,15 @@
     text-align: center;
 }
 
+.imgResponsive {
+  width: 90%;
+  height: auto;
+}
+
+.imgShadow {
+    /* box-shadow: 10px 10px 5px #888888; */
+    box-shadow: 0px 0px 0px 5px #000, 0px 0px 0px 10px #fff;
+}
 
 /* style button for shot image*/
 
@@ -154,6 +163,7 @@
 .slider {
   height: 100%;
 }
+
 .slider-slide {
   padding-top: 80px;
   color: #000;
