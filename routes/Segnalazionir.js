@@ -95,16 +95,18 @@ router.get('/getImage', function(req, res) {
 
 
 
-router.get('/getList', function(req, res) {
-    console.log('/getList');
-    console.log(req.query);
-    var pagesize = parseInt(req.query.pageSize); 
-    var n =  parseInt(req.query.currentPage);
-    var collection = mongocli.get().collection('segnalazioni');
-    var rand = Math.floor(Math.random()*100000000).toString();
+router.get('/getList', utilityModule.ensureAuthenticated, function(req, res) {
+      console.log('/getList .... ');
+      console.log(req.query);
+      console.log(req.user);
+      var pagesize = parseInt(req.query.pageSize); 
+      var n =  parseInt(req.query.currentPage);
+      var collection = mongocli.get().collection('segnalazioni');
+      var rand = Math.floor(Math.random()*100000000).toString();
       //db.users.find().skip(pagesize*(n-1)).limit(pagesize)
+      var searchCriteria = { "userData.userProvider": req.user.userProvider, $and: [ { "userData.userId": req.user.userId } ] };
 
-      collection.find().skip(pagesize*(n-1)).limit(pagesize).toArray(function(err, docs) {
+      collection.find( searchCriteria ).skip(pagesize*(n-1)).limit(pagesize).toArray(function(err, docs) {
         console.log("Found the following records ... ");
         //console.dir(err);
         console.log(err);

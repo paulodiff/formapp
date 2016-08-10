@@ -163,6 +163,9 @@ angular.module('myApp.controllers')
             function($scope,    $state,   $log,   sigService ,  $ionicActionSheet , $ionicLoading ,  $ionicPopup,   qReaderService) {
 
                
+
+
+
         $log.debug("sigPhoto  start");
         $scope.imageSrc = 'images/park.jpg';
         $scope.singleModel = 1;
@@ -204,6 +207,8 @@ angular.module('myApp.controllers')
 
                                 buttonClicked: function(index) {
                                     console.log(index);
+                                    $scope.showVideo = true;
+                                    $scope.showImage = false;   
                                     $state.go('menu.type');
                                     return true;
                                 }
@@ -229,6 +234,21 @@ angular.module('myApp.controllers')
 
                
         $log.debug("sigIntro  start");
+        $scope.browserAlert = false;
+        
+        $log.debug(bowser.name);
+        $log.debug(bowser.version);
+
+
+
+        if ( ( bowser.name != "Chrome" ) || ( bowser.name == "Chrome" && bowser.version < 48 ))  {
+            $scope.browserAlert = true;
+            $scope.browserMessage = 'ATTENZIONE La presente webapp funziona solo con Google Chrome (>48). Il presente browser ' + bowser.name + '(' + bowser.version + ') non è supportato';
+        } else {
+            $scope.browserMessage = bowser.name + '(' + bowser.version + ')';
+        }
+         
+        //alert('Hello ' + bowser.name + ' ' + bowser.version);
 
 
         $scope.startApp = function() {

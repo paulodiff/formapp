@@ -94,6 +94,13 @@ angular.module('myApp.controllers')
     $scope.profileInfo  = $auth.getPayload();
     sigService.setUserData($auth.getPayload());
 
+
+    $scope.$on("$ionicView.enter", function(event, data){
+        // handle event
+         console.log("#####################  State Params: ", data.stateParams);
+    });
+
+
   }])
 
   .controller('SLogoutCtrl', 

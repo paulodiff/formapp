@@ -41,7 +41,7 @@ module.exports = {
           req.user = payload.sub;
           next();
     },
-
+    
     createJWT: function(user) {
           var payload = {
             sub: user,

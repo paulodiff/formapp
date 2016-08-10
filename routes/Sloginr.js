@@ -459,6 +459,33 @@ router.post('/twitter', function(req, res) {
 
       console.log(profile);
 
+
+      var user = {};
+      user.id = profile.id;
+      user.email = profile.id;
+      user.provider = 'twitter';
+      console.log(user);
+                
+      var userLogin = new UserLogin();
+      userLogin.userId = user.id;
+      userLogin.userEmail = user.email;
+      userLogin.userProvider = user.provider;
+
+       userLogin.save(function(err, userl) {
+
+              if(err) {
+                res.status(500).send({ msg: err });  
+              }
+
+              console.log(' TWITTER saving userLogin');             
+              console.log(userl);
+              var token = utilityModule.createJWT(userl);
+              console.log(token);
+              res.send({ token: token });
+         });
+
+
+/*
         // Step 5a. Link user accounts.
         if (req.header('Authorization')) {
           User.findOne({ twitter: profile.id }, function(err, existingUser) {
@@ -498,6 +525,9 @@ router.post('/twitter', function(req, res) {
             });
           });
         }
+
+*/
+
       });
     });
   }

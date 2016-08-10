@@ -19,6 +19,13 @@
             <p>E' la web app del Comune che permette la segnalazione di un evento ....</p>
             <p>Le segnalazioni sono catalogate ...</p>
             <p>Il cittadino sono catalogate ...</p>
+            
+            
+            <button  ng-if="browserAlert" class="button button-assertive">
+                <p>{{browserMessage}}</p>
+            </button>
+            <small>{{browserMessage}}</small>
+
             </div>
             <button class="button button-positive button-clear no-animation"
                   ng-click="next()" ng-show="slideIndex != 2">Prossimo</button>

@@ -171,7 +171,7 @@ angular.module('myApp.controllers')
         $scope.$broadcast('scroll.infiniteScrollComplete');
   }
 
-
+/*
   $scope.fetchResult = function () {
       $log.debug('SegnalazioniSosteController: fetchResult');
       $http({
@@ -194,7 +194,7 @@ angular.module('myApp.controllers')
         }, function errorCallback(response) {
             console.log(response);        });
   }
-
+*/
 
   /*
 
