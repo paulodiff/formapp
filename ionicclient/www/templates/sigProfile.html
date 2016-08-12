@@ -29,11 +29,11 @@
                 
                 -->
                 <button class="button button-energized button-block icon-left ion-social-github" ng-click="login()"    ng-if="!isAuthenticated()">Accedi Comune di Rimini</button>
-                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('github')"    ng-if="!isAuthenticated()">Accedi con GitHub</button>
                 <button class="button button-assertive button-block icon-left ion-social-google" ng-click="authenticate('google')"    ng-if="!isAuthenticated()">Accedi con Google</button>
-                <button class="button button-positive button-block icon-left ion-social-instagram" ng-click="authenticate('instagram')" ng-if="!isAuthenticated()">Accedi con Instagram</button>
                 <button class="button button-balanced button-block icon-left ion-social-twitter" ng-click="authenticate('twitter')"   ng-if="!isAuthenticated()">Accedi con Twitter</button>
+                <button class="button button-positive button-block icon-left ion-social-instagram" ng-click="authenticate('instagram')" ng-if="!isAuthenticated()">Accedi con Instagram</button>
                 <button class="button button-royal button-block icon-left ion-social-facebook" ng-click="authenticate('facebook')"  ng-if="!isAuthenticated()">Accedi con Facebook</button>
+                <button class="button button-calm button-block icon-left ion-social-github" ng-click="authenticate('github')"    ng-if="!isAuthenticated()">Accedi con GitHub</button>
                
                 <div ng-if="isAuthenticated()" class="list card">
                         <div class="item item-divider">

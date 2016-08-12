@@ -28,15 +28,12 @@ if ($window.navigator.webkitGetUserMedia) console.log('$window.navigator.webkitG
 if ($window.navigator.mozGetUserMedia) console.log('$window.navigator.mozGetUserMedia');
 if ($window.navigator.msGetUserMedia) console.log('$window.navigator.msGetUserMedia');
 
-
-
-
-  var FileList2Upload = [];
-  var Address = {};
-  var curPosition = {};
-  var myArray = [];
-  var imgBase64 = {};
-  var userData = {};
+var FileList2Upload = [];
+var Address = {};
+var curPosition = {};
+var myArray = [];
+var imgBase64 = {};
+var userData = {};
 
 
 var promisifiedOldGUM = function(constraints, successCallback, errorCallback) {

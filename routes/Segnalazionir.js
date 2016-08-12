@@ -119,10 +119,11 @@ router.get('/getList', utilityModule.ensureAuthenticated, function(req, res) {
 });
 
 
-router.post('/upload', multipartMiddleware, function(req, res) {
+router.post('/upload', utilityModule.ensureAuthenticated,  multipartMiddleware, function(req, res) {
   console.log('/uploading.....');
   console.log(req.files);
   console.log('/body.....');
+  console.log(req.user);
   //console.log(req.body);
 
   //var transactionId = req.body.fields.transactionId;

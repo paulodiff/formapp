@@ -16,9 +16,9 @@ module.exports = {
   },
 
   ensureAuthenticated : function(req, res, next) {
-        console.log('ensureAuthenticated ....');
+        console.log('[#AUTH#] ensureAuthenticated ....');
         if (!req.header('Authorization')) {
-            console.log('ensureAuthenticated : 401 NO TOKEN');
+            console.log('[#AUTH#] ensureAuthenticated : 401 NO TOKEN');
             return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
         }
         var token = req.header('Authorization').split(' ')[1];
@@ -28,16 +28,16 @@ module.exports = {
             payload = jwt.decode(token, ENV.secret);
           }
           catch (err) {
-            console.log('ensureAuthenticated decoded error');
+            console.log('[#AUTH#] ensureAuthenticated decoded error');
             console.log(err);
             return res.status(401).send({ message: err.message });
           }
 
           if (payload.exp <= moment().unix()) {
-            console.log('token expired');
+            console.log('[#AUTH#] token expired');
             return res.status(401).send({ message: 'Token has expired' });
           }
-          console.log('ok next');
+          console.log('[#AUTH#] ok pass');
           req.user = payload.sub;
           next();
     },
