@@ -129,6 +129,18 @@ angular.module('myApp', [//'ionic',
         }
     });
 
+
+    $stateProvider.state('jiride', {
+        url: '/jiride',
+        templateUrl: 'templates/formly.html',
+        controller: 'SFormlyJirideCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+
     $stateProvider.state('formAsync', {
         url: '/formAsync',
         templateUrl: 'templates/formlyAsync.html',
@@ -262,13 +274,148 @@ angular.module('myApp', [//'ionic',
 
 })
 
-//formly configuration
+//formly configuration GLOBALE
 .config(function(formlyConfigProvider) {
+
+
+
+    formlyConfigProvider.extras.removeChromeAutoComplete = true;
+
+
     // set templates here
     formlyConfigProvider.setType({
       name: 'custom',
       templateUrl: 'templates/formly-custom-template.html'
     });
+
+    formlyConfigProvider.setType({
+      name: 'ui-select-single',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select-single-template.html'
+    });
+
+    formlyConfigProvider.setType({
+      name: 'ui-select-single-select2',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select2-single-template.html'
+    });
+
+    formlyConfigProvider.setType({
+      name: 'ui-select-single-search',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select-single-async-template.html'
+    });
+
+    formlyConfigProvider.setType({
+      name: 'ui-select-multiple',
+      extends: 'select',
+      templateUrl: 'templates/formly-ui-select-multiple-template.html'
+    });
+
+
+    var attributes = [
+        'date-disabled',
+        'custom-class',
+        'show-weeks',
+        'starting-day',
+        'init-date',
+        'min-mode',
+        'max-mode',
+        'format-day',
+        'format-month',
+        'format-year',
+        'format-day-header',
+        'format-day-title',
+        'format-month-title',
+        'year-range',
+        'shortcut-propagation',
+        'datepicker-popup',
+        'show-button-bar',
+        'current-text',
+        'clear-text',
+        'close-text',
+        'close-on-date-selection',
+        'datepicker-append-to-body'
+      ];
+
+      var bindings = [
+        'datepicker-mode',
+        'min-date',
+        'max-date'
+      ];
+
+      function camelize(string) {
+        string = string.replace(/[\-_\s]+(.)?/g, function(match, chr) {
+          return chr ? chr.toUpperCase() : '';
+        });
+        // Ensure 1st char is always lowercase
+        return string.replace(/^([A-Z])/, function(match, chr) {
+          return chr ? chr.toLowerCase() : '';
+        });
+      };
+
+
+
+      var ngModelAttrs = {};
+
+      angular.forEach(attributes, function(attr) {
+        ngModelAttrs[camelize(attr)] = {attribute: attr};
+      });
+
+      angular.forEach(bindings, function(binding) {
+        ngModelAttrs[camelize(binding)] = {bound: binding};
+      });
+
+
+
+    formlyConfigProvider.setType({
+      name: 'datepicker',
+      templateUrl:  'templates/formly-datepicker-bootstrap-template.html',
+      wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+      defaultOptions: {
+        ngModelAttrs: ngModelAttrs,
+        templateOptions: {
+          datepickerOptions: {
+            format: 'dd/MM/yyyy',
+            initDate: new Date()
+          }
+        }
+      },
+      controller: ['$scope', function ($scope) {
+        $scope.datepicker = {};
+        $scope.datepicker.opened = false;
+        $scope.datepicker.open = function ($event) {
+          $scope.datepicker.opened = !$scope.datepicker.opened;
+        };
+      }]
+    });
+
+    // formly Wrapper
+
+    formlyConfigProvider.setWrapper({    
+        name: 'panel',
+        templateUrl: 'templates/formly-wrapper-panel-template.html'
+    });
+
+
+    formlyConfigProvider.setWrapper([
+      {
+        templateUrl: 'templates/formly-input-with-error-template.html',
+        types: 'inputWithError'
+      },
+      {
+        template: [
+          '<div class="checkbox formly-template-wrapper-for-checkboxes form-group">',
+          '<label for="{{::id}}">',
+          '<formly-transclude></formly-transclude>',
+          '</label>',
+          '</div>'
+        ].join(' '),
+        types: 'checkbox'
+      }
+    ]);
+
+
 })
 
 .run(function() {

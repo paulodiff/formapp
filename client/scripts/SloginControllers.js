@@ -3,6 +3,27 @@ angular.module('myApp.controllers')
            ['$scope', 'dialogs', '$auth', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log',
     function($scope,   dialogs,   $auth,   $rootScope,   AuthService,   Session,   Restangular,  $state,  ENV ,  $log ) {
 
+    $scope.NTLMLogin = function() {
+      $log.debug('NTLMLogin');
+      $auth.loginUrl = "/auth/NTLMlogin";
+      var options = {  url: '/auth/NTLMlogin' };
+      $auth.login($scope.user, options)
+        .then(function() {
+          dialogs.notify('ok','You have successfully signed in!');
+          $state.go('home');
+        })
+        .catch(function(error) {
+          $log.debug('login error:');
+          $log.debug(error);
+          if (error.data) {
+            dialogs.error('Errore',error.data.message);
+          } else
+            dialogs.error('Errore','Errore generico di accesso');
+        });
+    };
+
+
+
     $scope.login = function() {
       $auth.login($scope.user)
         .then(function() {
@@ -149,4 +170,17 @@ angular.module('myApp.controllers')
     $scope.isAuthenticated = function() {
       return $auth.isAuthenticated();
     };
+
+
+    $scope.getUserId = function() {
+
+      if ($auth.isAuthenticated()) {
+        return $auth.getPayload().sub.userId;
+      } else {
+        return '';
+      }
+      
+    };
+
+
   }]);    

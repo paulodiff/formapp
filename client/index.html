@@ -111,6 +111,7 @@
     <script src="scripts/sigControllers.js"></script>
     <script src="scripts/SloginControllers.js"></script>
     <script src="scripts/formlyControllers.js"></script>
+    <script src="scripts/formlyJirideControllers.js"></script>
     <script src="scripts/uigridControllers.js"></script>
 
     <script src="scripts/filters.js"></script>
@@ -153,6 +154,7 @@
                 <li><a href="#/form">Form1</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/profile">Profile</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/form">Form</a></li>
+                <li ng-if="isAuthenticated()"><a href="#/jiride">Jiride</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/formAsync">FormAsync</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/uigrid">uigrid</a></li>
                 <li><a href="#/sigPhoto">Photo</a></li>
@@ -164,7 +166,7 @@
           </ul>
 
           <ul ng-if="isAuthenticated()" class="nav navbar-nav pull-right">
-            <li><a href="#/logout">@Logout</a></li>
+            <li><a href="#/logout">Esci({{getUserId()}})</a></li>
           </ul>
         </nav>
         
@@ -176,7 +178,7 @@
                 <li ng-if="isAuthenticated()"><a href="#/profile" ng-click="isCollapsed = !isCollapsed">Profile</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form</a></li>
                 <li><a href="#/login"  ng-click="isCollapsed = !isCollapsed">@@Login</a></li>
-                <li ng-if="isAuthenticated()"><a href="#/logout">@@Logout</a></li>
+                <li ng-if="isAuthenticated()"><a href="#/logout">Esci({{getUserId()}})</a></li>
             </ul>
         </nav>
 

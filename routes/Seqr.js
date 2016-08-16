@@ -4,7 +4,9 @@ var request = require('request');
 var jwt = require('jwt-simple');
 var ENV   = require('../config.js'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); // load configuration data
-var models = require("../modelsSequelize");
+//var models = require("../modelsSequelize");
+var dbMysql = require('../models/mysqlModule.js');
+var log = require('../models/loggerModule.js');
 
 module.exports = function(){
 
@@ -45,84 +47,34 @@ router.get('/map',function(req, res) {
 });
 
 
-router.post('/add-task', function(req, res) {
-  models.Tasks
-        .build({
-            title: req.body.taskName,
-            completed: false})
-        .save()
-        .then(function() {
-          models.Tasks.findAll({}).then(function(taskList) {
-                return res.status(200).json(taskList);
-            });
-        });
-});
 
-router.post('/create', function(req, res) {
-  console.log(req.body.DICHIARANTI);
-  console.log(req.body.NUCLEOFAMILIARE);
-  console.log(req.body.UPLOADFILE);
-  models.Person
-        .build({
-            email: req.body.DICHIARANTI.dichiarantePadre,
-            title: req.body.DICHIARANTI.dichiaranteMadre,
-            name: 'name',
-            Blobs : req.body.UPLOADFILE,
-            Tasks : [
-              { title : 't1', completed : false},
-              { title : 't2', completed : true}
-              ],
-            
-            Nucleos: req.body.NUCLEOFAMILIARE,
-            },
-          {
-             include: [ models.Tasks, models.Nucleos, models.Blobs ]
-          })
-        .save()
-        .then(function() {
-            models.Person.findAll({
-                              include: [{
-                                  model: models.Tasks
-        //where: { state: Sequelize.col('project.state') }
-                                        },
-                                      {
-                                  model: models.Nucleos
-        //where: { state: Sequelize.col('project.state') }
-                                        },
-                                      {
-                                  model: models.Blobs
-        //where: { state: Sequelize.col('project.state') }
-                                        },
+router.get('/user', function(req, res) {
+  console.log('get /user');
 
-                                        ]
-                              }).then(function(taskList) {
-                return res.status(200).json(taskList);
-            });
-        })
-        .catch(function(error) {
-          console.log(error);
-          return res.status(500).json(error);
-        });
-/*
-Product.create({
-  id: 1,
-  title: 'Chair',
-  Tags: [
-    { name: 'Alpha'},
-    { name: 'Beta'}
-  ]
-}, {
-  include: [ Tag ]
-})
-*/
-/*
-task.save().catch(function(error) {
-  // mhhh, wth!
-})
-*/
+  var qry  = '';
 
+ 
+  if (req.query.address) {
+    qry  = "SELECT * FROM utentiIRIDE where descFull like '%" +  req.query.address  + "%' LIMIT 10 ";
+  } else {
+    qry = "SELECT * FROM utentiIRIDE where descFull like '%MIRRA%'";
+  }
+
+  console.log(qry);
+
+  dbMysql.get().query(qry, function(err, result) {
+    if (err) {
+      log.log2console(err);
+      return res.status(500).json({ message: err });
+    } else {
+      log.log2console(result);
+      return res.status(200).json({ rows: result });
+    }
+  })
 
 });
+
+
 
   return router;
 }

@@ -60,3 +60,21 @@ http://nervgh.github.io/pages/angular-file-upload/examples/image-preview/
 
 
 https://www.bcrypt-generator.com/
+
+Open Source & Standard
+
+Server
+
+NodeJs - Open source - Linux Foundation - Usato anche da design.italia.it
+Framework Express - Framework di sviluppo Open Source
+Moduli ES5 in Javascript http://www.ecma-international.org/
+
+Client
+AngularJs - Open Source
+Ionic - Open Source
+Angular Material Design - Open Source
+
+DataBase
+
+Mysql
+MongoDb

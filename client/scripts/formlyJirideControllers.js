@@ -7,11 +7,11 @@ angular.module('myApp.controllers')
 
 
 // SFormlyCtrl ---------------------------------------------------------------------------------
-.controller('SFormlyCtrl', 
-          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs','UtilsService', 'Upload',
-   function($rootScope,  $scope,   $state,   $location,   Session,   $log,   $timeout,  ENV,  formlyConfig,  $q,  $http,  formlyValidationMessages,   FormlyService,  usSpinnerService,  dialogs,   UtilsService,  Upload ) {
+.controller('SFormlyJirideCtrl', 
+          ['$rootScope','$scope', '$state', '$location', 'Session', '$log', '$timeout','ENV','formlyConfig','$q','$http','formlyValidationMessages', 'FormlyService','usSpinnerService','dialogs','UtilsService', 'Upload', 
+   function($rootScope,  $scope,   $state,   $location,   Session,   $log,   $timeout,  ENV,  formlyConfig,  $q,  $http,  formlyValidationMessages,   FormlyService,  usSpinnerService,  dialogs,   UtilsService,  Upload) {
     
-  $log.debug('SFormlyCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
+  $log.debug('SFormlyJirideCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
 
 
@@ -19,66 +19,33 @@ angular.module('myApp.controllers')
     var unique = 1;
     var _progress = 0;
 
-    var ElencoPlessi = [
-      {
-        "id": "LA VELA - Torre Pedrera",
-        "label":"LA VELA - Torre Pedrera"
-      },
-      {
-        "id": "IL VOLO - Rimini Centro",
-        "label":"IL VOLO - Rimini Centro"
-      },
-      {
-        "id": "IL DELFINO - Bellariva",
-        "label":"IL DELFINO - Bellariva"
-      }
+    var ElencoSoftware = [
+      { "id": "IRIDE", "label":"IRIDE"  },
+      { "id": "J-IRIDE", "label":"J-IRIDE"  },
+      { "id": "Firma Digitale",  "label":"Firma Digitale" },
+      { "id": "Word Processor",  "label":"Word Processor" },
+      { "id": "Velox PM",  "label":"Velox PM" },
+      { "id": "Altro",  "label":"Altro" }
     ];
 
-/*
 
-  var attributes = [
-    'date-disabled',
-    'custom-class',
-    'show-weeks',
-    'starting-day',
-    'init-date',
-    'min-mode',
-    'max-mode',
-    'format-day',
-    'format-month',
-    'format-year',
-    'format-day-header',
-    'format-day-title',
-    'format-month-title',
-    'year-range',
-    'shortcut-propagation',
-    'datepicker-popup',
-    'show-button-bar',
-    'current-text',
-    'clear-text',
-    'close-text',
-    'close-on-date-selection',
-    'datepicker-append-to-body'
-  ];
-
-  var bindings = [
-    'datepicker-mode',
-    'min-date',
-    'max-date'
-  ];
-
-  
-  function camelize(string) {
-    string = string.replace(/[\-_\s]+(.)?/g, function(match, chr) {
-      return chr ? chr.toUpperCase() : '';
-    });
-    // Ensure 1st char is always lowercase
-    return string.replace(/^([A-Z])/, function(match, chr) {
-      return chr ? chr.toLowerCase() : '';
-    });
+ // richiede la lista degli utenti IRIDE da Mysql
+ function refreshUtenteIride(address, field) {
+      var promise;
+      if (!address) {
+        promise = $q.when({data: {results: []}});
+      } else {
+        var params = {address: address, sensor: false};
+        var endpoint = '/api/seq/user';
+        promise = $http.get(endpoint, {params: params});
+      }
+      return promise.then(function(response) {
+        console.log(response);
+        field.templateOptions.options = response.data.rows;
+      });
   };
 
-*/
+
 
   function refreshAddresses(address, field) {
       var promise;
@@ -94,94 +61,6 @@ angular.module('myApp.controllers')
       });
   };
 
-/*
-
-  var ngModelAttrs = {};
-
-  angular.forEach(attributes, function(attr) {
-    ngModelAttrs[camelize(attr)] = {attribute: attr};
-  });
-
-  angular.forEach(bindings, function(binding) {
-    ngModelAttrs[camelize(binding)] = {bound: binding};
-  });
-
-  formlyConfig.extras.removeChromeAutoComplete = true;
-
-
-  formlyConfig.setWrapper({    
-        name: 'panel',
-        templateUrl: 'templates/formly-wrapper-panel-template.html'
-  });
-
-
-  formlyConfig.setWrapper([
-      {
-        templateUrl: 'templates/formly-input-with-error-template.html',
-        types: 'inputWithError'
-      },
-      {
-        template: [
-          '<div class="checkbox formly-template-wrapper-for-checkboxes form-group">',
-          '<label for="{{::id}}">',
-          '<formly-transclude></formly-transclude>',
-          '</label>',
-          '</div>'
-        ].join(' '),
-        types: 'checkbox'
-      }
-    ]);
-*/
-/*
-
-
-    formlyConfig.setType({
-      name: 'ui-select-single',
-      extends: 'select',
-      templateUrl: 'templates/formly-ui-select-single-template.html'
-    });
-
-    formlyConfig.setType({
-      name: 'ui-select-single-select2',
-      extends: 'select',
-      templateUrl: 'templates/formly-ui-select2-single-template.html'
-    });
-
-    formlyConfig.setType({
-      name: 'ui-select-single-search',
-      extends: 'select',
-      templateUrl: 'templates/formly-ui-select-single-async-template.html'
-    });
-
-    formlyConfig.setType({
-      name: 'ui-select-multiple',
-      extends: 'select',
-      templateUrl: 'templates/formly-ui-select-multiple-template.html'
-    });
-
-  formlyConfig.setType({
-    name: 'datepicker',
-    templateUrl:  'templates/formly-datepicker-bootstrap-template.html',
-    wrapper: ['bootstrapLabel', 'bootstrapHasError'],
-    defaultOptions: {
-      ngModelAttrs: ngModelAttrs,
-      templateOptions: {
-        datepickerOptions: {
-          format: 'dd/MM/yyyy',
-          initDate: new Date()
-        }
-      }
-    },
-    controller: ['$scope', function ($scope) {
-      $scope.datepicker = {};
-      $scope.datepicker.opened = false;
-      $scope.datepicker.open = function ($event) {
-        $scope.datepicker.opened = !$scope.datepicker.opened;
-      };
-    }]
-  });
-
-*/
 
     formlyConfig.setType({
       name: 'repeatSection',
@@ -351,78 +230,6 @@ angular.module('myApp.controllers')
         }
       }
     });
-/*
-    formlyConfig.setType({
-      name: 'uploadFile',
-      templateUrl: 'templates/formly-file-upload-template.html',
-      controller: function($scope) {
-        $scope.formOptions = {formState: $scope.formState};
-        $scope.addNew = addNew;
-        $scope.copyFields = copyFields;
-        
-        function showEv(f){
-          console.log(f);
-        }
-
-        $scope.onErrorHandler = function (event, reader, fileList, fileObjs, file) {
-          console.log('onErrorHandler');
-          console.log(event);
-          console.log(reader);
-          console.log(fileList);
-          console.log(fileObjs);
-          console.log(file);
-        }
-
-        $scope.onAfterValidateFunc = function (event, fileObjs, fileList) {
-          console.log('onAfterValidate');
-          console.log(event);
-          console.log(fileObjs);
-          console.log(fileList);
-        }
-
-        $scope.onChangeHandlerFunc = function (event, fileList){
-          console.log('onChangeHandlerFunc');
-          console.log(event);
-          console.log(fileList);
-        }
-
-        function copyFields(fields) {
-          fields = angular.copy(fields);
-          addRandomIds(fields);
-          return fields;
-        }
-        
-        function addNew() {
-          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-          var repeatsection = $scope.model[$scope.options.key];
-          var lastSection = repeatsection[repeatsection.length - 1];
-          var newsection = {};
-          if (lastSection) {
-            newsection = angular.copy(lastSection);
-          }
-          repeatsection.push(newsection);
-        }
-        
-        function addRandomIds(fields) {
-          unique++;
-          angular.forEach(fields, function(field, index) {
-            if (field.fieldGroup) {
-              addRandomIds(field.fieldGroup);
-              return; // fieldGroups don't need an ID
-            }
-            
-            if (field.templateOptions && field.templateOptions.fields) {
-              addRandomIds(field.templateOptions.fields);
-            }
-            
-            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
-          });
-        }
-
-      }
-
-  });        
-*/
 
 formlyConfig.setType({
       name: 'uploaderFile',
@@ -602,7 +409,7 @@ formlyConfig.setType({
       url: 'https://www.comune.rimini.it' // a link to your twitter/github/blog/whatever
     };
 
-    vm.exampleTitle = 'Iscrizioni Nidi Comunali 2016';
+    vm.exampleTitle = 'Assistenza JIRIDE';
     vm.exampleDescription = 'Descrizione operativa del modulo';
 
     vm.env = {
@@ -612,7 +419,8 @@ formlyConfig.setType({
 
     vm.model = {
       showErrorState: true,
-      transactionId : UtilsService.getTimestampPlusRandom()
+      transactionId : UtilsService.getTimestampPlusRandom(),
+      
       /*
       awesome: true,
       nucleo: [
@@ -722,17 +530,17 @@ formlyConfig.setType({
       },
       */
 
-
       {
         key: 'DICHIARANTI',
         wrapper: 'panel',
         className: 'to-uppercase',
         templateOptions: { 
-          label: '1.0 Dichiaranti',
-          info: 'In questa sezione devono essere indicati i dichiaranti',
-          help: 'In questa sezione devono essere indicati i dichiaranti'
+          label: '1.0 Modulo di assistenza JIRIDE',
+          info: '',
+          help: ''
         },
         fieldGroup: [
+          /*
         {
           key: 'dichiarantePadre',
           type: 'input',
@@ -755,21 +563,126 @@ formlyConfig.setType({
             label: 'La sottoscritta (madre)'
           }
         },
+        */
         {
-        key: 'cittaDichiaranti',
+        key: 'utenteRichiedenteAssistenza',
         type: 'ui-select-single-search',
         templateOptions: {
           optionsAttr: 'bs-options',
           ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
-          label: 'GMap Async Search via proxy',
-          valueProp: 'formatted_address',
-          labelProp: 'formatted_address',
-          placeholder: 'Search',
+          label: 'Utente richiedente assistenza',
+          valueProp: 'descFull',
+          labelProp: 'descFull',
+          placeholder: 'Inserire un testo da ricercare',
           options: [],
-          refresh: refreshAddresses,
+          refresh: refreshUtenteIride,
           refreshDelay: 10
         }
       },
+      {
+        key: 'softwareLista',
+        type: 'ui-select-multiple',
+        wrapper: 'inputWithError',
+         validators: {
+          conteggio: {
+            expression: function(viewValue, modelValue) {
+              console.log(modelValue);
+              console.log(viewValue);
+              var value = modelValue || viewValue;
+              return true;
+              /*
+              if(modelValue){
+                if ((modelValue.length > 0) && (modelValue.length < 3))  {
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                return false;
+              }
+              */
+            },
+            message: '$viewValue + " o uno o due"'
+          }
+        },
+        templateOptions: {
+          required: true,
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'Selezionare il software oggetto della richiesta',
+          valueProp: 'id',
+          labelProp: 'label',
+          placeholder: 'Cliccare qui per selezionare',
+          options: ElencoSoftware
+        }
+      },
+      {
+        key: 'tipoIntervento',
+        type: 'ui-select-single',
+        wrapper: 'inputWithError',
+         validators: {
+          conteggio: {
+            expression: function(viewValue, modelValue) {
+              console.log(modelValue);
+              console.log(viewValue);
+              var value = modelValue || viewValue;
+              return true;
+              /*
+              if(modelValue){
+                if ((modelValue.length > 0) && (modelValue.length < 3))  {
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                return false;
+              }
+              */
+            },
+            message: '$viewValue + " o uno o due"'
+          }
+        },
+        templateOptions: {
+          required: true,
+          optionsAttr: 'bs-options',
+          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
+          label: 'Selezionare il tipo di intervento richiesto',
+          valueProp: 'id',
+          labelProp: 'label',
+          placeholder: 'CLICCARE QUI PER SELEZIONARE',
+          options: ElencoSoftware
+        }
+      },
+      {
+        "type": "textarea",
+        "key": "descIntervento",
+        "templateOptions": {
+          "placeholder": "",
+          "label": "Descrizione problema",
+          "rows": 4,
+          "cols": 15
+        }
+      },
+      {
+        "key": "dataRisoluzione",
+        "type": "datepicker",
+        "templateOptions": {
+          "label": "Data risoluzione",
+          "type": "text",
+          "datepickerPopup": "dd-MMMM-yyyy"
+        }
+      },
+      {
+        "type": "textarea",
+        "key": "descAttiivitaSvolta",
+        "templateOptions": {
+          "placeholder": "",
+          "label": "Attività svolta",
+          "rows": 4,
+          "cols": 15
+        }
+      },
+
         ]
       },
       /*
@@ -813,7 +726,7 @@ formlyConfig.setType({
         ]
       },
       */
-      
+      /*
       {
         key: 'PLESSO',
         wrapper: 'panel',
@@ -860,7 +773,8 @@ formlyConfig.setType({
       }
         ]
       },
-      
+      */
+      /*
       {
         key: 'UPLOADFILE',
         type: 'repeatUploadSection',
@@ -911,7 +825,10 @@ formlyConfig.setType({
             }
           ], //fields
         } //templateOptions
-      },
+      }
+      */
+
+      /*
 
       {
         key: 'IMMAGINE_SINGOLA',
@@ -935,6 +852,8 @@ formlyConfig.setType({
         },
         ]
       },
+
+      */
 
       /*
       {
@@ -1097,63 +1016,6 @@ formlyConfig.setType({
         } //templateOptions
       },
       */
-      
-      {
-        key: 'NUCLEOFAMILIARE',
-        type: 'repeatSection',
-        wrapper: 'panel',
-        //templateOptions: { label: 'Address', info: 'info!' },
-        //templateUrl: 'templates/formly-custom-template.html',
-        templateOptions: 
-        {
-          label: '4.0 DICHIARAZIONE NUCLEO FAMILIARE', 
-          info: 'La sceltaInserire in questa sezione i dati rela',
-          warn: 'La sceltaInserire in questa sezione i dati relativi alla fatturazione',
-          btnText:'Aggiungi nuovo membro del nucleo familiare',
-          help: 'help......',
-          fields: [
-            {
-              //className: 'row',
-              fieldGroup: 
-              [
-              {
-                  key: 'tipoMembro',
-                  className: 'col-md-3',
-                  type: 'select',
-                  templateOptions: {
-                    label: 'Tipo dichiarante',
-                    options: [
-                      {name: 'DICHIARANTE', value: 'DICHIARANTE'},
-                      {name: 'ALTRO GENITORE', value: 'ALTRO GENITORE'},
-                      {name: 'FIGLIO O AFFIDATO', value: 'FIGLIO O AFFIDATO'}
-                    ]
-                  }
-                },
-                {
-                  type: 'input',
-                  className: 'col-md-4',
-                  key: 'cognomeNome',
-                  templateOptions: 
-                  {
-                    label: 'Cognome Nome',
-                    required: true
-                  }
-                },
-                {
-                  type: 'input',
-                  key: 'codiceFiscale',
-                  className: 'col-md-4',
-                  templateOptions: 
-                  {
-                        label: 'Codice Fiscale',
-                        required: true
-                  }
-                }
-              ] // fieldGroup
-            }
-          ], //fields
-        } //templateOptions
-      }
       /*  
       ,
       {

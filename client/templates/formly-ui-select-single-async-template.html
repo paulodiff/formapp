@@ -2,6 +2,6 @@
         <ui-select-match placeholder="{{to.placeholder}}">{{$select.selected[to.labelProp]}}</ui-select-match>
         <ui-select-choices data-repeat="{{to.ngOptions}}" data-refresh="to.refresh($select.search, options)" data-refresh-delay="{{to.refreshDelay}}">
           <div ng-bind-html="option[to.labelProp] | highlight: $select.search"></div>
-          <div><small>{{option.geometry.location.lat}}, {{option.geometry.location.lng}}</small></div>
+          <!-- <div><small>{{option.geometry.location.lat}}, {{option.geometry.location.lng}}</small></div> -->
         </ui-select-choices>
       </ui-select>

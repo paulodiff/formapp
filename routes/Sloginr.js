@@ -8,9 +8,39 @@ var utilityModule  = require('../models/utilityModule.js'); // load configuratio
 var request = require('request');
 var qs = require('querystring');
 var path = require('path');
+var ntlm = require('express-ntlm');
 
 
 module.exports = function(){
+
+
+// Log in with NTML
+
+ // Log in with Email
+router.post('/NTLMlogin', ntlm(ENV.ntlm), function(req, res) {
+    console.log(req.ntlm);
+    console.log('login ok');
+      var userLogin = { 
+          'userProvider' : 'NTLM',
+          'userId' : req.ntlm.UserName,
+          'userEmail' : req.ntlm.UserName,
+          'userWorkstation' : req.ntlm.Workstation,
+          'userDomainName' : req.ntlm.DomainName
+      };
+
+      console.log(userLogin);
+
+      if (req.ntlm.UserName == ''){
+        return res.status(401).send({ message: 'Invalid email and/or password' });    
+      } else {
+        res.send({ token: utilityModule.createJWT(userLogin) });
+      }
+
+      
+      
+    // {"DomainName":"MYDOMAIN","UserName":"MYUSER","Workstation":"MYWORKSTATION"}
+});
+
 
 
  // Log in with Email

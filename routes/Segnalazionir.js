@@ -118,6 +118,9 @@ router.get('/getList', utilityModule.ensureAuthenticated, function(req, res) {
       });      
 });
 
+//{ "ts": { $gt: ISODate("2016-08-01T00:00:00.000+0000") }, $and: [ { "ts": { $lt: "2016-08-30T00:00:00.000Z" } } ] }
+//{ "ts": { $gt: "2016-08-01T00:00:00.000+0000" }, $and: [ { "ts": { $lt: "2016-08-30T00:00:00.000Z" } } ] }
+//{ "ts": { $gt: ISODate("2016-08-11T00:00:00.000Z") } }
 
 router.post('/upload', utilityModule.ensureAuthenticated,  multipartMiddleware, function(req, res) {
   console.log('/uploading.....');
@@ -125,6 +128,8 @@ router.post('/upload', utilityModule.ensureAuthenticated,  multipartMiddleware, 
   console.log('/body.....');
   console.log(req.user);
   //console.log(req.body);
+
+  console.log('Counting insert'); 
 
   //var transactionId = req.body.fields.transactionId;
   var transactionId = 'segnalazioni';
