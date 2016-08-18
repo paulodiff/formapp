@@ -40,26 +40,11 @@ angular.module('myApp.controllers')
         promise = $http.get(endpoint, {params: params});
       }
       return promise.then(function(response) {
-        console.log(response);
+        //console.log(response);
         field.templateOptions.options = response.data.rows;
       });
   };
 
-
-
-  function refreshAddresses(address, field) {
-      var promise;
-      if (!address) {
-        promise = $q.when({data: {results: []}});
-      } else {
-        var params = {address: address, sensor: false};
-        var endpoint = '/api/seq/map';
-        promise = $http.get(endpoint, {params: params});
-      }
-      return promise.then(function(response) {
-        field.templateOptions.options = response.data.results;
-      });
-  };
 
 
     formlyConfig.setType({
@@ -449,89 +434,9 @@ formlyConfig.setType({
     };
     
     vm.fields = [
-    /*
-    {
-        key: 'singleOption',
-        type: 'ui-select-single',
-        templateOptions: {
-          optionsAttr: 'bs-options',
-          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
-          label: 'Single Select',
-          valueProp: 'id',
-          labelProp: 'label',
-          placeholder: 'Select option',
-          description: 'Template includes the allow-clear option on the ui-select-match element',
-          options: testData
-        }
-      },
-      {
-        key: 'multipleOption',
-        type: 'ui-select-multiple',
-        templateOptions: {
-          optionsAttr: 'bs-options',
-          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
-          label: 'Multiple Select',
-          valueProp: 'id',
-          labelProp: 'label',
-          placeholder: 'Select options',
-          options: testData
-        }
-      },
-      {
-        key: 'singleOptionAsync',
-        type: 'ui-select-single-search',
-        templateOptions: {
-          optionsAttr: 'bs-options',
-          ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
-          label: 'Async Search',
-          valueProp: 'formatted_address',
-          labelProp: 'formatted_address',
-          placeholder: 'Search',
-          options: [],
-          refresh: refreshAddresses,
-          refreshDelay: 0
-        }
-      },
-      {
-        key: 'text',
-        type: 'input',
-        templateOptions: {
-          label: 'Text',
-          placeholder: 'insert ...',
-          required: true
-        },
-        validators : { 
-          isUnique: function($viewValue, $modelValue, scope){
-            var value = $viewValue || $modelValue;
-            console.log(value);
-            if (value == "aaaa" || value == "") {
-              //throw new Error('IS aaaa');
-              return false;
-            } else {
-              return true;
-            }
-          },
-          message: '$viewValue + " is not a valid IP Address"'
-        },
-        validation: {
-         messages: {
-              required: 'to.label + " is required"'
-         }
-        }
-      },*/
-      /*
-      {
-        key: 'image',
-        type: 'uploadFile',
-        templateOptions: {
-          label: '',
-          maxsize: '500'
-        }
-      },
-      */
 
       {
-        key: 'DICHIARANTI',
+        key: 'segnalazione',
         wrapper: 'panel',
         className: 'to-uppercase',
         templateOptions: { 
@@ -581,7 +486,7 @@ formlyConfig.setType({
       },
       {
         key: 'softwareLista',
-        type: 'ui-select-multiple',
+        type: 'ui-select-single',
         wrapper: 'inputWithError',
          validators: {
           conteggio: {
@@ -659,7 +564,7 @@ formlyConfig.setType({
         "templateOptions": {
           "placeholder": "",
           "label": "Descrizione problema",
-          "rows": 4,
+          "rows": 2,
           "cols": 15
         }
       },
@@ -674,14 +579,24 @@ formlyConfig.setType({
       },
       {
         "type": "textarea",
-        "key": "descAttiivitaSvolta",
+        "key": "descAttivitaSvolta",
         "templateOptions": {
           "placeholder": "",
           "label": "Attività svolta",
-          "rows": 4,
+          "rows": 2,
+          "cols": 15
+        },
+      },
+      {
+        "type": "textarea",
+        "key": "descNote",
+        "templateOptions": {
+          "placeholder": "",
+          "label": "Note",
+          "rows": 2,
           "cols": 15
         }
-      },
+      }
 
         ]
       },
@@ -1051,28 +966,20 @@ formlyConfig.setType({
           console.log('upload!!');
 
         Upload.upload({
-            url: 'uploadmgr/upload',
+            url: $rootScope.base_url + '/helpdesk/hdupload',
             method: 'POST',
             //files: vm.options.data.fileList
-            data: {files : vm.options.data.fileList, fields: { transactionId : vm.model.transactionId } }
+            data: {files : vm.options.data.fileList, fields: { formModel : vm.model } }
         }).then(function (resp) {
             console.log('Success ');
 
-          FormlyService.createFormly(vm.model)
-            .then(function() {
-              //usSpinnerService.stop('spinner-1');
-              dialogs.notify('ok','Form has been updated');
-            })
-            .catch(function(response) {
-              //usSpinnerService.stop('spinner-1');
-              dialogs.error('500 - Errore server',response.data.message, response.status);
-            });
-
-
-
+               dialogs.notify('ok','Form has been updated');
+              //dialogs.error('500 - Errore server',response.data.message, response.status);
+          
             //usSpinnerService.stop('spinner-1');
         }, function (resp) {
             console.log('Error status: ' + resp.status);
+            dialogs.error('500 - Errore server',response.data.message, response.status);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ');
@@ -1125,4 +1032,157 @@ formlyConfig.setType({
 
 
                                  
+}])
+
+
+.controller('SFormlyJirideListCtrl', 
+            ['$rootScope','$scope', '$http', '$state', '$location','uiGridConstants', '$filter', 'Session', '$log', '$timeout','ENV','$uibModal',
+     function($rootScope,  $scope,   $http, $state,   $location,  uiGridConstants ,  $filter,   Session,   $log,   $timeout, ENV, $uibModal) {
+    
+  $log.debug('SFormlyJirideListCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
+  
+  
+  $scope.totalPages = 0;
+  $scope.itemsCount = 0;
+  $scope.currentPage = 1; 
+  $scope.currentItemDetail = null;
+  $scope.totalItems = 0;
+  $scope.pageSize = 100; // impostato al massimo numero di elementi
+  $scope.startPage = 0;         
+  $scope.openedPopupDate = false;    
+  $scope.utentiList = [];
+  $scope.id_utenti_selezione = 0;        
+  $scope.items = [];
+  $scope.loadMoreDataCanBeLoaded = true;
+  
+  var today = new Date();
+  var nextWeek = new Date();
+  nextWeek.setDate(nextWeek.getDate() + 7);
+ 
+ $scope.status = {
+    isopen: false
+  };
+
+  $scope.toggled = function(open) {
+    console.log('Dropdown is now: ', open);
+  };
+
+
+  $scope.gridOptions = {
+    enableSorting: true,
+    enableGridMenu: true,
+    enableRowSelection: true,
+    enableSelectAll: true,
+    showGridFooter:true,
+    columnDefs: [
+      { name: 'Data Ins.',  field:  'ts', cellFilter:'date', width:80, type:'date', enableFiltering:false },
+      { name: 'Matr. Ins.', field: 'userData.userId', width:80 , enableFiltering:true },
+      { name: 'tipoIntervento', field: 'formModel.segnalazione.tipoIntervento'},
+      { name: 'Utente', field: 'formModel.segnalazione.utenteRichiedenteAssistenza'},
+      { field: 'company', enableSorting: false }
+    ],
+    onRegisterApi: function( gridApi ) {
+      $scope.grid1Api = gridApi;
+    }
+  };
+  $scope.gridOptions.multiSelect = true;
+ 
+  $scope.toggleGender = function() {
+    if( $scope.gridOptions1.data[64].gender === 'male' ) {
+      $scope.gridOptions1.data[64].gender = 'female';
+    } else {
+      $scope.gridOptions1.data[64].gender = 'male';
+    };
+    $scope.grid1Api.core.notifyDataChange( uiGridConstants.dataChange.EDIT );
+  };
+                                 
+                                 
+  $scope.closeSortModal = function() {$scope.sortModal.hide();};
+  $scope.closeDetailModal = function() {$scope.detailModal.hide();};
+                                 
+  $scope.applySortModal = function() {
+    $log.debug("ListReportController: SORT MODAL " + this.filterTerm + " sort " + this.sortBy + ' id_selezione :' + this.id_utenti_selezione);
+    $scope.filterCriteria.id_utenti_selezione = this.id_utenti_selezione;
+    $log.debug($scope.filterCriteria);
+    $scope.filterTerm = this.filterTerm;
+    $scope.sortBy = this.sortBy;
+    $scope.sortModal.hide();
+    $scope.fetchResult();
+  }
+  
+//  $scope.OpenFilter = function() {
+//       $log.debug("ListReportController: OpenFilter .. sortModal.show()");
+//       $scope.sortModal.show();
+//  };                                 
+                               
+  $http.get(  $rootScope.base_url +  '/helpdesk/getList')
+    .success(function(data) {
+      console.log(data);
+      $scope.data = data;
+      //$scope.gridOptions2.data = data;
+    });                  
+                                 
+    //http://angular-formly.com/#/example/integrations/ui-bootstrap-modal
+    $scope.OpenFilter = function(model, add) {
+      console.log('OpenFilter');
+      var result = $uibModal.open({
+        templateUrl: 'templates/searchOptionsModal.html',
+        controller: 'ModalInstanceCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          formData: function() {
+            return {
+              //fields: getFormFields(),
+              fields :
+              [
+                {'key':'txtUtente','type':'input','templateOptions':{'label':'Utente Richiedente','placeholder':''}},
+                {'key':'txtApplicativo','type':'input','templateOptions':{'label':'Applicativo','placeholder':''}},
+                {'key':'txtProblema','type':'input','templateOptions':{'label':'Testo Problema','placeholder':''}},
+                {'key':'txtSoluzione','type':'input','templateOptions':{'label':'Testo Soluzione','placeholder':''}}
+              ],
+              model: model
+            }
+          }
+        }
+      }).result;
+
+      console.log('');
+      
+
+      if (add) {
+        result.then(function(model) {
+          console.log(model);
+          //vm.history.push(model);
+        });
+      }
+    }
+
+}])
+
+.controller('ModalInstanceCtrl', 
+    ['$uibModalInstance', 'formData', 
+      function ($uibModalInstance, formData) {
+
+    var vm = this;
+
+    // function assignment
+    vm.ok = ok;
+    vm.cancel = cancel;
+
+    // variable assignment
+    vm.formData = formData;
+    vm.originalFields = angular.copy(vm.formData.fields);
+
+    // function definition
+    function ok() {
+      console.log(vm.formData.model);
+      $uibModalInstance.close(vm.formData.model);
+    }
+
+    function cancel() {
+      vm.formData.options.resetModel()
+      $uibModalInstance.dismiss('cancel');
+    };
 }]);
+
+

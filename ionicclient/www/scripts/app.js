@@ -121,6 +121,7 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
       window.alert('Error: '+data.message);
     }
   */
+  
   };
 
 }]);
@@ -510,6 +511,7 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
   });
 
 */
+
 /*
  $stateProvider.state('menu.cordova',{
         url: '/cordova',
@@ -532,7 +534,9 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
         configAction: 'view'
   });
 */
+
  // Preload templates FAKE
+
 /*
  $stateProvider.state('fake1',{
         url: '/fake1',
@@ -550,6 +554,7 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
         configAction: 'view'
   });  
 */
+
   /*
   RestangularProvider.setBaseUrl('/apiQ');
   RestangularProvider.setDefaultRequestParams({ apiKey: '**********************' });
@@ -562,19 +567,16 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
         return elem;
       });
   */
+
 }])
 
 .run(function($ionicPlatform, $templateCache) {
 
-
   //$templateCache.put('templates/mapLocationModal.html', 'This is the content of the template');
-
 
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
-
-
 
 
     if(window.cordova && window.cordova.plugins.Keyboard) {
@@ -584,11 +586,9 @@ $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
       StatusBar.styleDefault();
     }
 
-
     // hide loading screen...
     console.log('hide loading screen...');
     loading_screen.finish();
-
     
   });
 });

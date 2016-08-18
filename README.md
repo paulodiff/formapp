@@ -65,16 +65,20 @@ Open Source & Standard
 
 Server
 
-NodeJs - Open source - Linux Foundation - Usato anche da design.italia.it
+NodeJs - Open source - Linux Foundation - Usato anche da design.italia.it per i test
 Framework Express - Framework di sviluppo Open Source
 Moduli ES5 in Javascript http://www.ecma-international.org/
 
 Client
 AngularJs - Open Source
+Bootstrap - design.italia.it per il front end
 Ionic - Open Source
-Angular Material Design - Open Source
 
 DataBase
 
 Mysql
 MongoDb
+
+Autenticazione
+
+https://jwt.io/

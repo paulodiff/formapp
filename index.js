@@ -165,6 +165,9 @@ app.use('/uploadmgr', UploadData);
 var Segnalazioni = require('./routes/Segnalazionir')();
 app.use('/segnalazioni', Segnalazioni);
 
+var HelpDesk = require('./routes/HelpDeskr')();
+app.use('/helpdesk', HelpDesk);
+
 
 //default serving html data
 app.use(express.static('ionicclient/www/'));

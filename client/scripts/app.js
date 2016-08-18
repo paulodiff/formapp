@@ -141,6 +141,16 @@ angular.module('myApp', [//'ionic',
     });
 
 
+    $stateProvider.state('jlist', {
+        url: '/jlist',
+        templateUrl: 'templates/jlist.html',
+        controller: 'SFormlyJirideListCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
     $stateProvider.state('formAsync', {
         url: '/formAsync',
         templateUrl: 'templates/formlyAsync.html',

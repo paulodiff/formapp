@@ -36,8 +36,10 @@ angular.module('myApp.controllers')
     enableSelectAll: true,
     showGridFooter:true,
     columnDefs: [
-      { field: 'name' },
-      { field: 'gender' },
+      { name: 'Data Ins.',  field:  'ts', cellFilter:'date', width:80, type:'date', enableFiltering:false },
+      { name: 'Matr. Ins.', field: 'userData.userId', width:80 , enableFiltering:true },
+      { name: 'tipoIntervento', field: 'formModel.segnalazione.tipoIntervento'},
+      { name: 'Utente', field: 'formModel.segnalazione.utenteRichiedenteAssistenza'},
       { field: 'company', enableSorting: false }
     ],
     onRegisterApi: function( gridApi ) {
@@ -74,9 +76,9 @@ angular.module('myApp.controllers')
        $scope.sortModal.show();
   };                                 
                                
-  $http.get('/data/100.json')
+  $http.get(  $rootScope.base_url +  '/helpdesk/getList')
     .success(function(data) {
-      //console.log(data);
+      console.log(data);
       $scope.gridOptions.data = data;
       //$scope.gridOptions2.data = data;
     });                  

@@ -8,8 +8,8 @@ angular.module('myApp.controllers')
 
 
 .controller("AppCtrl", 
-                    ['$scope', 'dialogs', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log',
-            function($scope,    dialogs, $rootScope,   AuthService,   Session,   Restangular,  $state, ENV, $log) {
+                    ['$scope', 'dialogs', '$rootScope', 'AuthService', 'Session', 'Restangular', '$state','ENV', '$log', '$location',
+            function($scope,    dialogs,   $rootScope,   AuthService,   Session,   Restangular,    $state, ENV,   $log,   $location) {
 
                 
         $log.debug("AppCtrl ... start");
@@ -34,9 +34,27 @@ angular.module('myApp.controllers')
         };
           
         // CONFIGURAZIONI -----------------------------------------------------------------        
-                
-        $rootScope.base_url = ENV.apiEndpoint;
-        $log.debug('Restangular set base Url '+ ENV.apiEndpoint);
+
+        //console.log($location.host());
+        //console.log($location.absUrl());
+
+        var host = $location.host();
+        //console.log(host); 
+
+        if( host  == 'localhost') {
+            $rootScope.base_url = 'http://localhost:9988';
+        } else {
+            $rootScope.base_url = 'https://pmlab.comune.rimini.it/SostaSelvaggia';
+        }
+
+        //$rootScope.base_url = ENV.apiEndpoint;
+        //$log.debug('Restangular set base Url '+ ENV.apiEndpoint);
+        $log.debug('Restangular Url '+ $rootScope.base_url);
+
+
+
+        //$rootScope.base_url = ENV.apiEndpoint;
+        //$log.debug('Restangular set base Url:'+ ENV.apiEndpoint);
         Restangular.setBaseUrl($rootScope.base_url);
 
 
