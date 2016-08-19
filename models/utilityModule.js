@@ -70,6 +70,45 @@ module.exports = {
           console.log(payload);
     },
 
+
+    getNowFormatted: function(strTime2Add) {
+
+          var d = new Date(),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+          if (month.length < 2) month = '0' + month;
+          if (day.length < 2) day = '0' + day;
+    
+          var time = [ d.getHours(), d.getMinutes(), d.getSeconds() ];
+          var ms = addZero(d.getMilliseconds(), 3);
+
+          console.log('UtilsService:getNowFormatted');
+
+
+          var suffix = Math.floor(Math.random()*90000) + 10000;
+
+            for ( var i = 1; i < 3; i++ ) {
+              if ( time[i] < 10 ) {
+                time[i] = "0" + time[i];
+              }
+            }
+
+          console.log(time.join(""));  
+
+          var timeFormatted = [year, month, day].join('-');
+          if (strTime2Add) {
+            timeFormatted = timeFormatted + strTime2Add;
+          } 
+
+          // Return the formatted string
+          return timeFormatted;
+          //return date.join("") + "@" + time.join("") + "@" + suffix;
+
+    },
+
+
     getTimestampPlusRandom: function() {
 
           var d = new Date(),

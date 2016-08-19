@@ -121,15 +121,72 @@ router.get('/getList', utilityModule.ensureAuthenticated, function(req, res) {
 //{ "ts": { $gt: ISODate("2016-08-01T00:00:00.000+0000") }, $and: [ { "ts": { $lt: "2016-08-30T00:00:00.000Z" } } ] }
 //{ "ts": { $gt: "2016-08-01T00:00:00.000+0000" }, $and: [ { "ts": { $lt: "2016-08-30T00:00:00.000Z" } } ] }
 //{ "ts": { $gt: ISODate("2016-08-11T00:00:00.000Z") } }
+//{ $and: [  { "ts": { $gt: ISODate("2016-08-11T00:00:00.000Z") } } , { "ts": { $lt: ISODate("2016-08-12T00:00:00.000Z") } }    ] }
+//{
+//    $and: [
+//       {
+//            "userData.userProvider": "email" 
+//        }
+//        ,
+//        {
+//            "userData.userId": "tom@tim.it" 
+//        }
+//        ,
+//        {
+//            "ts": {
+//                $gte: ISODate("2016-08-09T00:00:00.000+0000"),
+//                $lte: ISODate("2016-08-09T23:59:59.999+0000") 
+//            }
+//        }
+//    ]
+//}
 
-router.post('/upload', utilityModule.ensureAuthenticated,  multipartMiddleware, function(req, res) {
+function checkNumOfSegnalazioni(req, res, next) {
+
+  console.log('##checkNumOfSegnalazioni');
+  var qObj = {
+     $and: [ 
+        {   "userData.userProvider": req.user.userProvider  },
+        {   "userData.userId": req.user.userId   },
+        {
+            "ts": {
+                $gte: new Date(utilityModule.getNowFormatted('T00:00:00.000+0000')),
+                $lte: new Date(utilityModule.getNowFormatted('T23:59:59.999+0000')) 
+            }
+        }
+      ]
+  };
+  
+  console.log(qObj);
+
+  var collection = mongocli.get().collection('segnalazioni'); 
+
+  collection.find(qObj).count( function(err, result) {
+      if(err){
+        console.log(err);
+        return res.status(500).json({ message: 'Error query DB' });
+      } else {
+        if (result > ENV.MAX_NUM_SEGNALAZIONI_GIORNALIERE) {
+          console.log('## Count STOP!');
+          return res.status(501).json({ message: 'Max numero di segnalazioni giornaliere raggiunto.' });
+        } else {
+          console.log('## Count PASS!');
+          next();
+        }
+      }
+   });
+
+}
+
+router.post('/upload', utilityModule.ensureAuthenticated,
+                       checkNumOfSegnalazioni,   
+                       multipartMiddleware, function(req, res) {
   console.log('/uploading.....');
   console.log(req.files);
   console.log('/body.....');
   console.log(req.user);
   //console.log(req.body);
 
-  console.log('Counting insert'); 
 
   //var transactionId = req.body.fields.transactionId;
   var transactionId = 'segnalazioni';
@@ -156,9 +213,7 @@ router.post('/upload', utilityModule.ensureAuthenticated,  multipartMiddleware, 
       };
 
       console.log(oneFile);
-
       listOfFiles.push(oneFile);
-
     }
   }
   
@@ -186,6 +241,9 @@ router.post('/upload', utilityModule.ensureAuthenticated,  multipartMiddleware, 
     });
     
 });
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------
 
 router.post('/uploadOld', multipartMiddleware, function(req, res) {
   console.log('/upload call $flow.post ...');
@@ -265,7 +323,37 @@ router.get('/download/:identifier', function(req, res) {
 
 router.get('/test', function(req, res) {
   console.log('Get /download/identifier : '+ req.params.identifier);
-  res.status(200).send({ok:1});
+  console.log('Counting insert'); 
+  console.log(utilityModule.getNowFormatted());
+  console.log(utilityModule.getNowFormatted('T00:00:00.000+0000'));
+  console.log(utilityModule.getNowFormatted('T23:59:59.999+0000'));
+
+  var qObj = {
+     $and: [ 
+        {   "userData.userProvider": "email"  },
+        {   "userData.userId": "tom@tim.it"   },
+        {
+            "ts": {
+                $gte: new Date(utilityModule.getNowFormatted('T00:00:00.000+0000')),
+                $lte: new Date(utilityModule.getNowFormatted('T23:59:59.999+0000')) 
+            }
+        }
+    ]
+};
+ 
+  var collection = mongocli.get().collection('segnalazioni'); 
+
+  collection.find(qObj).count( function(err, result) {
+      if(err){
+        console.log(err);
+        return res.status(500).json({ message: 'Error insert segnalazione' });
+      } else {
+       console.log(result);
+       res.status(200).send({ok: result}); 
+      }
+   });
+
+  
 });
 
 

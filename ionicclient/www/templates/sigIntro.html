@@ -13,13 +13,12 @@
         </ion-nav-buttons>
         <ion-slide-box on-slide-changed="slideChanged(index)">
           <ion-slide>
-              <div class="box blue">
-            <h3>Segnalazioni</h3>
-            <img  class="center" src="images/logo_rimini.png">
-            <p>E' la web app del Comune che permette la segnalazione di un evento ....</p>
-            <p>Le segnalazioni sono catalogate ...</p>
-            <p>Il cittadino sono catalogate ...</p>
-            
+              <div class="box__slide">
+                <h3>Segnalazioni</h3>
+                <img  class="center" src="images/logo_rimini.png">
+                <p>E' la web app del Comune che permette la segnalazione di una infrazione del Codice della Strada</p>
+                <p>Le segnalazioni saranno catalogate ed utilizzate a fini statistici...</p>
+                <p>Per poter effettuare una segnalazione sarà richiestaIl cittadino sono catalogate ...</p>
             
             <button  ng-if="browserAlert" class="button button-assertive">
                 <p>{{browserMessage}}</p>
@@ -27,8 +26,7 @@
             <small>{{browserMessage}}</small>
 
             </div>
-            <button class="button button-positive button-clear no-animation"
-                  ng-click="next()" ng-show="slideIndex != 2">Prossimo</button>
+            <button class="button button button-calm"  ng-click="next()" ng-show="slideIndex != 2">Prossimo</button>
           </ion-slide>
           <ion-slide>
             <h3>Ricorda di autorizzare quando richiesto:</h3>
@@ -36,7 +34,7 @@
             <img class="imgResponsive imgShadow" src="images/auth_gps.jpg">
             <h4>e l'accesso alla fotocamera</h4>
             <img class="imgResponsive imgShadow" src="images/auth_camera.jpg">
-<button class="button button-positive button-clear no-animation"
+<button class="button button-positive"
                   ng-click="next()" ng-show="slideIndex != 2">Prossimo</button>
           </ion-slide>
           <ion-slide>

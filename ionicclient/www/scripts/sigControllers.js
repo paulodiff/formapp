@@ -748,9 +748,12 @@ angular.module('myApp.controllers')
                     }, function (resp) {
                         $ionicLoading.hide();
                          console.log('Error');
+                         var msg = '';
+                         if (resp.status == 501) msg = '501 - Limite segnalazioni giornaliero raggiunto';
+                         if (resp.status == 500) msg = '500 - Errore riprovare a ricaricare la webapp';
                             var alertPopup = $ionicPopup.alert({
                                 title: 'Errore',
-                                template: resp.status
+                                template: msg
                         });
                         alertPopup.then(function(res) {
                             $log.debug(resp.status);
