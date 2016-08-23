@@ -86,28 +86,39 @@ angular.module('myApp.controllers')
 }])
 
 .controller('GraphPhoneCtrl', 
-            ['$rootScope','$scope', '$http', '$state', '$location','UtilsService', '$filter', 'Session', '$log', '$timeout','ENV',
-     function($rootScope,  $scope,   $http, $state,   $location,  UtilsService ,  $filter,   Session,   $log,   $timeout, ENV) {
+            ['$rootScope','$scope', '$http', '$state', '$location','UtilsService', '$filter', 'Session', '$log', '$timeout','ENV', 'usSpinnerService',
+     function($rootScope,  $scope,   $http, $state,   $location,  UtilsService ,  $filter,   Session,   $log,   $timeout, ENV, usSpinnerService) {
     
   $log.debug('GraphPhoneCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
-  $http.get(  $rootScope.base_url +  '/phone/getData')
-    .success(function(data) {
-      console.log(data);
+
+  $scope.reloadData = function(){
+    console.log('reloadData');
+    usSpinnerService.spin('spinner-1');
+    $http(  {
+        url : $rootScope.base_url +  '/phone/getData',
+        method : 'GET',
+        params : vm.model
+    })
+      .success(function(data) {
+        console.log(data);
+
+         
 
         $scope.labels = [];
         $scope.data = [];
 
-         angular.forEach(data.dataset, function(item) {
-           $scope.data.push(item.numTelefonate);
-           $scope.labels.push(item.tel_data.substring(0, 10));
-          
-      });
+        angular.forEach(data.dataset, function(item) {
+            $scope.data.push(item.numTelefonate);
+            $scope.labels.push(item.tel_data.substring(0, 10));
+            
+        });
 
+        usSpinnerService.stop('spinner-1');
+      });  
 
-      //$scope.gridOptions.data = data;
-      //$scope.gridOptions2.data = data;
-    });  
+  }
+
 /*
   $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
   $scope.series = ['Series A', 'Series B'];
@@ -198,8 +209,11 @@ angular.module('myApp.controllers')
   };
 
   vm.model = {
-      showErrorState: true,
-      transactionId : UtilsService.getTimestampPlusRandom()
+      //showErrorState: true,
+      //transactionId : UtilsService.getTimestampPlusRandom(),
+      numTel: '4607',
+      daData: new Date('08-08-2016'),
+      aData: new Date('08-20-2016')
   };
 
   vm.errors = {};
@@ -260,64 +274,21 @@ angular.module('myApp.controllers')
           //alert(JSON.stringify(vm.model), null, 2);
           //usSpinnerService.spin('spinner-1');
 
+          console.log(vm.model);
+          $scope.reloadData();
 
-          var dlg = dialogs.wait(undefined,undefined,_progress);
-
-          console.log('upload!!');
-
-        Upload.upload({
-            url: 'uploadmgr/upload',
-            method: 'POST',
-            //files: vm.options.data.fileList
-            data: {files : vm.options.data.fileList, fields: { transactionId : vm.model.transactionId } }
-        }).then(function (resp) {
-            console.log('Success ');
-
-          FormlyService.createFormly(vm.model)
-            .then(function() {
-              //usSpinnerService.stop('spinner-1');
-              dialogs.notify('ok','Form has been updated');
-            })
-            .catch(function(response) {
-              //usSpinnerService.stop('spinner-1');
-              dialogs.error('500 - Errore server',response.data.message, response.status);
-            });
-
-
-
-            //usSpinnerService.stop('spinner-1');
-        }, function (resp) {
-            console.log('Error status: ' + resp.status);
-        }, function (evt) {
-            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            console.log('progress: ' + progressPercentage + '% ');
-            if (progressPercentage < 100) {
-              _progress = progressPercentage
-              $rootScope.$broadcast('dialogs.wait.progress',{'progress' : _progress});
-            }else{
-              $rootScope.$broadcast('dialogs.wait.complete');
-            }
-        });
           
-          /*
-          FormlyService.createFormly(vm.model)
-            .then(function() {
-              usSpinnerService.stop('spinner-1');
-              dialogs.notify('ok','Form has been updated');
-            })
-            .catch(function(response) {
-              usSpinnerService.stop('spinner-1');
-              dialogs.error('500 - Errore server',response.data.message, response.status);
-            });
-
-          */
         }
     }
 
 
+     // spinner test control
+    $scope.startSpin = function(){
+        usSpinnerService.spin('spinner-1');
+    }
 
+    $scope.stopSpin = function(){
+        usSpinnerService.stop('spinner-1');
+    }
 
-}])
-
-
-;
+}]);
