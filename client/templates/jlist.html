@@ -1,24 +1,40 @@
 <div class="container">
  
-
-
 <div class="row">
 		<div class="col-md-12">
             <div class="input-group" id="adv-search">
-                <input type="text" class="form-control" placeholder="Ricerca una parola" />
+                <input type="text" class="form-control" ng-model="txtGlobalSearch" placeholder="Ricerca una parola" ng-keyup="$event.keyCode == 13 && DoSearch()" />
                 <div class="input-group-btn">
                     <div class="btn-group" role="group">
                         <div class="dropdown dropdown-lg">
-                            <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            <button type="button" class="btn btn-primary" ng-click="DoSearch()"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                         </div>
                         <button type="button" class="btn btn-success"  ng-click="OpenFilter({},{})"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
                     </div>
                 </div>
             </div>
           </div>
-        </div>
+</div>
 
-<br>
+<br/>
+
+<div class="row">
+    <div class="col-md-12">
+  <div class="btn-group">
+        <label class="btn btn-primary" ng-model="filterModelButton.IRIDE" ng-click="DoSearch()" uib-btn-checkbox>IRIDE</label>
+        <label class="btn btn-primary" ng-model="filterModelButton.JIRIDE" ng-click="DoSearch()" uib-btn-checkbox>JIRIDE</label>
+        <label class="btn btn-primary" ng-model="filterModelButton.VELOX" ng-click="DoSearch()" uib-btn-checkbox>VELOX</label>
+    </div>
+
+ <div class="btn-group">
+        <label class="btn btn-success" ng-model="filterModelButton.APERTI" uib-btn-radio="'true'" ng-click="setFilter('IRIDE')" uncheckable>APERTI</label>
+        <label class="btn btn-success" ng-model="filterModelButton.CHIUSI" uib-btn-radio="'false'" ng-click="setFilter('IRIDE')" uncheckable>CHIUSI</label>
+        <label class="btn btn-success" ng-model="filterModelButton.TUTTI"  uib-btn-radio="'true'" ng-click="setFilter('IRIDE')" uncheckable>TUTTI</label>
+    </div>
+</div>
+</div>
+
+<br/>
 
 <div class="card__wrapper" ng-repeat="item in data">
   <div class="card radius shadowDepth1">

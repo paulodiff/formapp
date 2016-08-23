@@ -1,4 +1,4 @@
-// Route for upload
+// Route for Phone data
 
 var express = require('express');
 var router = express.Router();
@@ -15,6 +15,9 @@ var mongocli = require('../models/mongocli');
 //var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
 var flow = require('../models/flow-node.js')('tmp'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); // load configuration data
+var dbMysql = require('../models/mysqlPhone.js');
+var utilityModule  = require('../models/utilityModule.js'); // load configuration data
+var log = require('../models/loggerModule.js');
 
 var ACCESS_CONTROLL_ALLOW_ORIGIN = false;
 //var DW_PATH = (path.join(__dirname, './storage'));
@@ -25,15 +28,49 @@ var _ = require('lodash');
 
 module.exports = function(){
 
-/*
+
+// GET /api/me
+router.get('/getData', function(req, res) {
+  console.log('get /me');
+  //var qry = "select tel_data, tel_ora, tel_chiamato, tel_chiamante, tel_durata from tel_telefonate where tel_chiamato =  '4607' order by tel_timestamp";
+
+  var numTel = '4607';
+  var daData = '2016-08-01';
+  var aData = '2016-08-31';
+
+  if(req.query.daData){ daData = req.query.daData; }
+  if(req.query.aData){ aData = req.query.aData; }
+  if(req.query.numTel){ numTel = req.query.numTel; }
+
+
+  var qry =  "select count(*) as numTelefonate , tel_data";
+  qry = qry + " from tel_telefonate ";
+  //qry = qry + " where tel_chiamante =  '4607' AND  (tel_data BETWEEN '2016-08-01' AND '2016-08-31') "; 
+  qry = qry + " WHERE tel_chiamato =  '" + numTel +  "' ";
+  qry = qry + " AND  (tel_data BETWEEN '"+  daData + "' AND '" + aData + "') ";
+  qry = qry + " group by tel_data order by tel_data ";
+
+
+  dbMysql.get().query(qry, function(err, result) {
+    if (err) {
+      log.log2console(err);
+      return res.status(500).json({ dataset: result });
+    } else {
+      log.log2console(result);
+      return res.status(200).json({ dataset: result });
+    }
+  })
+});
+
+
 router.get('/getImage', function(req, res) {
 
-    
-    // var img = fs.readFileSync('./logo.gif');
-    // res.writeHead(200, {'Content-Type': 'image/gif' });
-    // res.end(img, 'binary');
+    /*
+     var img = fs.readFileSync('./logo.gif');
+     res.writeHead(200, {'Content-Type': 'image/gif' });
+     res.end(img, 'binary');
 
-   
+   */
 
     console.log('/getImage');
     console.log(req.query.id);
@@ -118,20 +155,75 @@ router.get('/getList', utilityModule.ensureAuthenticated, function(req, res) {
       });      
 });
 
-*/
-
 //{ "ts": { $gt: ISODate("2016-08-01T00:00:00.000+0000") }, $and: [ { "ts": { $lt: "2016-08-30T00:00:00.000Z" } } ] }
 //{ "ts": { $gt: "2016-08-01T00:00:00.000+0000" }, $and: [ { "ts": { $lt: "2016-08-30T00:00:00.000Z" } } ] }
 //{ "ts": { $gt: ISODate("2016-08-11T00:00:00.000Z") } }
+//{ $and: [  { "ts": { $gt: ISODate("2016-08-11T00:00:00.000Z") } } , { "ts": { $lt: ISODate("2016-08-12T00:00:00.000Z") } }    ] }
+//{
+//    $and: [
+//       {
+//            "userData.userProvider": "email" 
+//        }
+//        ,
+//        {
+//            "userData.userId": "tom@tim.it" 
+//        }
+//        ,
+//        {
+//            "ts": {
+//                $gte: ISODate("2016-08-09T00:00:00.000+0000"),
+//                $lte: ISODate("2016-08-09T23:59:59.999+0000") 
+//            }
+//        }
+//    ]
+//}
 
-router.post('/hdupload', utilityModule.ensureAuthenticated,  multipartMiddleware, function(req, res) {
-  console.log('/hduploading.....');
+function checkNumOfSegnalazioni(req, res, next) {
+
+  console.log('##checkNumOfSegnalazioni');
+  var qObj = {
+     $and: [ 
+        {   "userData.userProvider": req.user.userProvider  },
+        {   "userData.userId": req.user.userId   },
+        {
+            "ts": {
+                $gte: new Date(utilityModule.getNowFormatted('T00:00:00.000+0000')),
+                $lte: new Date(utilityModule.getNowFormatted('T23:59:59.999+0000')) 
+            }
+        }
+      ]
+  };
+  
+  console.log(qObj);
+
+  var collection = mongocli.get().collection('segnalazioni'); 
+
+  collection.find(qObj).count( function(err, result) {
+      if(err){
+        console.log(err);
+        return res.status(500).json({ message: 'Error query DB' });
+      } else {
+        if (result > ENV.MAX_NUM_SEGNALAZIONI_GIORNALIERE) {
+          console.log('## Count STOP!');
+          return res.status(501).json({ message: 'Max numero di segnalazioni giornaliere raggiunto.' });
+        } else {
+          console.log('## Count PASS!');
+          next();
+        }
+      }
+   });
+
+}
+
+router.post('/upload', utilityModule.ensureAuthenticated,
+                       checkNumOfSegnalazioni,   
+                       multipartMiddleware, function(req, res) {
+  console.log('/uploading.....');
   console.log(req.files);
   console.log('/body.....');
   console.log(req.user);
-  console.log(req.body);
+  //console.log(req.body);
 
-  console.log('Counting insert'); 
 
   //var transactionId = req.body.fields.transactionId;
   var transactionId = 'segnalazioni';
@@ -158,7 +250,6 @@ router.post('/hdupload', utilityModule.ensureAuthenticated,  multipartMiddleware
       };
 
       console.log(oneFile);
-
       listOfFiles.push(oneFile);
     }
   }
@@ -167,17 +258,16 @@ router.post('/hdupload', utilityModule.ensureAuthenticated,  multipartMiddleware
 
   var fileUploadedObj = { "fileUploaded" : oneFile};
   var tsObj = {
-        "type" : 'helpdesk', 
+        "type" : 'segnalazione', 
         "ts" : new Date()
       };
-  var userD = { "userData" : req.user };
-  var fullObj = _.merge(req.body.fields, fileUploadedObj, tsObj, userD);
+  var fullObj = _.merge(req.body.fields, fileUploadedObj, tsObj);
 
   //console.log(fullObj);
 
-  var collection = mongocli.get().collection('helpdesk'); 
+  var collection = mongocli.get().collection('segnalazioni'); 
 
-   collection.insert( fullObj, function(err, result) {
+   collection.insert(  fullObj  , function(err, result) {
       if(err){
         console.log(err);
         return res.status(500).json({ message: 'Error insert segnalazione' });
@@ -190,96 +280,78 @@ router.post('/hdupload', utilityModule.ensureAuthenticated,  multipartMiddleware
 });
 
 
-router.get('/getList', function(req, res) {
-      console.log('/getList .... ');
-      console.log(req.query);
-      console.log(req.user);
-      var pagesize = parseInt(req.query.pageSize); 
-      var n =  parseInt(req.query.currentPage);
-      var collection = mongocli.get().collection('helpdesk');
-      var rand = Math.floor(Math.random()*100000000).toString();
-      //db.users.find().skip(pagesize*(n-1)).limit(pagesize)
-      //var searchCriteria = { "userData.userProvider": req.user.userProvider, $and: [ { "userData.userId": req.user.userId } ] };
+// ----------------------------------------------------------------------------------------------------------------------------------
 
-      var searchCriteria = {};
+router.post('/uploadOld', multipartMiddleware, function(req, res) {
+  console.log('/upload call $flow.post ...');
+  //console.log(req);
+  var transactionId = req.body.transactionId;
+  flow.post(req, function(status, filename, original_filename, identifier) {
+    console.log('callback POST', status, original_filename, identifier);
+    console.log('status', status);
+    console.log('original_filename', original_filename);
+    console.log('identifier', identifier);
 
+    if (ACCESS_CONTROLL_ALLOW_ORIGIN) {
+      res.header("Access-Control-Allow-Origin", "*");
+    }
 
-      if(req.query.filterData){
-        var filterData = JSON.parse(req.query.filterData);
-        console.log(filterData);
-      }
+    if (status == 'partly_done') {
+      status = 200;
+    }
 
+    if (status == 'done') {
 
-      var filterButton = [];
-      if(req.query.filterButton){
-        //var filterButton = JSON.parse(req.query.filterButton);
-        filterButton = req.query.filterButton;
-        console.log(filterButton);
-      }
+      var dir = DW_PATH + "/" +  transactionId;
+      if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
+      var dw_fileName = dir + "/" + original_filename;
+      console.log('writing ...',dw_fileName);
+      var stream = fs.createWriteStream(dw_fileName);
+      flow.write(identifier, stream);
+      //stream.on('data', function(data){...});
+      //stream.on('finish', function(){...});
       
+      status = 200;
+    }
 
-      var filterObjArray = [];
-      if (filterButton) {
+    if (status == 'invalid_flow_request')  {   status = 501;  } 
+    if (status == 'non_flow_request')      {   status = 501;  } 
+    if (status == 'invalid_flow_request1') {   status = 501;  } 
+    if (status == 'invalid_flow_request2') {   status = 502;  } 
+    if (status == 'invalid_flow_request3') {   status = 503;  } 
+    if (status == 'invalid_flow_request4') {   status = 504;  } 
 
-        if(_.isArray(filterButton)) {
-          _(filterButton).forEach(function(v){
-              console.log(v);
-              var regex = new RegExp(".*" + v + ".*", "i");
-              var obj1 =  {  "formModel.segnalazione.tipoIntervento": regex   };
-              filterObjArray.push(obj1);
-          });
-        } else {
-              var regex = new RegExp(".*" + filterButton + ".*", "i");
-              var obj1 =  {  "formModel.segnalazione.tipoIntervento": regex   };
-              filterObjArray.push(obj1);
-        }
-
-
-
-        searchCriteria = {
-            $or:  filterObjArray
-        };  
-
-      }
-
-      console.log(filterObjArray);      
-
-      if(filterData) {
-        console.log('1');
-        console.log(req.query.filterData);
-        if(filterData.globalTxt){
-          console.log('2');
-
-          //var stringToGoIntoTheRegex = "abc";
-          var regex = new RegExp(".*" + filterData.globalTxt + ".*", "i");
-          // at this point, the line above is the same as: var regex = /#abc#/g;
-
-
-          searchCriteria = {
-            $or: [
-              {  "formModel.segnalazione.utenteRichiedenteAssistenza": regex   }
-//              {  "formModel.segnalazione.tipoIntervento": /.*IR.*/i  },
-//              {  "formModel.segnalazione.descIntervento": /.*Ri.*/i }
-            ]
-          };    
-        }
-      } 
-
-      console.log(searchCriteria);
-
-      collection.find( searchCriteria ).skip(pagesize*(n-1)).limit(pagesize).toArray(function(err, docs) {
-        console.log("Found the following records ... ");
-        //console.dir(err);
-        console.log(err);
-        if(err){
-            res.status(500).json(err);
-        }else{
-            res.status(201).json(docs);
-        }
-      });      
+    res.status(status).send();
+  });
 });
 
-/*
+router.options('/upload', function(req, res){
+  console.log('OPTIONS');
+  if (ACCESS_CONTROLL_ALLOW_ORIGIN) {
+    res.header("Access-Control-Allow-Origin", "*");
+  }
+  res.status(200).send();
+});
+
+// Handle status checks on chunks through Flow.js
+router.get('/upload', function(req, res) {
+  console.log('GET / upload', status);
+  flow.get(req, function(status, filename, original_filename, identifier) {
+    console.log('GET', status);
+    if (ACCESS_CONTROLL_ALLOW_ORIGIN) {
+      res.header("Access-Control-Allow-Origin", "*");
+    }
+
+    if (status == 'found') {
+      status = 200;
+    } else {
+      status = 204;
+    }
+
+    res.status(status).send();
+  });
+});
+
 router.get('/download/:identifier', function(req, res) {
   console.log('Get /download/identifier : '+ req.params.identifier);
   flow.write(req.params.identifier, res);
@@ -288,9 +360,41 @@ router.get('/download/:identifier', function(req, res) {
 
 router.get('/test', function(req, res) {
   console.log('Get /download/identifier : '+ req.params.identifier);
-  res.status(200).send({ok:1});
+  console.log('Counting insert'); 
+  console.log(utilityModule.getNowFormatted());
+  console.log(utilityModule.getNowFormatted('T00:00:00.000+0000'));
+  console.log(utilityModule.getNowFormatted('T23:59:59.999+0000'));
+
+  var qObj = {
+     $and: [ 
+        {   "userData.userProvider": "email"  },
+        {   "userData.userId": "tom@tim.it"   },
+        {
+            "ts": {
+                $gte: new Date(utilityModule.getNowFormatted('T00:00:00.000+0000')),
+                $lte: new Date(utilityModule.getNowFormatted('T23:59:59.999+0000')) 
+            }
+        }
+    ]
+};
+ 
+  var collection = mongocli.get().collection('segnalazioni'); 
+
+  collection.find(qObj).count( function(err, result) {
+      if(err){
+        console.log(err);
+        return res.status(500).json({ message: 'Error insert segnalazione' });
+      } else {
+       console.log(result);
+       res.status(200).send({ok: result}); 
+      }
+   });
+
+  
 });
 
+
+/*
 router.get('/map',function(req, res) {
   console.log('/map');
   

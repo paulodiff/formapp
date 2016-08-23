@@ -82,6 +82,17 @@ dbMysql.connect('info', function(err) {
   }
 });
 
+var dbMysqlPhone = require('./models/mysqlPhone.js');
+dbMysqlPhone.connect('info', function(err) {
+  if (err) {
+    console.log('Unable to connect to MySQL.');
+    process.exit(1);
+  } else {
+    console.log('MySQL Phone connected!');
+  }
+});
+
+
 var log = require('./models/loggerModule.js');
 
 //var logger2Mail = log4js.getLogger('mailer');
@@ -167,6 +178,9 @@ app.use('/segnalazioni', Segnalazioni);
 
 var HelpDesk = require('./routes/HelpDeskr')();
 app.use('/helpdesk', HelpDesk);
+
+var Phone = require('./routes/Phoner')();
+app.use('/phone', Phone);
 
 
 //default serving html data

@@ -98,6 +98,12 @@
     <link href="bower_components/angular-ui-grid/ui-grid.css" rel="stylesheet">
     <script src="bower_components/angular-ui-grid/ui-grid.js"></script> 
 
+    <!-- chart.js -->
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/chart.js/dist/Chart.js"></script>
+    <script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
+
+
     <!-- your app's js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/configuration.js"></script>
@@ -157,7 +163,7 @@
                 <li ng-if="isAuthenticated()"><a href="#/jiride">Jiride</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/jlist">Jlist</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/uigrid">uigrid</a></li>
-                <li><a href="#/sigPhoto">Photo</a></li>
+                <li><a href="#/graphPhone">graphPhone</a></li>
           </ul>
 
           <ul ng-if="!isAuthenticated()" class="nav navbar-nav pull-right">

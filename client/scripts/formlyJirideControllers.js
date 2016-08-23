@@ -21,10 +21,11 @@ angular.module('myApp.controllers')
 
     var ElencoSoftware = [
       { "id": "IRIDE", "label":"IRIDE"  },
-      { "id": "J-IRIDE", "label":"J-IRIDE"  },
-      { "id": "Firma Digitale",  "label":"Firma Digitale" },
-      { "id": "Word Processor",  "label":"Word Processor" },
-      { "id": "Velox PM",  "label":"Velox PM" },
+      { "id": "JIRIDE", "label":"JIRIDE"  },
+      { "id": "FIRMA DIGITALE",  "label":"FIRMA DIGITALE" },
+      { "id": "WORD PROCESSOR",  "label":"WORD PROCESSOR" },
+      { "id": "VELOX PM",  "label":"VELOX PM" },
+      { "id": "PDF CREATOR",  "label":"PDF CREATOR" },
       { "id": "Altro",  "label":"Altro" }
     ];
 
@@ -1043,6 +1044,7 @@ formlyConfig.setType({
   
   
   $scope.totalPages = 0;
+  $scope.txtGlobalSearch = '';
   $scope.itemsCount = 0;
   $scope.currentPage = 1; 
   $scope.currentItemDetail = null;
@@ -1055,6 +1057,26 @@ formlyConfig.setType({
   $scope.items = [];
   $scope.loadMoreDataCanBeLoaded = true;
   
+
+
+  var filterObj = {
+    "pageInfo" : {
+      "totalPages" : 0,
+      "currentPage" : 0
+    },
+    "filterData" : {
+      "globalTxt" : '',
+      "descUtente" : '',
+      "descAttivitaSvolta" : ''
+    },
+    "filterButton" : null,
+    "orderBy" : {
+      "dateInsert" : 'asc'
+    }
+
+  };
+
+
   var today = new Date();
   var nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
@@ -1121,7 +1143,47 @@ formlyConfig.setType({
       $scope.data = data;
       //$scope.gridOptions2.data = data;
     });                  
-                                 
+
+
+  $scope.setFilter = function(strFilter){
+    console.log($scope.filterModelButton);
+
+  };
+
+  $scope.filterModelButton = {};
+  $scope.checkResults = [];
+
+  $scope.DoSearch = function(){
+      console.log('DoSearch');
+
+      filterObj.filterData.globalTxt = $scope.txtGlobalSearch;
+      filterObj.filterButton = $scope.filterModelButton;
+
+      $scope.checkResults = [];
+      angular.forEach($scope.filterModelButton, function (value, key) {
+        if (value) {
+          $scope.checkResults.push(key);
+        }
+      });
+
+      filterObj.filterButton = $scope.checkResults;
+      console.log(filterObj);
+      console.log($scope.checkResults);
+
+    $http( 
+            {
+              url: $rootScope.base_url +  '/helpdesk/getList', 
+              method: "GET",
+              params: filterObj
+        })
+      .success(function(data) {
+      //console.log(data);
+      $scope.data = data;
+      //$scope.gridOptions2.data = data;
+    });                  
+
+   }                   
+
     //http://angular-formly.com/#/example/integrations/ui-bootstrap-modal
     $scope.OpenFilter = function(model, add) {
       console.log('OpenFilter');

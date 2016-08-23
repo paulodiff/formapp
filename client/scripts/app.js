@@ -25,6 +25,7 @@ angular.module('myApp', [//'ionic',
                          'ngFileUpload',
                          'ui.grid',
                          'ui.grid.selection',
+                         'chart.js',
                          //'uiGmapgoogle-maps',
                          'myApp.filters',
                          'myApp.services',
@@ -174,10 +175,10 @@ angular.module('myApp', [//'ionic',
 // mobile signal
 
 
-    $stateProvider.state('sigPhoto', {
-        url: '/sigPhoto',
-        templateUrl: 'templates/sigPhoto.html',
-        controller: 'sigPhotoController',
+    $stateProvider.state('graphPhone', {
+        url: '/graphPhone',
+        templateUrl: 'templates/graphPhone.html',
+        controller: 'GraphPhoneCtrl',
         controllerAs: 'vm',
         resolve: {
           //loginRequired: loginRequired

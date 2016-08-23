@@ -7,7 +7,7 @@ angular.module('myApp.controllers')
 
 .controller('UiGridCtrl', 
             ['$rootScope','$scope', '$http', '$state', '$location','uiGridConstants', '$filter', 'Session', '$log', '$timeout','ENV',
-     function($rootScope,  $scope,   $http, $state,   $location,  uiGridConstants ,  $filter,   Session,   $log,   $timeout, ENV) {
+     function($rootScope,  $scope,   $http,  $state,   $location,  uiGridConstants ,  $filter,   Session,   $log,   $timeout, ENV) {
     
   $log.debug('UiGridCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
   
@@ -83,4 +83,241 @@ angular.module('myApp.controllers')
       //$scope.gridOptions2.data = data;
     });                  
                                  
-}]);
+}])
+
+.controller('GraphPhoneCtrl', 
+            ['$rootScope','$scope', '$http', '$state', '$location','UtilsService', '$filter', 'Session', '$log', '$timeout','ENV',
+     function($rootScope,  $scope,   $http, $state,   $location,  UtilsService ,  $filter,   Session,   $log,   $timeout, ENV) {
+    
+  $log.debug('GraphPhoneCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
+
+  $http.get(  $rootScope.base_url +  '/phone/getData')
+    .success(function(data) {
+      console.log(data);
+
+        $scope.labels = [];
+        $scope.data = [];
+
+         angular.forEach(data.dataset, function(item) {
+           $scope.data.push(item.numTelefonate);
+           $scope.labels.push(item.tel_data.substring(0, 10));
+          
+      });
+
+
+      //$scope.gridOptions.data = data;
+      //$scope.gridOptions2.data = data;
+    });  
+/*
+  $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
+  $scope.series = ['Series A', 'Series B'];
+  $scope.data = [
+    [65, 59, 80, 81, 56, 55, 40],
+    [28, 48, 40, 19, 86, 27, 90]
+  ];
+*/
+  $scope.onClick = function (points, evt) {
+    console.log(points, evt);
+  };
+  /*
+  $scope.datasetOverride = [{ yAxisID: 'y-axis-1' }];
+  $scope.options = {
+    scales: {
+      yAxes: [
+        {
+          id: 'y-axis-1',
+          type: 'linear',
+          display: true,
+          position: 'left'
+        }
+      ]
+    }
+  };
+  */
+
+  // popup date input
+
+  $scope.open1 = function() {
+    $scope.popup1.opened = true;
+  };
+
+  $scope.open2 = function() {
+    $scope.popup2.opened = true;
+  };
+
+  $scope.setDate = function(year, month, day) {
+    $scope.dt = new Date(year, month, day);
+  };
+
+  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'yyyy-MM-dd', 'shortDate'];
+  $scope.format = $scope.formats[2];
+  $scope.altInputFormats = ['M!/d!/yyyy'];
+
+  $scope.popup1 = {
+    opened: false
+  };
+
+  $scope.popup2 = {
+    opened: false
+  };
+
+
+  // simple form with formly
+
+  
+  var vm = this;
+  var unique = 1;
+  var _progress = 0;
+
+  var ElencoSoftware = [
+      { "id": "IRIDE", "label":"IRIDE"  },
+      { "id": "JIRIDE", "label":"JIRIDE"  },
+      { "id": "FIRMA DIGITALE",  "label":"FIRMA DIGITALE" },
+      { "id": "WORD PROCESSOR",  "label":"WORD PROCESSOR" },
+      { "id": "VELOX PM",  "label":"VELOX PM" },
+      { "id": "PDF CREATOR",  "label":"PDF CREATOR" },
+      { "id": "Altro",  "label":"Altro" }
+    ];
+
+
+
+  vm.id = 'form01';
+  vm.showError = true;
+  vm.onSubmit = onSubmit;
+  vm.author = { // optionally fill in your info below :-)
+      name: 'RR',
+      url: 'https://www.comune.rimini.it' // a link to your twitter/github/blog/whatever
+    };
+
+  vm.exampleTitle = '';
+  vm.exampleDescription = '';
+
+  vm.env = {
+      angularVersion: angular.version.full,
+      formlyVersion: '1.0.0'
+  };
+
+  vm.model = {
+      showErrorState: true,
+      transactionId : UtilsService.getTimestampPlusRandom()
+  };
+
+  vm.errors = {};
+
+  // dati globali del form  
+
+    vm.options = {
+      formState: {
+        awesomeIsForced: false
+      },
+      // contiene i dati dei file da upload di per usare il componente esternamente a due passaggi
+      data: {
+            fileCount: 0,
+            fileList: []
+        }
+    };
+    
+    vm.fields = [
+         {
+          key: 'numTel',
+          type: 'input',
+          templateOptions: {
+            required: true,
+            type: 'text',
+            label: 'Interno telefonico abbreviato'
+          }
+        },
+        {
+          key: 'daData',
+          type: 'datepicker',
+          templateOptions: {
+              label: 'Data di Partenza',
+              type: 'text',
+              datepickerPopup: 'dd-MMMM-yyyy'
+            }
+         }
+
+      ,
+        {
+          key: 'aData',
+          type: 'datepicker',
+          templateOptions: {
+              label: 'Data di Arrivo',
+              type: 'text',
+              datepickerPopup: 'dd-MMMM-yyyy'
+            }
+         }
+         
+    ];
+
+
+    vm.originalFields = angular.copy(vm.fields);
+
+    // function definition
+    function onSubmit() {
+       if (vm.form.$valid) {
+          vm.options.updateInitialValue();
+          //alert(JSON.stringify(vm.model), null, 2);
+          //usSpinnerService.spin('spinner-1');
+
+
+          var dlg = dialogs.wait(undefined,undefined,_progress);
+
+          console.log('upload!!');
+
+        Upload.upload({
+            url: 'uploadmgr/upload',
+            method: 'POST',
+            //files: vm.options.data.fileList
+            data: {files : vm.options.data.fileList, fields: { transactionId : vm.model.transactionId } }
+        }).then(function (resp) {
+            console.log('Success ');
+
+          FormlyService.createFormly(vm.model)
+            .then(function() {
+              //usSpinnerService.stop('spinner-1');
+              dialogs.notify('ok','Form has been updated');
+            })
+            .catch(function(response) {
+              //usSpinnerService.stop('spinner-1');
+              dialogs.error('500 - Errore server',response.data.message, response.status);
+            });
+
+
+
+            //usSpinnerService.stop('spinner-1');
+        }, function (resp) {
+            console.log('Error status: ' + resp.status);
+        }, function (evt) {
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ');
+            if (progressPercentage < 100) {
+              _progress = progressPercentage
+              $rootScope.$broadcast('dialogs.wait.progress',{'progress' : _progress});
+            }else{
+              $rootScope.$broadcast('dialogs.wait.complete');
+            }
+        });
+          
+          /*
+          FormlyService.createFormly(vm.model)
+            .then(function() {
+              usSpinnerService.stop('spinner-1');
+              dialogs.notify('ok','Form has been updated');
+            })
+            .catch(function(response) {
+              usSpinnerService.stop('spinner-1');
+              dialogs.error('500 - Errore server',response.data.message, response.status);
+            });
+
+          */
+        }
+    }
+
+
+
+
+}])
+
+
+;
