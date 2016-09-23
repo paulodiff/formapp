@@ -133,7 +133,7 @@ angular.module('myApp', [//'ionic',
 
     $stateProvider.state('jiride', {
         url: '/jiride',
-        templateUrl: 'templates/formly.html',
+        templateUrl: 'templates/jformly.html',
         controller: 'SFormlyJirideCtrl',
         controllerAs: 'vm',
         resolve: {

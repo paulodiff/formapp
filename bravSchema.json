@@ -1,0 +1,125 @@
+{
+    "id": "v.01",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema per chiamata Brav a protocollo",
+    "type": "object",
+    "required": [   "tracciabilitaOperazione", 
+                    "domandaPermessoFormatoPDF",
+                    "numeroIdentificativoPermesso",
+                    "tipoPermesso",
+                    "tipoOperazione",
+                    "richiedente",
+                    "validitaPermesso",
+                    "numeroVeicoli",
+                    "veicoliAssociati" ],
+    "properties": {
+        "tracciabilitaOperazione": { 
+                "type": "object",
+                "required": [ "dataRichiestaWAPI", "oraRichiestaWAPI", "idOperatore", "cognomeNome" ],
+                "properties": {
+                    "dataRichiestaWAPI": { "type" : "string" },
+                    "oraRichiestaWAPI": { "type" : "string" },
+                    "idOperatore": { "type" : "string" },
+                    "cognomeNome": { "type" : "string" }
+                }
+        },
+        "domandaPermessoFormatoPDF" : {"$ref": "#/definitions/descFile" },
+        "numeroIdentificativoPermesso": { "type": "string" },
+        "tipoPermesso": { 
+                "type": "object",
+                "required": [ "id", "descrizione" ],
+                "properties": {
+                    "id": { "type" : "string" },
+                    "descrizione": { "type" : "string" }
+                }
+        },
+        "tipoOperazione": { "type": "string" },
+        "richiedente": { 
+                "type": "object",
+                "required": [   "nome", 
+                                "cognome",
+                                "codiceFiscale",
+                                "dataDiNascita",
+                                "indirizzo",
+                                "mail",
+                                "telefonoCellulare",
+                                "telefonoFisso"
+                                 ],
+                "properties": {
+                    "nome": { "type" : "string" },
+                    "cognome": { "type" : "string" },
+                    "codiceFiscale": { "type" : "string" },
+                    "dataDiNascita": { "type" : "string" },
+                    "indirizzo": { "type" : "string" },
+                    "mail": { "type" : "string" },
+                    "telefonoCellulare": { "type" : "string" },
+                    "telefonoFisso": { "type" : "string" }
+                }
+        },
+        "validitaPermesso": { 
+                "type": "object",
+                "required": [ "dal", "al" ],
+                "properties": {
+                    "dal": { "type" : "string" },
+                    "al": { "type" : "string" }
+                }
+        },
+        "numeroVeicoli": { "type": "string" },
+        "veicoliAssociati" : {
+                "type": "array",
+                "items": { "$ref": "#/definitions/descVeicolo" }
+        },
+        "note": { "type": "string" },
+        "importi" : {
+                "type": "array",
+                "items": { "$ref": "#/definitions/descImporto" }
+        },
+        "altriDati" : {
+                "type": "array",
+                "items": { "$ref": "#/definitions/descElemento" }
+        },
+        "numeroAllegati": { "type": "string" },
+        "allegati" : {
+                "type": "array",
+                "items": { "$ref": "#/definitions/descFile" }
+        }
+    },
+
+    "definitions": {
+        "descVeicolo": {
+            "properties": {
+                "marca": { "type": "string" },
+                "modello": { "type": "string" },
+                "targa": { "type": "string" }
+            },
+            "required": [ "marca", "modello", "targa" ]
+        },
+        "descFile": {
+            "properties": {
+                "nomeFile": { "type": "string" },
+                "dimensioneFile": { "type": "string" },
+                "mimeType": { "type": "string" },
+                "base64": { "type": "string" },
+                "hashSHA256File": { "type": "string" },
+                "tipoId": { "type": "string" },
+                "tipoDescrizione": { "type": "string" }
+            },
+            "required": [ "nomeFile", "dimensioneFile", "mimeType", "base64", "hashSHA256File" ]
+        },
+        "descElemento": {
+            "properties": {
+                "chiave": { "type": "string" },
+                "valore": { "type": "string" }
+            },
+            "required": [ "chiave", "valore" ]
+        },
+        "descImporto": {
+            "properties": {
+                "imponibile": { "type": "string" },
+                "imposta": { "type": "string" },
+                "iva": { "type": "string" }
+            },
+            "required": [ "imponibile", "imposta", "iva" ]
+        }
+   }
+}

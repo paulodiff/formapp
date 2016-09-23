@@ -169,6 +169,9 @@ app.use('/api/m', Mdata);
 var SeqData = require('./routes/Seqr')();
 app.use('/api/seq', SeqData);
 
+var BravData = require('./routes/Bravr')();
+app.use('/api/brav', BravData);
+
 var UploadData = require('./routes/Uploadr')();
 app.use('/uploadmgr', UploadData);
 

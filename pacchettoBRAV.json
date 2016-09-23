@@ -1,0 +1,92 @@
+{
+    "tracciabilitaOperazione": {
+        "dataRichiestaWAPI": "01/01/2000",
+        "oraRichiestaWAPI": "08:00:00",
+        "idOperatore": "OP7",
+        "cognomeNome": "VERDI/LUCA"
+    },
+    "domandaPermessoFormatoPDF": {
+        "hashSHA256File": "b9a4bed709d33d0503abdc6a09135ac373f73dc54858530915dc1df381c98466",
+        "nomeFile": "Documento1.pdf",
+        "dimensioneFile": "555444",
+        "mimeType": "application/pdf",
+        "base64": "JVBERi0xLjQNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhpdC1JVCkgL091dHB1dEludGVudHNbPDwvVHlwZS9PdXRwdXRJbnRlbnQvUy9HVFNfUERGQTEvT3V0cHV0Q29uZGl0aW9uSWRlbnRpZmllcihzUkdCKSAvUmVnaXN0cnlOYW1lKGh0dHA6Ly93d3cuZg0KODc2MDkNCiUlRU9G"
+    },
+    "numeroIdentificativoPermesso": "A120004x",
+    "tipoPermesso": {
+        "id": "1",
+        "descrizione": "ROSA"
+    },
+    "tipoOperazione": "RICHIESTA",
+    "richiedente": {
+        "nome": "MARIO",
+        "cognome": "ROSSI",
+        "codiceFiscale": "AAFF456565411",
+        "dataDiNascita": "01/01/2000",
+        "indirizzo": "via Roma, 1 47900 - Rimini (RN)",
+        "mail": "aaaaa@aaaa.com",
+        "telefonoCellulare": "065465465464",
+        "telefonoFisso": "054613213213"
+    },
+    "validitaPermesso": {
+        "dal": "01/01/2000",
+        "al": "31/12/2000"
+    },
+    "numeroVeicoli": "2",
+    "veicoliAssociati": [
+        {
+            "marca": "FIAT",
+            "modello": "PUNTO",
+            "targa": "AF423409"
+        },
+        {
+            "marca": "FORD",
+            "modello": "MODEO",
+            "targa": "AF423409"
+        }
+    ],
+    "note": "note .... note",
+    "importi": [
+        {
+            "imponibile": "8,50  €",
+            "imposta": "1,50  €",
+            "iva": "22%"
+        },
+        {
+            "imponibile": "3,50  €",
+            "imposta": "0  €",
+            "iva": "Fuori campo IVA"
+        }
+    ],
+    "altriDati": [
+        {
+            "chiave": "StatoMaternita",
+            "valore": "Madre"
+        },
+        {
+            "chiave": "NomeCognomeBambino",
+            "valore": "Marco Rossi"
+        }
+    ],
+    "numeroAllegati": "2",
+    "allegati": [
+        {
+            "nomeFile": "Documento1.pdf",
+            "dimensioneFile": "555444",
+            "mimeType": "application/pdf",
+            "base64": "JVBERi0xLjQKJcfs86IKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvVmlld2VyUHJlZmVyZW5j",
+            "hashSHA256File": "b9a4bed709d33d0503abdc6a09135ac373f73dc54858530915dc1df381c98466",
+            "tipoId": "6",
+            "tipoDescrizione": "PATENTE DI GUIDA"
+        },
+        {
+            "nomeFile": "LIBRETTO.pdf",
+            "dimensioneFile": "555444",
+            "mimeType": "application/pdf",
+            "base64": "JVBERi0x..............OMISSISS................zsg0",
+            "hashSHA256File": "b9a4bed709d33d0503abdc6a09135ac373f73dc54858530915dc1df381c98466",
+            "tipoId": "7",
+            "tipoDescrizione": "CARTA DI CIRCOLAZIONE VEICOLO"
+        }
+    ]
+}

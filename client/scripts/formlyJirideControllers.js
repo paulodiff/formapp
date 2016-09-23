@@ -22,11 +22,11 @@ angular.module('myApp.controllers')
     var ElencoSoftware = [
       { "id": "IRIDE", "label":"IRIDE"  },
       { "id": "JIRIDE", "label":"JIRIDE"  },
-      { "id": "FIRMA DIGITALE",  "label":"FIRMA DIGITALE" },
-      { "id": "WORD PROCESSOR",  "label":"WORD PROCESSOR" },
-      { "id": "VELOX PM",  "label":"VELOX PM" },
-      { "id": "PDF CREATOR",  "label":"PDF CREATOR" },
-      { "id": "Altro",  "label":"Altro" }
+      { "id": "FIRMA_DIGITALE",  "label":"FIRMA_DIGITALE" },
+      { "id": "WORD_PROCESSOR",  "label":"WORD_PROCESSOR" },
+      { "id": "VELOX_PM",  "label":"VELOX_PM" },
+      { "id": "PDF_CREATOR",  "label":"PDF_CREATOR" },
+      { "id": "ALTRO",  "label":"ALTRO" }
     ];
 
 
@@ -48,333 +48,6 @@ angular.module('myApp.controllers')
 
 
 
-    formlyConfig.setType({
-      name: 'repeatSection',
-      templateUrl: 'templates/formly-repeatSection-template.html',
-      controller: function($scope) {
-        $scope.formOptions = {formState: $scope.formState};
-        $scope.addNew = addNew;
-        $scope.copyFields = copyFields;
-        
-        function copyFields(fields) {
-          fields = angular.copy(fields);
-          addRandomIds(fields);
-          return fields;
-        }
-        
-        function addNew() {
-          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-          var repeatsection = $scope.model[$scope.options.key];
-          var lastSection = repeatsection[repeatsection.length - 1];
-          var newsection = {};
-          if (lastSection) {
-            newsection = angular.copy(lastSection);
-          }
-          repeatsection.push(newsection);
-        }
-        
-        function addRandomIds(fields) {
-          unique++;
-          angular.forEach(fields, function(field, index) {
-            if (field.fieldGroup) {
-              addRandomIds(field.fieldGroup);
-              return; // fieldGroups don't need an ID
-            }
-            
-            if (field.templateOptions && field.templateOptions.fields) {
-              addRandomIds(field.templateOptions.fields);
-            }
-            
-            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
-          });
-        }
-        
-        function getRandomInt(min, max) {
-          return Math.floor(Math.random() * (max - min)) + min;
-        }
-      }
-    });
-    
-    formlyConfig.setType({
-      name: 'repeatUploadSection',
-      templateUrl: 'templates/formly-repeatUploadSection-template.html',
-      controller: function($scope) {
-
-        $scope.formOptions = {formState: $scope.formState};
-                
-        $scope.openSelectFile = function(){
-              console.log('openSelectFile............');
-              document.getElementById("upfile").click();
-          }
-
-        $scope.copyFields = function(fields) {
-          fields = angular.copy(fields);
-          addRandomIds(fields);
-          return fields;
-        }
-
-        $scope.delItem = function(itemId) {
-          console.log('delItem');
-          console.log(itemId);
-          $scope.model[$scope.options.key].splice(itemId, 1);
-          vm.options.data.fileList.splice(itemId,1);
-          console.log(vm.options.data.fileList);
-        }
-        
-        $scope.addNew = function () {
-          console.log('repeatUploadSection addNew');
-          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-          console.log($scope.options.key);
-          console.log($scope.model[$scope.options.key]);
-          var repeatsection = $scope.model[$scope.options.key];
-          var lastSection = repeatsection[repeatsection.length - 1];
-          console.log(lastSection);
-          var newsection = {};
-          if (lastSection) {
-            newsection = angular.copy(lastSection);
-            newsection.fileSize = "9999";
-          } else {
-            newsection.fileName = 'Nuovo';
-          }
-          repeatsection.push(newsection);
-        }
-    
-
-        $scope.startUpload = function (){
-          console.log('endUpload ...');
-          return;
-        }
-
-        $scope.addFiles = function(files, errFiles) {
-            console.log('addFiles ...');
-            var files = event.target.files;
-            console.log(files);
-            console.log($scope.parent);
-            console.log($scope);
-            
-            var fileInfo = [];
-            var i = 0;
-            for(i=0;i<files.length;i++){
-              console.log('adding file ..', files[i].name);
-              addNewFile(files[i]);
-              fileInfo[i]  = {
-                  'name' : files[i].name,
-                  'error' : '',
-                  'paused' : '',
-                  'type' : files[i].type,
-                  'size' : files[i].size,
-                  'uniqueIdentifier' : '',
-                  '_prevProgress' : ''
-                }
-            }
-
-            //$scope.userData.Files = fileInfo;
-            //$scope.$apply();
-            //HelloWorldService.doWorkF(files);
-
-            //console.log($scope.fFiles);
-            //console.log($scope.userData.Files);
-            $scope.$apply();
-      }
-
-      function addNewFile(fileInfo){
-          console.log('addNewFile');
-          console.log(fileInfo);
-          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-          var repeatsection = $scope.model[$scope.options.key];
-          var lastSection = repeatsection[repeatsection.length - 1];
-          var newsection = {};
-          
-          newsection.tipoDocumento = 'CI';
-          newsection.fileName = fileInfo.name;
-          newsection.fileSize = fileInfo.size;
-          vm.options.data.fileList.push(fileInfo);
-          console.log(vm.options.data.fileList);
-          
-          repeatsection.push(newsection);
-      }
-
-
-        function addRandomIds(fields) {
-          unique++;
-          angular.forEach(fields, function(field, index) {
-            if (field.fieldGroup) {
-              addRandomIds(field.fieldGroup);
-              return; // fieldGroups don't need an ID
-            }
-            
-            if (field.templateOptions && field.templateOptions.fields) {
-              addRandomIds(field.templateOptions.fields);
-            }
-            
-            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
-          });
-        }
-        
-        function getRandomInt(min, max) {
-          return Math.floor(Math.random() * (max - min)) + min;
-        }
-      }
-    });
-
-formlyConfig.setType({
-      name: 'uploaderFile',
-      templateUrl: 'templates/formly-file-uploader-template.html',
-      controller: function($scope) {
-        $scope.formOptions = {formState: $scope.formState};
-        $scope.addNew = addNew;
-        $scope.copyFields = copyFields;
-        
-        function showEv(f){
-          console.log(f);
-        }
-
-        $scope.onErrorHandler = function (event, reader, fileList, fileObjs, file) {
-          console.log('onErrorHandler');
-          console.log(event);
-          console.log(reader);
-          console.log(fileList);
-          console.log(fileObjs);
-          console.log(file);
-        }
-
-        $scope.onAfterValidateFunc = function (event, fileObjs, fileList) {
-          console.log('onAfterValidate');
-          console.log(event);
-          console.log(fileObjs);
-          console.log(fileList);
-        }
-
-        $scope.onChangeHandlerFunc = function (event, fileList){
-          console.log('onChangeHandlerFunc');
-          console.log(event);
-          console.log(fileList);
-        }
-
-        function copyFields(fields) {
-          fields = angular.copy(fields);
-          addRandomIds(fields);
-          return fields;
-        }
-        
-        function addNew() {
-          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-          var repeatsection = $scope.model[$scope.options.key];
-          var lastSection = repeatsection[repeatsection.length - 1];
-          var newsection = {};
-          if (lastSection) {
-            newsection = angular.copy(lastSection);
-          }
-          repeatsection.push(newsection);
-        }
-        
-        function addRandomIds(fields) {
-          unique++;
-          angular.forEach(fields, function(field, index) {
-            if (field.fieldGroup) {
-              addRandomIds(field.fieldGroup);
-              return; // fieldGroups don't need an ID
-            }
-            
-            if (field.templateOptions && field.templateOptions.fields) {
-              addRandomIds(field.templateOptions.fields);
-            }
-            
-            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
-          });
-        }
-
-        function getRandomInt(min, max) {
-          return Math.floor(Math.random() * (max - min)) + min;
-        }
-
-      }
-    });
-    
-// imageUpload blocco per selezionare una foto da archivio o fotocamera
-
-formlyConfig.setType({
-      name: 'imageUpload',
-      templateUrl: 'templates/formly-image-upload-template.html',
-      controller: function($scope) {
-        $scope.formOptions = {formState: $scope.formState};
-        $scope.addNew = addNew;
-        $scope.copyFields = copyFields;
-        
-        function showEv(f){
-          console.log(f);
-        }
-
-        // attiva il 
-        $scope.selectImageFile = function(){
-              console.log('selectImageFile............');
-              document.getElementById("idImageFileInput").click();
-        }
-
-        $scope.onErrorHandler = function (event, reader, fileList, fileObjs, file) {
-          console.log('onErrorHandler');
-          console.log(event);
-          console.log(reader);
-          console.log(fileList);
-          console.log(fileObjs);
-          console.log(file);
-        }
-
-        $scope.onAfterValidateFunc = function (event, fileObjs, fileList) {
-          console.log('onAfterValidate');
-          console.log(event);
-          console.log(fileObjs);
-          console.log(fileList);
-        }
-
-        $scope.onChangeHandlerFunc = function (event, fileList){
-          console.log('onChangeHandlerFunc');
-          console.log(event);
-          console.log(fileList);
-        }
-
-        function copyFields(fields) {
-          fields = angular.copy(fields);
-          addRandomIds(fields);
-          return fields;
-        }
-        
-        function addNew() {
-          $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-          var repeatsection = $scope.model[$scope.options.key];
-          var lastSection = repeatsection[repeatsection.length - 1];
-          var newsection = {};
-          if (lastSection) {
-            newsection = angular.copy(lastSection);
-          }
-          repeatsection.push(newsection);
-        }
-        
-        function addRandomIds(fields) {
-          unique++;
-          angular.forEach(fields, function(field, index) {
-            if (field.fieldGroup) {
-              addRandomIds(field.fieldGroup);
-              return; // fieldGroups don't need an ID
-            }
-            
-            if (field.templateOptions && field.templateOptions.fields) {
-              addRandomIds(field.templateOptions.fields);
-            }
-            
-            field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
-          });
-        }
-
-
-        function getRandomInt(min, max) {
-          return Math.floor(Math.random() * (max - min)) + min;
-        }
-
-      }
-    });
-    
-
     formlyValidationMessages.messages.required = 'to.label + " è obbligatorio"';
     formlyValidationMessages.messages.email = '$viewValue + " is not a valid email address"';
     formlyValidationMessages.addTemplateOptionValueMessage('minlength', 'minlength', '', '#### is the minimum length', '**** Too short');
@@ -395,8 +68,8 @@ formlyConfig.setType({
       url: 'https://www.comune.rimini.it' // a link to your twitter/github/blog/whatever
     };
 
-    vm.exampleTitle = 'Assistenza JIRIDE';
-    vm.exampleDescription = 'Descrizione operativa del modulo';
+    vm.exampleTitle = 'Assistenza _';
+    vm.exampleDescription = '';
 
     vm.env = {
       angularVersion: angular.version.full,
@@ -522,6 +195,7 @@ formlyConfig.setType({
           options: ElencoSoftware
         }
       },
+      /*
       {
         key: 'tipoIntervento',
         type: 'ui-select-single',
@@ -533,17 +207,7 @@ formlyConfig.setType({
               console.log(viewValue);
               var value = modelValue || viewValue;
               return true;
-              /*
-              if(modelValue){
-                if ((modelValue.length > 0) && (modelValue.length < 3))  {
-                  return true;
-                } else {
-                  return false;
-                }
-              } else {
-                return false;
-              }
-              */
+        
             },
             message: '$viewValue + " o uno o due"'
           }
@@ -559,6 +223,7 @@ formlyConfig.setType({
           options: ElencoSoftware
         }
       },
+      */
       {
         "type": "textarea",
         "key": "descIntervento",
@@ -974,7 +639,7 @@ formlyConfig.setType({
         }).then(function (resp) {
             console.log('Success ');
 
-               dialogs.notify('ok','Form has been updated');
+               dialogs.notify('ok','Azione completata con successo!');
               //dialogs.error('500 - Errore server',response.data.message, response.status);
           
             //usSpinnerService.stop('spinner-1');
