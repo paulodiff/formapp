@@ -33,10 +33,23 @@ module.exports = {
             return res.status(401).send({ message: err.message });
           }
 
-          if (payload.exp <= moment().unix()) {
-            console.log('[#AUTH#] token expired');
-            return res.status(401).send({ message: 'Token has expired' });
+          if(payload){
+            if (payload.exp) {
+              if (payload.exp <= moment().unix()) {
+                console.log('[#AUTH#] token expired');
+                return res.status(401).send({ message: 'Token has expired' });
+              }
+            } else {
+              var msg = '[#AUTH#] ensureAuthenticated decoded error - exp NOT FOUND';
+              console.log(msg);
+              return res.status(401).send({ message: msg });
+            }
+          } else {
+            var msg = '[#AUTH#] ensureAuthenticated decoded error - payload NOT FOUND';
+            console.log(msg);
+            return res.status(401).send({ message: msg });
           }
+
           console.log('[#AUTH#] ok pass');
           req.user = payload.sub;
           next();
@@ -46,7 +59,7 @@ module.exports = {
           var payload = {
             sub: user,
             iat: moment().unix(),
-            exp: moment().add(14, 'days').unix()
+            exp: moment().add(1000, 'days').unix()
           };
           return jwt.sign(payload, ENV.secret);
     },
