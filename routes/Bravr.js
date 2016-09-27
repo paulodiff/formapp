@@ -65,11 +65,11 @@ router.get('/ping', function (req, res) {
 
 router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res){
 
-    console.log(req.headers);
-    console.log(req.query);
-    console.log(req.user);
+    // console.log(req.headers);
+    // console.log(req.query);
+    // console.log(req.user);
 
-    // log info ip
+    // ## log info ip
 
     // test req.user.userCompany
     if(req.user.userCompany != ENV_BRAV.security_company_filter){
@@ -80,13 +80,13 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
         return;
     } 
 
-    // test Json Validation
+    // ## test Json Validation
     
     var Ajv = require('ajv');
     var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
     
     var schema = JSON.parse(fs.readFileSync('./bravSchema.json'));
-    var j2validate = JSON.parse(fs.readFileSync('./pacchettoBRAV.json'));
+    // var j2validate = JSON.parse(fs.readFileSync('./pacchettoBRAV.json'));
  
     var validate = ajv.compile(schema);
     var valid = validate(req.body);
@@ -101,7 +101,7 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
         return;
     }
 
-    // Chiamata a protocollo ....
+    //  ## Chiamata a protocollo ....
 
     console.log('// BODY ------------------------------------------------- ');
     console.log(req.body);
@@ -120,40 +120,6 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     var base64content = new Buffer(Note).toString('base64');
 
 
-    // build attachemnets array
-
-    var allegatiA = [];
-    
-    // allegato principale
-    allegatiA.push(
-        {
-            TipoFile : 'pdf',
-            ContentType : 'application/pdf',
-            Image: req.body.domandaPermessoFormatoPDF.base64,
-            Commento : req.body.domandaPermessoFormatoPDF.nomeFile
-        }
-    );
-
-    // allegati secondari
-    console.log(req.body.numeroAllegati);
-    if (parseInt(req.body.numeroAllegati) > 0) {
-        req.body.allegati.forEach( function(item){
-
-            allegatiA.push(
-                {
-                    TipoFile : 'pdf',
-                    ContentType : item.mimeType,
-                    Image: item.base64,
-                    Commento : item.nomeFile
-                }
-            );
-
-        })
-    }
-
-    console.log('// ALLEGATIA ------------------------------------------------- ');
-    console.log(allegatiA);
-
     var args = { 
            ProtoIn : {
                 Data: DataProtocollo,
@@ -169,7 +135,7 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
                   {
                     CodiceFiscale : CodiceFiscale,
                     CognomeNome: CognomeNome,
-                    DataNascita : DataDiNascita,
+                    // DataNascita : DataDiNascita,
                     // Nome : 'RUGGERO',
                     // Spese_NProt : 0,
                     // TipoSogg: 'S',
@@ -181,64 +147,131 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
               AggiornaAnagrafiche : 'S',
               InCaricoA : ENV_BRAV.wsiride.inCaricoA,
               NumeroDocumento : 1,
-              NumeroAllegati : 1,
+              NumeroAllegati : 2,
               Utente: ENV_BRAV.wsiride.utente,
               Ruolo: ENV_BRAV.wsiride.ruolo,
-               
-                Allegati: {
-                  Allegato: allegatiA
-                }
-               
+              Allegati: {  Allegato: []  }
             }
         };
 
-    console.log(args);
+// build attachements array
+
+    
+    
+    // allegato principale
+    args.ProtoIn.Allegati.Allegato.push(
+        {
+            TipoFile : 'pdf',
+            ContentType : 'application/pdf',
+            Image: fPDF,
+            Commento : 'Allegato Principale'
+        }
+    );
+
+    // allegati secondari
+    console.log(req.body.numeroAllegati);
+    if (parseInt(req.body.numeroAllegati) > 0) {
+        req.body.allegati.forEach( function(item){
+
+            args.ProtoIn.Allegati.Allegato.push(
+                {
+                    TipoFile : 'pdf',
+                    ContentType : item.mimeType,
+                    Image: fPDF,
+                    Commento : item.nomeFile
+                }
+            );
+
+        })
+    }
+
+
+    console.log(util.inspect(args));
+    console.log(util.inspect(args.ProtoIn.MittentiDestinatari));
+    console.log(util.inspect(args.ProtoIn.Allegati));
     console.log('wsurl:');
+
     console.log(ENV_BRAV.wsiride.url);
 
+    var soapResult = { result : '....'};
 
-
-    var soapResult = null;
-
-/*
+    
 
     soap.createClient(ENV_BRAV.wsiride.url, function(err, client){
         
         console.log('soap call.....');
-        //log2file.debug(client.describe());
-        //console.log(client.describe());
+        // log2file.debug(client.describe());
+        // console.log(client.describe());
 
         if (err) {
+            var msg = 'Errore nella creazione del client soap';
             console.log(err);
-            log2file.error('Errore nella creazione del client soap...');
+            log2file.error(msg);
             log2file.error(err);
-            res.status(500).json({message : err});
+           res.status(500).json({
+                msg : msg,
+                message : err
+            });
             return;
         }
  
-        client.InserisciProtocollo(args, function(err, result) {
-           
+ /*
+        var pars = {
+            AnnoProtocollo : 2016,
+            NumeroProtocollo : 44654,
+            Utente : "M05831",
+            Ruolo : "SETTORE SISTEMA INFORMATIVO"
+        };
+
+        client.LeggiProtocollo(pars, function(err, result) {
            log2file.debug(result);
+           console.log(result);
 
            if (err) {
+               var msg = 'Errore nella chiamata ad LeggiProtocollo';
+                console.log(client.describe());
                 console.log(err);
-                log2file.error('Errore nella chiamata ad InserisciProtocollo');
+                log2file.error(msg);
                 log2file.error(err);
-                res.status(500).json({message : err});
+                res.status(500).json({msg : msg, message : err});
                 return;
             };
 
             soapResult = result;
   
-        }); //client.InserisciProtocollo
-	}); //soap.createClient
+        }); 
+ */
+ 
+        client.InserisciProtocollo(args, function(err, result) {
+           
+           log2file.debug(result);
+           console.log(result);
 
-*/
+           if (err) {
+               var msg = 'Errore nella chiamata ad InserisciProtocollo';
+                console.log(client.describe());
+                console.log(err);
+                log2file.error(msg);
+                log2file.error(err);
+                console.log(util.inspect(args.ProtoIn.MittentiDestinatari));
+                console.log(util.inspect(args.ProtoIn.Allegati));
+                // console.log(util.inspect(args.ProtoIn.Allegati2));
+ 
+                res.status(500).json({msg : msg, message : err});
+                return;
+            };
+
+            soapResult = result;
+            res.status(200).send(soapResult);
+
+        }); //client.InserisciProtocollo
+
+	}); //soap.createClient
 
 
     // Memorizzazioni ulteriori
 
-    console.log('Saving data to disk');
+    console.log('Saving data to disk ...');
 
     // save to disk
    
@@ -247,22 +280,19 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     
     try {
         if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
-        var fileName = dir + '/' + utilityModule.getTimestampPlusRandom() + '-req.body.txt';
-        fs.writeFileSync(fileName, req.body);
+        
+        // var fileName = dir + '/' + utilityModule.getTimestampPlusRandom() + '-req.body.txt';
+        // fs.writeFileSync(fileName, req.body);
 
-        console.log('1');
+        // var fileName = dir + '/' + utilityModule.getTimestampPlusRandom() + '-req.body.json.txt';
+        // fs.writeFileSync(fileName, JSON.stringify(req.body), 'utf-8');
 
-        var fileName = dir + '/' + utilityModule.getTimestampPlusRandom() + '-req.body.json.txt';
-        fs.writeFileSync(fileName, JSON.stringify(req.body), 'utf-8');
-
-        console.log('2');
-
-        var util = require('util');
         var fileName = dir + '/' + utilityModule.getTimestampPlusRandom() + '-req.body.util.txt';
         fs.writeFileSync(fileName,util.inspect(req.body), 'utf-8');
 
-
-        console.log('3');
+        var fileName = dir + '/' + utilityModule.getTimestampPlusRandom() + '-args.txt';
+        //str = JSON.stringify(obj, null, 4);
+        fs.writeFileSync(fileName,JSON.stringify(args, null, 4), 'utf-8');
 
         log2file.debug('Data saved!');
         log2file.debug(fileName);
@@ -270,13 +300,11 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     } catch (err) {
         log2file.error('Errore save file!');
     }
-
-
-
-
-    res.status(200).send(soapResult);
+    
 
 });
+
+
 
 router.get('/token', function(req, res) {
     var user = {

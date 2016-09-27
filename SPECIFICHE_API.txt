@@ -1,0 +1,87 @@
+Accesso a web service per interfacciamento al protocollo
+
+Introduzione 
+
+Il presente documento ha lo scopo di fornire le linee guida per le modalità di accesso alla procedura di interfacciamento con
+il sistema di gestione documentale del Comune di Rimini.
+Il presente documento si rivolge ad un lettore che abbia familiarità con gli argomenti tecnici trattati, 
+in particolar modo quelli riguardanti la tecnologia e le tecniche di sviluppo Api Rest.
+
+Protocollazione
+
+L'accesso ai servizi di protocollazione automatica avviene attraverso un servizio API.
+
+La url del servizio è personalizzata rispetto al fornitore ad es:
+
+http://wa.comune.rimini.it/api/[company]
+
+La chiamata al servizio è del tipo:
+
+
+curl    -X POST
+        -d @dati_da_protocollare.json 
+        -H "Content-Type: application/json"
+        -H "Authorization: Bearer [token_di_autorizzazione]"
+        http://wa.comune.rimini.it/api/[company]
+
+dove [token_di_autorizzazione] viene fornito dal Settore Sistema Informativo
+e il file dati_da_protocollare.json deve avere una struttura di questo tipo:
+
+Ad Esempio:
+
+{
+    "richiedente": {
+                    "nome": { "type" : "string"},
+                    "cognome": { "type" : "string"},
+                    "codiceFiscale": { "type" : "string"},
+                    "dataDiNascita": { "type" : "string"},
+                    "indirizzo": { "type" : "string" },
+                    "mail": { "type" : "string" },
+                    "telefonoCellulare": { "type" : "string" },
+                    "telefonoFisso": { "type" : "string" }
+                }
+        "metaDati":[
+            {
+                "key": { "type": "string" },
+                "value": { "type": "number" },
+            },
+
+            ...
+
+        ],
+        "allegati" : [
+
+            {
+                "nomeFile": { "type": "string" },
+                "dimensioneFile": { "type": "number" },
+                "mimeType": { "type": "string" },
+                "base64": { "type": "string" },
+                "hashSHA256File": { "type": "string" },
+                "descrizione": { "type": "string" }
+            },
+
+            ....
+
+        ]
+
+}
+
+N.B. Si consiglia di aggiungere, per completezza, il maggior numero di metadati.
+Inoltre per questioni di sicurezza l'accesso è ristretto ad i soli ip indicati nella richiesta.
+
+La risposta che si ottiene:
+
+{ 
+    stato : "ok",
+    descrizione : 
+        { 
+          IdDocumento: 3973809,
+          AnnoProtocollo: '2016',
+          NumeroProtocollo: 204078,
+          DataProtocollo: Tue Sep 27 2016 18:10:21 GMT+0200 (ora legale Europa occidentale),
+          Messaggio: 'Inserimento Protocollo ed Avvio Iter eseguito con successo'
+        }
+}
+
+Per ulteriori informazioni: Ruggero Ruggeri 0541/704607
+

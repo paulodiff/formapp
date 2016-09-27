@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope
+/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:
+tns="http://tempuri.org/"><soap:Body><InserisciProtocolloEAnagrafiche xmlns="http://tempuri.org/"><ProtoIn><Data>01/01/2
+000</Data><Classifica>001 006 001</Classifica><TipoDocumento>01001</TipoDocumento><Oggetto>BRAV PERMESSO N. A120004x</Og
+getto><Origine>A</Origine><MittenteInterno>404</MittenteInterno><MittentiDestinatari><MittenteDestinatario><CodiceFiscal
+e>RGGRGR70E25H294A</CodiceFiscale><CognomeNome>ROSSI a</CognomeNome><DataNascita>01/01/2000</DataNascita></MittenteDesti
+natario></MittentiDestinatari><AggiornaAnagrafiche>S</AggiornaAnagrafiche><InCaricoA>404</InCaricoA><NumeroDocumento>1</
+NumeroDocumento><NumeroAllegati>1</NumeroAllegati><Utente>M05831</Utente><Ruolo>SETTORE SISTEMA INFORMATIVO</Ruolo><Alle
+gati><Allegato><TipoFile>pdf</TipoFile><ContentType>application/pdf</ContentType><Image>JVBERi0xLjQKJ...OMISSIS.........
+.........zsg0</Image><Commento>Documento1.pdf</Commento></Allegato><Allegato><TipoFile>pdf</TipoFile><ContentType>applic
+ation/pdf</ContentType><Image>JVBERi0xLjQKJ...OMISSIS..................zsg0</Image><Commento>Documento1.pdf</Commento></
+Allegato><Allegato><TipoFile>pdf</TipoFile><ContentType>application/pdf</ContentType><Image>JVBERi0x..............OMISSI
+SS................zsg0</Image><Commento>LIBRETTO.pdf</Commento></Allegato></Allegati></ProtoIn></InserisciProtocolloEAna
+grafiche></soap:Body></soap:Envelope>
