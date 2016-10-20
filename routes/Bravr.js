@@ -39,11 +39,16 @@ log4js.configure({
   appenders: [
     { type: 'console' },
     { type: 'file', 
-      filename: 'log/' + ENV_BRAV.log_filename, 
-      category: 'file-logger',
+      filename: 'log/error-' + ENV_BRAV.log_filename, 
+      category: 'error-file-logger',
       maxLogSize: 120480,
-      backups: 10,
-      category: 'file-logger' 
+      backups: 10 
+    },
+    { type: 'file', 
+      filename: 'log/access-' + ENV_BRAV.log_filename, 
+      category: 'access-file-logger',
+      maxLogSize: 120480,
+      backups: 10 
     }
   ]
 });
@@ -51,12 +56,17 @@ var logger = log4js.getLogger();
 // init logging
 var logCon  = log4js.getLogger();
 // var loggerDB = log4js.getLogger('mongodb');
-var log2file = log4js.getLogger('file-logger');
+
+var log2file = log4js.getLogger('error-file-logger');
 log2file.setLevel(ENV_BRAV.log_level);
+
+var log2fileAccess = log4js.getLogger('access-file-logger');
 
 
 module.exports = function(){
 
+var WS_IRIDE =  "";
+var MODO_OPERATIVO = "TEST";
 
 router.get('/ping', function (req, res) {
   res.send('BRAV route pong!');
@@ -69,7 +79,20 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     // console.log(req.query);
     // console.log(req.user);
 
+    WS_IRIDE = ENV_BRAV.wsiride.url_test;
+
+    if(req.body.produzione) {
+        console.log('[##PRODUZIONE##]');
+        WS_IRIDE = ENV_BRAV.wsiride.url_produzione;
+        MODO_OPERATIVO = "PRODUZIONE";
+    } 
+
+    log2fileAccess.info('MODO OPERATIVO:' + MODO_OPERATIVO);
+    console.log(MODO_OPERATIVO);
+    console.log(WS_IRIDE);
     // ## log info ip
+
+    console.log('[*] Test auth ...');
 
     // test req.user.userCompany
     if(req.user.userCompany != ENV_BRAV.security_company_filter){
@@ -80,7 +103,12 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
         return;
     } 
 
+    log2fileAccess.info('Log in:');
+    log2fileAccess.info(req.user);
+
     // ## test Json Validation
+    console.log('[*] Validation ...');
+    // console.log(req.body);
     
     var Ajv = require('ajv');
     var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
@@ -90,7 +118,7 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
  
     var validate = ajv.compile(schema);
     var valid = validate(req.body);
-    console.log(valid);
+    // console.log(valid);
     if (!valid) {
         console.error(validate.errors);
         var msg = 'Json validation error';
@@ -191,13 +219,13 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     console.log(util.inspect(args.ProtoIn.Allegati));
     console.log('wsurl:');
 
-    console.log(ENV_BRAV.wsiride.url);
+    console.log(WS_IRIDE);
 
     var soapResult = { result : '....'};
 
     
 
-    soap.createClient(ENV_BRAV.wsiride.url, function(err, client){
+    soap.createClient(WS_IRIDE, function(err, client){
         
         console.log('soap call.....');
         // log2file.debug(client.describe());
@@ -261,8 +289,10 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
                 return;
             };
 
-            soapResult = result;
-            res.status(200).send(soapResult);
+            //soapResult = result;
+            result.modoOperativo = MODO_OPERATIVO;
+            log2fileAccess.debug(JSON.stringify(result));
+            res.status(200).send(result);
 
         }); //client.InserisciProtocollo
 
@@ -294,8 +324,7 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
         //str = JSON.stringify(obj, null, 4);
         fs.writeFileSync(fileName,JSON.stringify(args, null, 4), 'utf-8');
 
-        log2file.debug('Data saved!');
-        log2file.debug(fileName);
+        log2fileAccess.debug('2disk!:' + fileName);
 
     } catch (err) {
         log2file.error('Errore save file!');

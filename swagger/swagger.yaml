@@ -1,0 +1,203 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Api protocollazione - Comune di Rimini
+  description: |
+    #### Sono qui descritte le API per l'accesso al servio di gestione documentale
+    Per info contattare Ruggero Ruggeri - 0541/704607
+schemes:
+  - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header  
+host: 10.10.128.79:9988
+basePath: /api
+paths:
+  /COMPANY/protocollo:
+    post:
+      tags:
+        - Protocollazione
+      summary: Richiesta di un protocollazione di uno o più documenti
+      description: La presente api permette la protocollazione "atomica" di uno più documenti. Seguendo le indicazioni del tracciato è possibile inserire i dati del richiedente, il fascicolo, tutti i metadati opportuni e gli allegati
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: I dati JSON utili alla protocollazione
+          required: false
+          schema:
+            $ref: "#/definitions/tracciatoStandard"
+      responses:
+        "200":
+          description: OK!
+        "401":
+          description: Auth error!
+        "500":
+          description: Invalid input data
+      security:
+        - Bearer: []
+  /COMPANY/test:        
+    parameters:
+      - name: anno
+        in: query
+        description: anno protocollo
+        type: string
+        required: true
+      - name: numero
+        in: query
+        description: numero di protocollo
+        type: string
+        required: true
+    get:
+      tags:
+        - Protocollazione    
+      summary: Esegue una richiesta di lettura sul protocollo
+      description: Esegue una richiesta di lettura sul protocollo passando come parametri anno e numero di protocollo
+      responses:
+        200:
+          description: Ritorna gli estremi del protocollo
+        401:
+          description: Non autorizzato
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      username:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      userStatus:
+        type: integer
+        format: int32
+        description: User Status
+  Category:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+  tracciatoStandard:
+    type: object
+    properties:
+      richiedente:
+        type: string
+        $ref: "#/definitions/richiedenteDef"
+      fascicolo:
+        type: object
+        properties:
+          annoPratica:
+            type: string
+          numeroPratica:
+            type: string
+      metadati:
+        type: array
+        items:
+          $ref: "#/definitions/metadatoItem"
+      allegati:
+        type: array
+        items:
+          $ref: "#/definitions/Allegato"
+      note:
+        type: string
+        description: note associate
+  Tag:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+  Allegato:
+    type: object
+    properties:
+      nomeFile:
+        type: string
+      dimensione:
+        type: integer
+      mimeType:
+        type: string
+      base64:
+        type: string    
+      hashSHA256File:
+        type: string    
+      descrizione:
+        type: string    
+  Veicolo:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      targa:
+        type: integer
+      name:
+        type: string
+  metadatoItem:
+    type: object
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+  richiedenteDef:
+    type: object
+    properties:
+     nome:
+        type: string 
+     cognome:
+        type: string 
+     codiceFiscale:
+        type: string 
+     dataDiNascita:
+       type: string 
+     indirizzo:
+       type: string 
+     mail:
+       type: string 
+     telefonoCellulare:
+       type: string 
+     telefonoFisso:
+       type: string         
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      petId:
+        type: integer
+        format: int64
+      quantity:
+        type: integer
+        format: int32
+      shipDate:
+        type: string
+        format: date-time
+      status:
+        type: string
+        description: Order Status
+      complete:
+        type: boolean
+          

@@ -185,6 +185,9 @@ app.use('/helpdesk', HelpDesk);
 var Phone = require('./routes/Phoner')();
 app.use('/phone', Phone);
 
+var Push = require('./routes/Push')();
+app.use('/push', Push);
+
 
 //default serving html data
 app.use(express.static('ionicclient/www/'));

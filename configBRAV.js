@@ -5,8 +5,8 @@ module.exports = {
     log_level : 'DEBUG',
     security_company_filter : 'BRAV S.R.L.',
     wsiride : {
-        url : 'http://irideweb.comune.rimini.it/ulisse/iride/web_services_20/wsProtocolloDM/WSProtocolloDM.asmx?wsdl',
-        // url: 'http://10.10.128.63/ulisse/iride/web_services/wsprotocollodm/wsprotocollodm.asmx?wsdl',
+        url_produzione : 'http://irideweb.comune.rimini.it/ulisse/iride/web_services_20/wsProtocolloDM/WSProtocolloDM.asmx?wsdl',
+        url_test : 'http://10.10.128.63/ulisse/iride/web_services/wsprotocollodm/wsprotocollodm.asmx?wsdl',
         // url : 'http://srv-irideweb.ad.comune.rimini.it/ulisse/iride/web_services_20/wsProtocolloDM/WSProtocolloDM.asmx?wsdl',
         tipo_documento : '01001',
         classifica : '001 006 001',
