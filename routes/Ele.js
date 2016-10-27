@@ -412,7 +412,25 @@ res.send('stop!');
 
 });
 
+router.get('/test/parse', function (req, res) {
 
+var parse = require('csv-parse');
+var fs = require('fs');
+var contents = fs.readFileSync('./tmp/sezioni.csv').toString();
+
+
+parse(contents, {comment: '#', delimiter: ';' }, function(err, output){
+  console.log(output);
+
+  output.forEach( function(o){
+      console.log(o);
+      console.log(o[0]);
+  } );
+
+});
+
+
+});
 
 
   return router;
