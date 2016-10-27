@@ -15,6 +15,36 @@ module.exports = {
     console.log('test');
   },
 
+
+  uint8ArrayToBase64Url : function(uint8Array, start, end) {
+    start = start || 0;
+    end = end || uint8Array.byteLength;
+
+  const base64 = window.btoa(
+    String.fromCharCode.apply(null, uint8Array.subarray(start, end)));
+  return base64
+    .replace(/\=/g, '') // eslint-disable-line no-useless-escape
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+  },
+
+// Converts the URL-safe base64 encoded |base64UrlData| to an Uint8Array buffer.
+  base64UrlToUint8Array : function(base64UrlData) {
+    const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
+    const base64 = (base64UrlData + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const buffer = new Uint8Array(rawData.length);
+
+    for (var i = 0; i < rawData.length; ++i) {
+        buffer[i] = rawData.charCodeAt(i);
+    }
+    return buffer;
+    },
+
+
   ensureAuthenticated : function(req, res, next) {
         console.log('[#AUTH#] ensureAuthenticated ....');
         if (!req.header('Authorization')) {

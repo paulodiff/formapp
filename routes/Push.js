@@ -16,6 +16,7 @@ var multipartMiddleware = multipart();
 var jwt = require('jwt-simple');
 var ENV   = require('../config.js'); // load configuration data
 var vapidKeys = require('../vapid.js');
+// var VAPIDencryption = require('../models/encryption.js');
 // var ENV_BRAV   = require('../configBRAV.js'); // load user configuration data
 // var mongocli = require('../models/mongocli');
 // var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
@@ -71,6 +72,22 @@ router.post('/getPublicKey',  function(req, res){
     res.status(200).send(vapidKeys.publicKey);
 });
 
+
+router.get('/test', function(req, res) {
+    var VAPIDencryption = require('../models/encryption.js');
+    var endpoint = "http://lll";
+    // VAPIDencryption.EncryptionHelperFactoryWrapper
+    var vV = VAPIDencryption.sendPushMessage('a','b');
+    /*
+    var vapidPromise = VAPIDencryption.EncryptionHelperFactoryWrapper.createVapidAuthHeader(
+      vapidKeys.publicKey,
+      endpoint,
+      'mailto:simple-push-demo@gauntface.co.uk');
+    */
+    // console.log(vapidPromise);
+    console.log(VAPIDencryption.EncTEST());
+    res.status(200).send('ok');    
+});
 
 
 router.get('/token', function(req, res) {

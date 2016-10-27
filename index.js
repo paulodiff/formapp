@@ -188,6 +188,10 @@ app.use('/phone', Phone);
 var Push = require('./routes/Push')();
 app.use('/push', Push);
 
+var Ele = require('./routes/Ele')();
+app.use('/ele', Ele);
+
+
 
 //default serving html data
 app.use(express.static('ionicclient/www/'));
