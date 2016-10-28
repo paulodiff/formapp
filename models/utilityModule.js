@@ -15,6 +15,11 @@ module.exports = {
     console.log('test');
   },
 
+ pad: function(n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  },
 
   uint8ArrayToBase64Url : function(uint8Array, start, end) {
     start = start || 0;
@@ -185,6 +190,9 @@ module.exports = {
           //return date.join("") + "@" + time.join("") + "@" + suffix;
         }
 }
+
+
+
 
 /*
 // utility Middleware Module
