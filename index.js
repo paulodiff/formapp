@@ -191,6 +191,8 @@ app.use('/push', Push);
 var Ele = require('./routes/Ele')();
 app.use('/ele', Ele);
 
+var Elezioni = require('./routes/Elezioni')();
+app.use('/elezioni', Elezioni);
 
 
 //default serving html data

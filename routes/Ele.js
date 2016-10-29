@@ -68,8 +68,32 @@ module.exports = function(){
 var WS_IRIDE =  "";
 var MODO_OPERATIVO = "TEST";
 
-router.get('/ping', function (req, res) {
-  res.send('BRAV route pong!');
+router.get('/async', function (req, res) {
+  // Async task (same in all examples in this chapter)
+    function async(arg, callback) {
+        console.log('Call function ... do something with \''+arg+'\', return 1 sec later');
+        setTimeout(function() { callback(arg * 2); }, 500);
+    }
+// Final task (same in all the examples)
+    function final() { 
+        console.log('Done', results);
+        res.send(results);
+    }
+
+    // A simple async series:
+    var items = [ 1, 2, 3, 4, 5, 6 ];
+    var results = [];
+    function series(item) {
+    if(item) {
+        async( item, function(result) {
+        results.push(result);
+        return series(items.shift());
+        });
+    } else {
+        return final();
+    }
+    }
+    series(items.shift());
 });
 
 
@@ -344,6 +368,10 @@ res.send('stop!');
 
 });
 
+
+
+//-----------------------------------------------------------------------
+
 router.get('/produzione/info', function (req, res) {
 
 var ws = require('ws.js')
@@ -393,8 +421,8 @@ console.log(new Date());
 
 ws.send(handlers, ctx, function(ctx) {
     // log2file.error(ctx.request);
-    console.log("status " + ctx.statusCode)
-    console.log("messagse " + ctx.response)
+    console.log("status " + ctx.statusCode);
+    console.log("messagse " + ctx.response);
     console.log(ctx.request);
 
 
@@ -406,11 +434,233 @@ ws.send(handlers, ctx, function(ctx) {
         console.log("The file was saved!");
     }); 
 
+
+   res.send(ctx.response);
+
 });
 
-res.send('stop!');
+});
+
+
+//-----------------------------------------------------------------------
+
+router.get('/produzione/recuperaEventiElettorali', function (req, res) {
+
+var ws = require('ws.js')
+, fs = require('fs')
+, sec = ws.Security
+, X509BinarySecurityToken = ws.X509BinarySecurityToken
+, FileKeyInfo = require('xml-crypto').FileKeyInfo
+
+var x509 = new X509BinarySecurityToken(
+  { "key": fs.readFileSync("./tmp/produzione.pem").toString()})
+var signature = new ws.Signature(x509)
+signature.addReference("//*[local-name(.)='Body']")
+signature.addReference("//*[local-name(.)='Timestamp']")
+signature.addReference("//*[local-name(.)='BinarySecurityToken']")
+
+var sec = new ws.Security({}, [ x509, signature ])
+
+var handlers =  [ sec
+                , new ws.Http()
+                ]
+
+
+request = "<soapenv:Envelope xmlns:elet='http://it.mininterno.sie/elettorale' xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>" + 
+          "<soapenv:Header />" +
+          "<soapenv:Body>" +
+            "<elet:ParametriRichiestaEventiElettorali>" + 
+            "<elet:Utente>" +
+                "<elet:UserID>cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p</elet:UserID>" + 
+                "<elet:Password>UklNSU5JLnJlZjEyMjAxNg==</elet:Password>" +
+            "</elet:Utente>" + 
+             "<elet:DataElezione>2016-12-04</elet:DataElezione>" +
+            "</elet:ParametriRichiestaEventiElettorali>" +
+           "</soapenv:Body>" +
+           "</soapenv:Envelope>";
+
+
+var ctx =   { request: request
+  , url: "https://elettoralews.interno.it/ServiziElettoraliWSBase/ServiziElettoraliPort"
+  , action: "recuperaEventiElettorali"
+  , contentType: "text/xml"
+}
+
+console.log(new Date());
+
+ws.send(handlers, ctx, function(ctx) {
+    // log2file.error(ctx.request);
+    console.log("status " + ctx.statusCode);
+    console.log("messagse " + ctx.response);
+    console.log(ctx.request);
+
+
+   res.send(ctx.response);
 
 });
+
+});
+
+
+
+//-----------------------------------------------------------------------
+
+router.get('/produzione/recuperaInfoQuesiti', function (req, res) {
+
+var ws = require('ws.js')
+, fs = require('fs')
+, sec = ws.Security
+, X509BinarySecurityToken = ws.X509BinarySecurityToken
+, FileKeyInfo = require('xml-crypto').FileKeyInfo
+
+var x509 = new X509BinarySecurityToken(
+  { "key": fs.readFileSync("./tmp/produzione.pem").toString()})
+var signature = new ws.Signature(x509)
+signature.addReference("//*[local-name(.)='Body']")
+signature.addReference("//*[local-name(.)='Timestamp']")
+signature.addReference("//*[local-name(.)='BinarySecurityToken']")
+
+var sec = new ws.Security({}, [ x509, signature ])
+
+var handlers =  [ sec
+                , new ws.Http()
+                ]
+
+
+request = "<soapenv:Envelope xmlns:elet='http://it.mininterno.sie/elettorale' xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>" + 
+          "<soapenv:Header />" +
+          "<soapenv:Body>" +
+            "<elet:ParametriRichiestaEventiElettorali>" + 
+            "<elet:Utente>" +
+                "<elet:UserID>cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p</elet:UserID>" + 
+                "<elet:Password>UklNSU5JLnJlZjEyMjAxNg==</elet:Password>" +
+            "</elet:Utente>" + 
+            "<elet:DataElezione>2016-12-04</elet:DataElezione>" +
+            "</elet:ParametriRichiestaEventiElettorali>" +
+           "</soapenv:Body>" +
+           "</soapenv:Envelope>";
+
+
+var ctx =   { request: request
+  , url: "https://elettoralews.interno.it/ServiziElettoraliWSReferendumVotanti/ServiziElettoraliPort"
+  , action: "recuperaInfoQuesiti"
+  , contentType: "text/xml"
+}
+
+console.log(new Date());
+
+ws.send(handlers, ctx, function(ctx) {
+    // log2file.error(ctx.request);
+    console.log("status " + ctx.statusCode);
+    console.log("messagse " + ctx.response);
+    console.log(ctx.request);
+
+    /*
+    var dw_fileName = "./tmp/" + utilityModule.getNowFormatted() +  ".xml";
+    fs.writeFile(dw_fileName, ctx.request, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    }); 
+    */
+
+   res.send(ctx.response);
+
+});
+
+
+
+});
+
+
+//-----------------------------------------------------------------------
+
+router.get('/produzione/recuperaInfoElettoriReferendum', function (req, res) {
+
+var ws = require('ws.js')
+, fs = require('fs')
+, sec = ws.Security
+, X509BinarySecurityToken = ws.X509BinarySecurityToken
+, FileKeyInfo = require('xml-crypto').FileKeyInfo
+
+var x509 = new X509BinarySecurityToken(
+  { "key": fs.readFileSync("./tmp/produzione.pem").toString()})
+var signature = new ws.Signature(x509)
+signature.addReference("//*[local-name(.)='Body']")
+signature.addReference("//*[local-name(.)='Timestamp']")
+signature.addReference("//*[local-name(.)='BinarySecurityToken']")
+
+var sec = new ws.Security({}, [ x509, signature ])
+
+var handlers =  [ sec
+                , new ws.Http()
+                ]
+var UserID = 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p';
+var Password = 'UklNSU5JLnJlZjEyMjAxNg==';
+var TipoElezione = '7';
+var DataElezione = '2016-12-04';
+// var DataElezione = '2016-11-02';
+var CodiceProvincia = '101';
+var CodiceComune = '140';
+var DataOraInizioComunicazione = '2016-10-26T00:00:00';
+var CodTipoElettore = '1';
+var toOutput = "";
+
+request = "<soapenv:Envelope xmlns:elet='http://it.mininterno.sie/elettorale' xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>" + 
+          "<soapenv:Header />" +
+          "<soapenv:Body>" +
+            "<elet:ParametriRichiestaRecuperaElettori>" + 
+            '<elet:Utente>' +
+                '<elet:UserID>' + UserID + '</elet:UserID>' +
+                '<elet:Password>' + Password  +  '</elet:Password>' +
+            '</elet:Utente>' + 
+            '<elet:Evento>' +
+                '<elet:TipoElezione>' + TipoElezione +  '</elet:TipoElezione>' +
+                '<elet:DataElezione>' + DataElezione +  '</elet:DataElezione>' +
+            '</elet:Evento>' +
+            '<elet:DataOraInizioComunicazione>' + DataOraInizioComunicazione + '</elet:DataOraInizioComunicazione>' +
+            '<elet:CodiceProvincia>' + CodiceProvincia + '</elet:CodiceProvincia>' +
+            '<elet:CodiceComune>' + CodiceComune + '</elet:CodiceComune>' +
+            "</elet:ParametriRichiestaRecuperaElettori>" +
+           "</soapenv:Body>" +
+           "</soapenv:Envelope>";
+
+
+var ctx =   { request: request
+  , url: "https://elettoralews.interno.it/ServiziElettoraliWSReferendumElettori/ServiziElettoraliPort"
+  , action: "recuperaInfoElettoriReferendum"
+  , contentType: "text/xml"
+}
+
+console.log(new Date());
+
+ws.send(handlers, ctx, function(ctx) {
+    // log2file.error(ctx.request);
+    console.log("status " + ctx.statusCode);
+    console.log("messagse " + ctx.response);
+    console.log(ctx.request);
+
+    /*
+    var dw_fileName = "./tmp/" + utilityModule.getNowFormatted() +  ".xml";
+    fs.writeFile(dw_fileName, ctx.request, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    }); 
+    */
+
+   res.send(ctx.response);
+
+});
+
+
+
+});
+
+
+//------------------------------------------------------------------------------------------
 
 router.get('/test/parse', function (req, res) {
 
@@ -447,32 +697,33 @@ parse(contents, {comment: '#', delimiter: ';' }, function(err, output){
 });
 
 
+//-------------------------------------------------------------------------------------
+
 router.get('/produzione/generaInvioElettori', function (req, res) {
 
 var parse = require('csv-parse');
 var fs = require('fs');
 var contents = fs.readFileSync('./tmp/sezioni-consistenza.csv').toString();
 
-console.log(contents);
+// console.log(contents);
 
 
 var UserID = 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p';
 var Password = 'UklNSU5JLnJlZjEyMjAxNg==';
 var TipoElezione = '7';
 var DataElezione = '2016-12-04';
+// var DataElezione = '2016-11-02';
 var CodiceProvincia = '101';
 var CodiceComune = '140';
-var DataOraInizioComunicazione = '2016-11-02T00:00:00';
+var DataOraInizioComunicazione = '2016-10-26T00:00:00';
 var CodTipoElettore = '1';
 var toOutput = "";
 
-console.log(req.query.codiceSezione);
-
-
-
+console.log('codiceSezione:',  req.query.codiceSezione);
 
 parse(contents, {comment: '#', delimiter: ';' }, function(err, output){
-  console.log(output);
+  
+  // console.log(output);
   var outputXML = "";
   output.forEach( function(o){
 
@@ -522,6 +773,12 @@ var outh = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/env
                      '<elet:NumeroFemmine>' + NumeroFemmine +  '</elet:NumeroFemmine>' +
                      '<elet:CodTipoElettore>' + CodTipoElettore + '</elet:CodTipoElettore>' + 
                   '</elet:TipoElettoreInviato>' +
+                  '<elet:TipoElettoreInviato>' +
+                     '<elet:NumeroTotale>0</elet:NumeroTotale>' +
+                     '<elet:NumeroMaschi>0</elet:NumeroMaschi>' +
+                     '<elet:NumeroFemmine>0</elet:NumeroFemmine>' +
+                     '<elet:CodTipoElettore>2</elet:CodTipoElettore>' + 
+                  '</elet:TipoElettoreInviato>' +
                '</elet:DatiElettori>' +
                '<elet:NumeroTotaleElettori>' + NumeroTotaleElettori + '</elet:NumeroTotaleElettori>' + 
                '<elet:NumeroTotaleMaschi>' + NumeroTotaleMaschi + '</elet:NumeroTotaleMaschi>' +
@@ -538,8 +795,8 @@ var outh = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/env
 
     outputXML = outputXML + outh;
 
-      console.log(o);
-      console.log(o[0]);
+      //console.log(o);
+      //console.log(o[0]);
 
 
       // WS chiamata
@@ -553,7 +810,7 @@ var ws = require('ws.js')
 , FileKeyInfo = require('xml-crypto').FileKeyInfo;
 
 var x509 = new X509BinarySecurityToken(
-  { "key": fs.readFileSync("./tmp/test.pem").toString()})
+  { "key": fs.readFileSync("./tmp/produzione.pem").toString()})
 var signature = new ws.Signature(x509)
 signature.addReference("//*[local-name(.)='Body']")
 signature.addReference("//*[local-name(.)='Timestamp']")
@@ -565,30 +822,29 @@ var handlers =  [ sec
                 , new ws.Http()
                 ]
 
-
 request = outh;
 
-
-
-
 var ctx =   { request: request
-  , url: "https://elettoralews.preprod.interno.it/ServiziElettoraliWSReferendumElettori/ServiziElettoraliPort"
+  , url: "https://elettoralews.interno.it/ServiziElettoraliWSReferendumElettori/ServiziElettoraliPort"
   , action: "inviaElettoriReferendum"
   , contentType: "text/xml"
 }
 
-
-
-if (req.query.codiceSezione ==  CodiceSezione ) {
+if ( CodiceSezione ==  req.query.codiceSezione ) {
 
     console.log(request);
+    setTimeout(   
+        
     ws.send(handlers, ctx, function(ctx) {
         // log2file.error(ctx.request);
         console.log("---------------------------------------------------------------------------");
+        console.log(CodiceSezione);
         console.log("status " + ctx.statusCode);
         console.log("messagse " + ctx.response);
-        console.log(ctx.request);
-    });
+        // console.log(ctx.request);
+    })
+
+    ,2000);
 
    toOutput = request;
 
@@ -618,14 +874,13 @@ var contents = fs.readFileSync('./tmp/sezioni-descrizione2.csv').toString();
 
 console.log(contents);
 
-
 var UserID = 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p';
 var Password = 'UklNSU5JLnJlZjEyMjAxNg==';
 var TipoElezione = '7';
-var DataElezione = '2016-12-25';
+var DataElezione = '2016-12-04';
 var CodiceProvincia = '101';
 var CodiceComune = '140';
-var DataOraInizioComunicazione = '2016-11-02T00:00:00';
+var DataOraInizioComunicazione = '2016-11-26T00:00:00';
 var CodTipoElettore = '1';
 var toOutput = "";
 
@@ -689,7 +944,7 @@ var ws = require('ws.js')
 , FileKeyInfo = require('xml-crypto').FileKeyInfo;
 
 var x509 = new X509BinarySecurityToken(
-  { "key": fs.readFileSync("./tmp/test.pem").toString()})
+  { "key": fs.readFileSync("./tmp/produzione.pem").toString()})
 var signature = new ws.Signature(x509)
 signature.addReference("//*[local-name(.)='Body']")
 signature.addReference("//*[local-name(.)='Timestamp']")
@@ -706,7 +961,8 @@ request = outh + outputXML + outf;
 
 
 var ctx =   { request: request
-  , url: "https://elettoralews.preprod.interno.it/ServiziElettoraliWSReferendumSezioni/ServiziElettoraliPort"
+  , url: "https://elettoralews.interno.it/ServiziElettoraliWSReferendumSezioni/ServiziElettoraliPort"
+
   , action: "inviaSezioniReferendum"
   , contentType: "text/xml"
 }
