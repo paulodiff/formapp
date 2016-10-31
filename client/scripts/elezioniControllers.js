@@ -376,10 +376,11 @@ angular.module('myApp.controllers')
                 $scope.outputResponse = res.data.replace(/['"]+/g, '');
                 $scope.outputStatusCode = res.data.replace(/['"]+/g, '');
             } else {
-                $scope.outputResponse = res.data.response.replace(/['"]+/g, '');
+                $scope.outputResponse = vkbeautify.xml(res.data.response);
                 // someStr.replace(/['"]+/g, '')
                 $scope.outputStatusCode = res.data.statusCode;
             }
+            
 
             
             usSpinnerService.stop('spinner-1');

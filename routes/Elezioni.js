@@ -9,12 +9,14 @@ var fs = require('fs');
 var path = require('path');
 var util = require('util');
 var soap = require('soap');
+var request = require('request');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 var jwt = require('jwt-simple');
 var ENV   = require('../config.js'); // load configuration data
 var ENV_ELEZIONI   = require('../configELEZIONI.js'); // load user configuration data
 var mongocli = require('../models/mongocli');
+var async = require('async');
 // var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
 // var flow = require('../models/flow-node.js')('tmp'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js');
@@ -249,9 +251,9 @@ function traverse(o,func, f) {
     }
 }
 
-    var objFound = traverse(test, process, false);
+    //var objFound = traverse(test, process, false);
 
-    res.send(objFound);
+    res.send( new Date() );
 })
 
 router.get('/async', function (req, res) {
@@ -280,6 +282,117 @@ router.get('/async', function (req, res) {
     }
     }
     series(items.shift());
+});
+
+router.get('/produzionebatch', function (req, res) {
+    console.log('produzionebatch');
+   
+
+    var sampleData = [
+        {
+            action : {
+                operationId : 'recuperaInfoQuesiti',
+                actionId : 'showXML'
+            },
+            data : {
+                UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
+                Password: 'UklNSU5JLnJlZjEyMjAxNg==',
+                CodiceComune: '140',
+                CodiceProvincia: '101',
+                TipoElezione : '7',
+                DataElezione: '2016-12-04'            
+            }
+        },
+        {
+            action : {
+                operationId : 'recuperaEventiElettorali',
+                actionId : 'showXML'
+            },
+            data : {
+                UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
+                Password: 'UklNSU5JLnJlZjEyMjAxNg==',
+                CodiceComune: '140',
+                CodiceProvincia: '101',
+                TipoElezione : '7',
+                DataElezione: '2016-12-04'            
+            }
+        },
+        {
+            action : {
+                operationId : 'recuperaInfoAreaAcquisizione',
+                actionId : 'showXML'
+            },
+            data : {
+                UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
+                Password: 'UklNSU5JLnJlZjEyMjAxNg==',
+                CodiceComune: '140',
+                CodiceProvincia: '101',
+                TipoElezione : '7',
+                DataElezione: '2016-12-04'            
+            }
+        }
+
+    ];
+
+    var locals = [];
+    
+    async.forEachSeries(Object.keys(sampleData), function(dataId, callback) {
+            console.log(sampleData[dataId].action.operationId);
+            console.log(sampleData[dataId].action.actionId);
+
+            var operationId = sampleData[dataId].action.operationId;
+            var actionId = sampleData[dataId].action.actionId;
+            var url = "http://10.10.6.63:9988/elezioni/produzione/" + operationId + "/" + actionId;
+            console.log(url); 
+             
+            // locals.push(sampleData[dataId]);
+            console.log('Request .....');
+            var options = {
+                // url: 'http://10.10.6.63:9988/elezioni/test',
+                url : url,
+                //url: 'http://jsonplaceholder.typicode.com/posts/1',
+                method: 'GET',
+                proxy: 'http://proxy1.comune.rimini.it:8080',
+                qs : sampleData[dataId].data
+            };
+
+            setTimeout(
+
+                    function(){
+
+                    request(options, function (error, response, body) {
+                        if (error) { 
+                            console.log('##################################################################################');
+                            console.log(error);
+                            callback(error);
+                        } 
+                        if (!error && response.statusCode == 200) {
+                            // console.log(body) // Show the HTML for the Google homepage.
+                            // console.log(response);
+                            locals.push(response.body);
+                            callback();
+                        } else {
+                            console.log(response);
+                            callback();
+                        }
+                    })
+                    }, 2000);
+
+             //var action = trafficLightActions[color];
+            //Play around with the color and action
+    }, function(err) {
+        //When done
+        if (err) {
+            console.log(err);
+            res.status(500).send(err); 
+        } else {
+            res.status(200).send(locals);
+        }
+        
+    });
+
+    
+
 });
 
 
@@ -338,17 +451,9 @@ router.get('/produzione/:operationId/:actionId', function (req, res) {
     if (actionId == 'sendXML') {
         sendSoap(operationId, wsdl, xmlBuilded, keyFile).then(function(result){
             if (result.statusCode == 200) {
+                console.log(result.statusCode);
                 console.log(result.response);
-                console.log(xmlTagRisposta);
-                parser.parseString(result.response, function (err, resultJSON) {
-                    /*
-                    if(resultJSON['S:Envelope']['S:Body'][xmlTagRisposta]['Esito']){
-                        console.log(resultJSON['S:Envelope']['S:Body'][xmlTagRisposta]['Esito']);
-                    }
-                    */
-                    //result.responseDecoded = resultJSON['S:Envelope']['S:Body'][0][xmlTagRisposta][0]['Esito']; //JSON.stringify(resultJSON);
-                    res.status(200).send(result);
-                });
+                res.status(200).send(result);
             } else {
                 log2fileError.error(result);
                 res.status(500).send('ERRORE GRAVE - VEDERE LOG.');
