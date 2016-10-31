@@ -185,6 +185,16 @@ angular.module('myApp', [//'ionic',
         }
     });
 
+    $stateProvider.state('elezioni', {
+        url: '/elezioni',
+        templateUrl: 'templates/elezioni.html',
+        controller: 'ElezioniCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
 
     $stateProvider.state('sigPosition', {
         url: '/sigPosition',

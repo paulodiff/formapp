@@ -60,6 +60,15 @@ module.exports = function(){
 var WS_IRIDE =  "";
 var MODO_OPERATIVO = "TEST";
 
+var dataSAMPLE1 = { 
+    CodiceComune: '101',
+    CodiceProvincia: '101',
+    DataElezione: '2016-12-04',
+    Password: 'UklNSU5JLnJlZjEyMjAxNg==',
+    TipoElezione: '7',
+    UserID: 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p' 
+};
+
 // dati di test
 var dataSAMPLE = {
         UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
@@ -83,8 +92,33 @@ var dataSAMPLE = {
                         NumeroPosizione: '3',
                         CodiceTipoSezione: '1'
                     }
-        ]
-    }
+        ],
+        // Elettori
+        LivelloAcquisizione: 'S',
+        CodiceSezione : '999',
+        NumeroProgressivoArea : '71010104000999',
+        DataOraInizioComunicazione : '2016-10-26T00:00:00',
+        CodTipoElettore : '1',
+        NumeroMaschi : '111',
+        NumeroFemmine : '222',
+        NumeroTotale : '333',
+        NumeroTotaleMaschi : '111',
+        NumeroTotaleFemmine : '222',
+        NumeroTotaleElettori : '333',
+        NumeroScheda : '1',
+        FlagInserimentoDefinitivo : 'true',
+        NumeroVotantiMaschi : '111',
+        NumeroVotantiFemmine : '222',
+        NumeroVotantiTotale : '333',
+        FlagRettifica : 'false',
+        NumeroSezioniPervenute : '1',
+        NumeroSchedeBianche : '0',
+        NumeroSchedeNulle : '0',
+        NumeroSchedeContestate : '0',
+        NumeroVotiSi : '100',
+        NumeroVotiNo : '100',
+        TotaleNumeroVoti : '200'
+}
 
 function sendSoap( operationId, endpoint, request, keyFile ) {
 
@@ -289,7 +323,9 @@ router.get('/produzione/:operationId/:actionId', function (req, res) {
         return;
     }
 
-    var data = dataSAMPLE; // dati di esempio
+    // var data = dataSAMPLE; // dati di esempio
+    var data = req.query;
+
 
     var template = handlebars.compile(fileContents);
     var xmlBuilded = template(data);
@@ -299,7 +335,7 @@ router.get('/produzione/:operationId/:actionId', function (req, res) {
         return;
     }
 
-    if (actionId == 'sendSOAP') {
+    if (actionId == 'sendXML') {
         sendSoap(operationId, wsdl, xmlBuilded, keyFile).then(function(result){
             if (result.statusCode == 200) {
                 console.log(result.response);
@@ -310,7 +346,7 @@ router.get('/produzione/:operationId/:actionId', function (req, res) {
                         console.log(resultJSON['S:Envelope']['S:Body'][xmlTagRisposta]['Esito']);
                     }
                     */
-                    result.responseDecoded = resultJSON['S:Envelope']['S:Body'][0][xmlTagRisposta][0]['Esito']; //JSON.stringify(resultJSON);
+                    //result.responseDecoded = resultJSON['S:Envelope']['S:Body'][0][xmlTagRisposta][0]['Esito']; //JSON.stringify(resultJSON);
                     res.status(200).send(result);
                 });
             } else {
@@ -320,8 +356,8 @@ router.get('/produzione/:operationId/:actionId', function (req, res) {
         });
 
     }else{
-        logConsole.info('actionId: '  +  actionId + ' NON TROVATA  (showXML|sendSOAP)');
-        res.status(400).send('actionId: '  +  actionId + ' NON TROVATA  (showXML|sendSOAP)');
+        logConsole.info('actionId: '  +  actionId + ' NON TROVATA  (showXML|sendXML)');
+        res.status(400).send('actionId: '  +  actionId + ' NON TROVATA  (showXML|sendXML)');
         return;
     }
 });

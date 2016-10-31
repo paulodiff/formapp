@@ -1,0 +1,27 @@
+<div class="container">
+
+<button data-toggle="collapse" data-target="#demo">Collapsible</button>
+
+<div id="demo" class="collapse">Lorem ipsum dolor text....</div>
+   <h4>ELEZIONI WS TEST</h4>
+
+     <div>
+
+      <form ng-submit="vm.onSubmit()" name="vm.form" novalidate>
+        <formly-form model="vm.model" fields="vm.fields" options="vm.options" form="vm.form">
+          <button type="submit" class="btn btn-lg btn-warning btn-block submit-button" ng-disabled="vm.form.$invalid">Invia i dati</button>
+        </formly-form>
+      </form>
+      
+      <p>Form Data</p>
+      <pre>{{vm.model | json}}</pre>
+      <p>Form Error</p>
+      <pre>{{vm.errors | json}}</pre>
+    </div>
+    <div>
+        <p>Output</p>
+        <textarea>{{output.data | json}}</textarea>
+        <pre>{{outputResponse}}</pre>
+        <code>{{outputStatusCode}}</code>
+    </div>
+</div>
