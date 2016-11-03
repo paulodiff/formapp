@@ -20,7 +20,10 @@ var async = require('async');
 // var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
 // var flow = require('../models/flow-node.js')('tmp'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js');
-var handlebars = require('handlebars'); 
+var handlebars = require('handlebars');
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser(); 
+var uuid = require('uuid');
 
 var ACCESS_CONTROLL_ALLOW_ORIGIN = false;
 // var DW_PATH = (path.join(__dirname, './storage'));
@@ -122,10 +125,47 @@ var dataSAMPLE = {
         TotaleNumeroVoti : '200'
 }
 
+
+function sendElastic( data ) {
+    console.log('send2Elastic');
+    return new Promise(function(resolve, reject) {
+        var my_uuid = uuid.v1();
+        // "PUT http://10.10.128.79:9200/velox3/velocita/" & uuid & " -d @" & sFTPTempFile"
+        // locals.push(sampleData[dataId]);
+        url = "http://10.10.128.79:9200/elezioni/referendum/" + my_uuid;
+
+        // console.log('Data 2 Elastic .. url', url);
+        // console.log(data);
+
+        var options = {
+                // url : url,
+                uri: url,
+                method: 'PUT',
+                proxy: 'http://proxy1.comune.rimini.it:8080',
+                json: true,
+                body : data
+                
+        };
+
+        request(options, function (error, response, body) {
+            if (error) { 
+                console.log('Errore invio richiesta ...');
+                    // console.log(error);
+                    reject(error);
+            } 
+            if (!error && response.statusCode == 201) {
+                resolve(response);
+            } else {
+                // console.log('Errore invio richiesta ...', response);
+                reject(response);
+            }
+        });
+    });
+}
+
 function sendSoap( operationId, endpoint, request, keyFile ) {
 
     return new Promise(function(resolve, reject) {
-
 
     var ws = require('ws.js');
     var fs = require('fs');
@@ -159,8 +199,28 @@ function sendSoap( operationId, endpoint, request, keyFile ) {
 
 }
 
+// Estrare una parte da un JSON
+function extractItem(obj, strItemId) {
+    var ids = [];
+    for (var prop in obj) {
+        if (typeof obj[prop] == "object" && obj[prop]) {
+            // console.log(prop, strItemId);
+            if (prop == strItemId) {
+                // console.log('-->', obj[prop]);
+                // ids = obj[prop].map(function(elem){  return elem.id;  })
+                ids = obj[prop];
+            }
+            //console.log('concat', obj[prop]);
+            ids = ids.concat(extractItem(obj[prop], strItemId));
+        }
+    }
+    return ids;
+}
+
 router.get('/test' , function (req, res) {
- var test = {
+
+ var testJSON = {
+     "dataDocumento" : "2016-01-01T10:00:00",
     "S:Envelope": {
       "$": {
         "xmlns:S": "http://schemas.xmlsoap.org/soap/envelope/"
@@ -221,39 +281,32 @@ router.get('/test' , function (req, res) {
     }
  };
 
-function process(key,value) {
-    if(key == "Esito") {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@');
-        console.log(value);
-    }
-    console.log('????:' + key + " : " + value);
-}
-function traverse(o,func, f) {
-    var found = f;
-    console.log(found);
-    if(found) {
-        console.log('found! EXIT');
-        return;
-    } else {
-        for (var i in o) {
-            //func.apply(this,[i,o[i]]);
-            if(i == "Esito"){
-                console.log('Found!');
-                console.log(o[i]);
-                found = true;
-                return o[i];
-            }  
-            if (o[i] !== null && typeof(o[i])=="object") {
-                //going on step down in the object tree!!
-                traverse(o[i],func,found);
-            }
-        }
-    }
-}
 
-    //var objFound = traverse(test, process, false);
+//var jsonFile = require('./file_test.json'); // the above in my local directory
+    var jsonFile = testJSON;
 
-    res.send( new Date() );
+    var testJSON2 = {
+     "dataDocumento" : "2016-01-01T10:00:00",
+     "descrizione": "d2"
+    };
+
+
+    sendElastic(testJSON2).then(function(response){ 
+        console.log(response.body) }
+    ).catch(function(err) { 
+        console.log(err)
+        console.log('ERRORE'); 
+    } );
+
+    /*
+    .then( function(result){
+            res.send( result );
+    }).error( function(error){
+            res.send( error );
+    });
+    */
+    res.send('ok');
+    
 })
 
 router.get('/async', function (req, res) {
@@ -302,11 +355,11 @@ router.get('/produzionebatch', function (req, res) {
                 TipoElezione : '7',
                 DataElezione: '2016-12-04'            
             }
-        },
-        {
+        }
+      , {
             action : {
                 operationId : 'recuperaEventiElettorali',
-                actionId : 'showXML'
+                actionId : 'sendXML'
             },
             data : {
                 UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
@@ -316,11 +369,11 @@ router.get('/produzionebatch', function (req, res) {
                 TipoElezione : '7',
                 DataElezione: '2016-12-04'            
             }
-        },
-        {
+        }
+      , {
             action : {
-                operationId : 'recuperaInfoAreaAcquisizione',
-                actionId : 'showXML'
+                operationId : 'recuperaInfoQuesiti',
+                actionId : 'sendXML'
             },
             data : {
                 UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
@@ -362,15 +415,47 @@ router.get('/produzionebatch', function (req, res) {
 
                     request(options, function (error, response, body) {
                         if (error) { 
-                            console.log('##################################################################################');
+                            console.log('Errore invio richiesta ...');
                             console.log(error);
                             callback(error);
                         } 
                         if (!error && response.statusCode == 200) {
-                            // console.log(body) // Show the HTML for the Google homepage.
-                            // console.log(response);
-                            locals.push(response.body);
-                            callback();
+                            console.log(response.body);
+                            
+                            if (actionId == "sendXML") {
+                                var info = JSON.parse(response.body);
+                                console.log(info);
+                                parser.parseString(info.response, function (err, result) {
+                                        console.dir(result);
+                                        var outJSON = {};
+                                        var Esito = extractItem(result, "Esito");
+                                        outJSON.operationId = operationId;
+                                        outJSON.actionId = actionId;
+                                        outJSON.url = info.url;
+                                        outJSON.action = info.action;
+                                        outJSON.statusCode = info.statusCode;
+                                        outJSON.response = info.response;
+                                        outJSON.CodiceEsito = Esito[0].CodiceEsito[0]; 
+                                        outJSON.DescrizioneEsito = Esito[0].DescrizioneEsito[0];
+                                        outJSON.dataDocumento = new Date();
+                                        locals.push(outJSON);
+                                        sendElastic(outJSON);
+                                        callback();
+                                });
+                            } else {
+                                var outJSON = {};
+                                outJSON.operationId = operationId;
+                                outJSON.actionId = actionId;
+                                outJSON.url = url;
+                                outJSON.action = "showXML";
+                                outJSON.statusCode = "200";
+                                outJSON.response = response.body;
+                                outJSON.CodiceEsito = "1000"; 
+                                outJSON.DescrizioneEsito = "showXML Eseguito con successo";
+                                outJSON.dataDocumento = new Date();
+                                locals.push(outJSON);
+                                callback();
+                            }
                         } else {
                             console.log(response);
                             callback();
@@ -390,9 +475,6 @@ router.get('/produzionebatch', function (req, res) {
         }
         
     });
-
-    
-
 });
 
 
