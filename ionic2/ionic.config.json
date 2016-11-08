@@ -1,0 +1,12 @@
+{
+  "name": "ionic-conference-app",
+  "app_id": "",
+  "typescript": true,
+  "v2": true,
+  "proxies": [
+    {
+      "path": "/wk",
+      "proxyUrl": "https://en.wikipedia.org/w/api.php"
+    }
+  ]
+}

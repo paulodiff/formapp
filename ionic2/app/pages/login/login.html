@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-navbar>
+    <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Login</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+
+    <form #loginForm="ngForm" novalidate>
+      
+      <ion-row responsive-sm>
+      <ion-item>
+        <ion-label floating primary>Username</ion-label>
+        <ion-input [(ngModel)]="login.username" name="username" type="text" #username="ngModel" spellcheck="false" autocapitalize="off" required>
+        </ion-input>
+      </ion-item>
+      
+      <p [hidden]="username.valid || submitted == false" danger padding-left>
+        Username is required
+      </p>
+
+      
+      <ion-item>
+        <ion-label floating primary>Password</ion-label>
+        <ion-input [(ngModel)]="login.password" name="password" type="password" #password="ngModel" required>
+        </ion-input>
+      </ion-item>
+
+      </ion-row>
+
+
+      <ion-item>
+        <ion-label stacked>Message</ion-label>
+        <ion-textarea [(ngModel)]="jsonData.textArea" name="textArea" #textArea="ngModel" > </ion-textarea>
+      </ion-item>
+      
+
+
+       <p [hidden]="password.valid || submitted == false" danger padding-left>
+          Password is required
+      </p>
+
+      <ion-row responsive-sm>
+        <ion-col>
+          <button (click)="onLogin(loginForm)" type="submit" primary block>Login</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="onSignup()" light block>Signup</button>
+        </ion-col>
+      </ion-row>
+    
+    
+    
+    <ion-row responsive-sm>
+        <ion-col>
+          <button (click)="eleGetinfo()" primary block>GetInfo</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="pushUnsubscribe()"  primary block>PushUnsubscribe</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="pushSend()" primary block>PushSend</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="pushCheck()" primary block>PushCheck</button>
+        </ion-col>
+      </ion-row>
+
+
+
+      <ion-row responsive-sm>
+        <ion-col>
+          <button (click)="pushSubscribe()" primary block>PushSubscribe</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="pushUnsubscribe()"  primary block>PushUnsubscribe</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="pushSend()" primary block>PushSend</button>
+        </ion-col>
+        <ion-col>
+          <button (click)="pushCheck()" primary block>PushCheck</button>
+        </ion-col>
+      </ion-row>
+    </form>
+
+      <ion-row responsive-sm>
+        <ion-card>
+          <ion-item>
+            <h2>Esito</h2>
+          </ion-item>
+
+          <ion-card-content>
+                <p>CodiceEsito:{{items.CodiceEsito}}</p>
+                <p>DescrizioneEsito:{{items.DescrizioneEsito}}</p>
+                <p>{{items}}</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-row>
+
+
+  </ion-list>
+
+
+{{items.keyFile_produzione}}
+
+<!--    <ion-list>
+      <ion-item *ngFor="let item of items" (click)="goToSessionDetail(item)">
+        {{item}}
+      </ion-item>
+    </ion-list>
+
+    -->
+
+</ion-content>

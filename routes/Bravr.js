@@ -337,6 +337,13 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
 });
 
 
+router.get('/leggiProtocolloTest', function(req, res) {
+
+
+    
+    res.status(201).json('ok');
+});
+
 
 router.get('/token', function(req, res) {
     var user = {
