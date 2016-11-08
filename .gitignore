@@ -1,7 +1,9 @@
 node_modules
 sb-admin-angular
 storage
-ionic2
+ionic2/node_modules
+ionic2/www
+ionic2/.github
 log
 tmp
 .idea
