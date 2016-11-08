@@ -79,7 +79,8 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     // console.log(req.query);
     // console.log(req.user);
 
-    WS_IRIDE = ENV_BRAV.wsiride.url_test;
+    // WS_IRIDE = ENV_BRAV.wsiride.url_test;
+    WS_IRIDE = ENV_BRAV.wsJiride.url_test;
 
     if(req.body.produzione) {
         console.log('[##PRODUZIONE##]');
@@ -222,7 +223,6 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
     console.log(WS_IRIDE);
 
     var soapResult = { result : '....'};
-
     
 
     soap.createClient(WS_IRIDE, function(err, client){
@@ -242,6 +242,9 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
             });
             return;
         }
+
+
+        console.log(client.describe());
  
  /*
         var pars = {
@@ -270,7 +273,7 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
         }); 
  */
  
-        client.InserisciProtocollo(args, function(err, result) {
+        client.InserisciProtocolloEAnagrafiche(args, function(err, result) {
            
            log2file.debug(result);
            console.log(result);

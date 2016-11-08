@@ -1,13 +1,8 @@
 // configuration BRAV
 module.exports = {
 
-    /** sono da eliminare */
-    infoGeneriche: {
-        UserID : 'cm4ucmltaW5pLndlYnNlcnZpY2UuZ2lhY29taW5p',
-        Password : 'UklNSU5JLnJlZjEyMjAxNg==',
-        keyFile_produzione : './tmp/produzione2.pem',
-        keyFile_test : './tmp/test.pem'
-    },
+    keyFile_produzione : './tmp/produzione2.pem',
+    keyFile_test : './tmp/test.pem',     
 
     recuperaEventiElettorali: {
         templateFileName : './templateXML/recuperaEventiElettorali.xml',
@@ -74,8 +69,11 @@ module.exports = {
 
     log_filename: 'ELEZIONI.log',
     log_level : 'DEBUG',
+    elastic_url : 'http://10.10.128.79:9200/elezioni/referendum/',
+    proxy_url : 'http://proxy1.comune.rimini.it:8080',
+    action_url : 'http://10.10.6.63:9988/elezioni/produzione/',
 
-    storage_folder: 'brav',
+    storage_folder: 'folderNAME',
         
     key1 : '_'
 
