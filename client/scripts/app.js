@@ -196,6 +196,16 @@ angular.module('myApp', [//'ionic',
     });
 
 
+    $stateProvider.state('protocollo', {
+        url: '/protocollo',
+        templateUrl: 'templates/protocollo.html',
+        controller: 'ProtocolloCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
     $stateProvider.state('sigPosition', {
         url: '/sigPosition',
         templateUrl: 'templates/sigPosition.html',

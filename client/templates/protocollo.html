@@ -1,0 +1,112 @@
+<div class="container">
+   <h4>PROTOCOLLO</h4>
+
+    
+    <div>
+    
+
+       <!-- create our form -->
+    <form name="vm.userForm">
+        
+        <!-- name field -->
+        <div class="form-group">
+            <label>Name</label>
+            <input  type="text" 
+                    class="form-control" 
+                    name="name" 
+                    ng-model="vm.model.name"
+                    ng-minlength="5"
+                    ng-maxlength="10"
+                    required>
+                
+    <div ng-messages="vm.userForm.name.$error" style="color:maroon" role="alert">
+    <div ng-message="required">You did not enter a field</div>
+    <div ng-message="minlength">Your field is too short</div>
+    <div ng-message="maxlength">Your field is too long</div>
+  </div>
+
+
+        </div>
+        
+        <!-- email field -->
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" 
+                ng-model="vm.model.email"
+                ng-minlength="5"
+                ng-maxlength="20"
+                required>
+                
+                  <div ng-messages="vm.userForm.email.$error" style="color:maroon" role="alert">
+    <div ng-message="required">You did not enter a field</div>
+    <div ng-message="minlength">Your field is too short</div>
+    <div ng-message="maxlength">Your field is too long</div>
+  </div>
+            <!-- ngMessages goes here -->
+    </div>
+
+   <div class="form-group">
+     <label>Doc1 - 2M max</label>
+      <input    type="file" 
+                ngf-select 
+                ng-model="vm.model.picFile1" 
+                name="file1"    
+                accept="image/*" 
+                ngf-max-size="2MB" 
+                required
+                ngf-change="vm.calcHash($file)"
+                ngf-model-invalid="errorFile">
+      <i ng-show="vm.userForm.file1.$error.required">*required</i><br>
+      <i ng-show="vm.userForm.file1.$error.maxSize">File too large 
+          {{errorFile.size / 1000000|number:1}}MB: max 2M</i>
+   </div>
+
+
+   <div class="form-group">
+     <label>Doc2 - Illimitato</label>
+      <input    type="file" 
+                ngf-select 
+                ng-model="vm.model.picFile2" 
+                name="file2"    
+                accept="*/*" 
+                required
+                ngf-change="vm.calcHash($file)"
+                ngf-model-invalid="errorFile">
+      <i ng-show="vm.userForm.file2.$error.required">File obbligatorio!</i><br>
+      <i ng-show="vm.userForm.file2.$error.maxSize">File too large 
+          {{errorFile.size / 1000000|number:1}}MB: max 2M</i>
+   </div>
+
+
+
+
+
+        <div class="form-group">
+            <button type="submit"
+                    ng-disabled="!vm.userForm.$valid" 
+                    class="btn btn-danger btn-block"  
+                    ng-click="vm.onSubmit()">Invia richiesta</button>
+        </div>
+        
+    </form>
+
+    <pre>vm.userForm.$valid = {{ vm.userForm.$valid | json }}</pre>
+    <pre>vm.userForm.name.$error = {{ vm.userForm.name.$error | json }}</pre>
+    <pre>vm.userForm.name.$touched = {{ vm.userForm.name.$touched | json }}</pre>
+    <pre>vm.userForm = {{ vm.userForm| json }}</pre>
+    
+      
+      <p>Form Data</p>
+      <pre>{{vm.model | json}}</pre>
+      <p>Form Error</p>
+      <pre>{{vm.errors | json}}</pre>
+    </div>
+    <p>reCaptcha - http://vividcortex.github.io/angular-recaptcha/ </p>
+    <p>hashMe.js - https://github.com/marcu87/hashme </p>
+    <p>ng-file-upload - https://github.com/danialfarid/ng-file-upload </p>
+    <div>
+        <p>Output</p>
+        <pre>{{outputStatusCode}}</pre>
+        <pre>{{outputResponse}}</pre>
+    </div>
+</div>      

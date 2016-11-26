@@ -27,7 +27,8 @@ class PopoverPage {
 
 
 @Component({
-  templateUrl: 'build/pages/about/about.html'
+  // templateUrl: 'build/pages/about/about.html'
+  templateUrl: 'about.html'
 })
 export class AboutPage {
   conferenceDate = '2047-05-17';

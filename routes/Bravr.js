@@ -275,8 +275,8 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
  
         client.InserisciProtocolloEAnagrafiche(args, function(err, result) {
            
-           log2file.debug(result);
-           console.log(result);
+           // log2file.debug(result);
+           // console.log(result);
 
            if (err) {
                var msg = 'Errore nella chiamata ad InserisciProtocollo';
@@ -339,9 +339,65 @@ router.post('/protocollo',  utilityModule.ensureAuthenticated, function(req, res
 
 router.get('/leggiProtocolloTest', function(req, res) {
 
+       // WS_IRIDE = ENV_BRAV.wsiride.url_test;
+        WS_IRIDE = ENV_BRAV.wsJiride.url_test;
 
+        console.log(WS_IRIDE);
+        console.log('create client....');
+
+        var soapOptions = {
+            endpoint: 'http://10.10.129.111:58000/client/services/ProtocolloSoap?CID=COCATEST'
+        };
+
+
+        soap.createClient(WS_IRIDE, soapOptions, function(err, client){
+        
+            console.log('soap call.....');
+            // log2file.debug(client.describe());
+            // console.log(client.describe());
+
+            if (err) {
+                var msg = 'Errore nella creazione del client soap';
+                console.log(err);
+                res.status(500).json({
+                        msg : msg,
+                        message : err
+                    });
+                return;
+            }
+
+            // console.log(client.describe());
     
-    res.status(201).json('ok');
+            var pars = {
+                AnnoProtocollo : 2016,
+                NumeroProtocollo : 1,
+                Utente : "wsalbo",
+                Ruolo : "SETTORE SISTEMA INFORMATIVO"
+            };
+
+            client.LeggiProtocollo(pars, function(err, result) {
+                // log2file.debug(result);
+                // console.log(result);
+
+                if (err) {
+                    var msg = 'Errore nella chiamata a LeggiProtocollo';
+                    //console.log(client.describe());
+                    // console.log(err);
+                    console.log('##', new Date(), "--------------------------------------");
+                    console.log(err.response.request);
+                    // log2file.error(msg);
+                    // log2file.error(err);
+                    res.status(500).json({"msg" : msg, "message" : err.response});
+                    return;
+                } else {
+                    res.status(200).json(result);
+                }
+   
+            }); 
+ 
+        });
+
+        // res.status(201).json('ok');
 });
 
 

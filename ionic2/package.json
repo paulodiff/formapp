@@ -25,6 +25,7 @@
     "zone.js": "0.6.12"
   },
   "devDependencies": {
+    "@ionic/app-scripts": "0.0.42",
     "del": "2.2.0",
     "gulp": "3.9.1",
     "gulp-tslint": "^5.0.0",
@@ -54,5 +55,9 @@
   "cordovaPlatforms": [
     "ios",
     "android"
-  ]
+  ],
+  "scripts": {
+    "ionic:build": "ionic-app-scripts build",
+    "ionic:serve": "ionic-app-scripts serve"
+  }
 }

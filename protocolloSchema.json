@@ -1,0 +1,103 @@
+{
+    "id": "v.01",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema per chiamata a protocollo",
+    "type": "object",
+    "required": [   "tracciabilitaOperazione",
+                    "documentoPrincipale" 
+                    "domandaPermessoFormatoPDF",
+                    "numeroIdentificativoPermesso",
+                    "tipoPermesso",
+                    "tipoOperazione",
+                    "richiedente",
+                    "validitaPermesso",
+                    "numeroVeicoli",
+                    "veicoliAssociati" ],
+    "properties": {
+        "tracciabilitaOperazione": { 
+                "type": "object",
+                "required": [ "dataRichiestaWAPI", "oraRichiestaWAPI", "idOperatore", "cognomeNome" ],
+                "properties": {
+                    "dataRichiestaWAPI": { 
+                        "type" : "string",
+                        "pattern": "^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$" 
+                    },
+                    "oraRichiestaWAPI": { "type" : "string" },
+                    "idOperatore": { "type" : "string" },
+                    "cognomeNome": { "type" : "string" }
+                }
+        },
+        "documentoPrincipale" : { "$ref": "#/definitions/descFile" },
+        "numeroIdentificativoPermesso": { "type": "string" },
+        "tipoPermesso": { 
+                "type": "object",
+                "required": [ "id", "descrizione" ],
+                "properties": {
+                    "id": { "type" : "string" },
+                    "descrizione": { "type" : "string" }
+                }
+        },
+        "richiedente": { 
+                "type": "object",
+                "required": [   "nome", 
+                                "cognome",
+                                "codiceFiscale",
+                                "dataDiNascita",
+                                "indirizzo",
+                                "mail",
+                                "telefonoCellulare",
+                                "telefonoFisso"
+                                 ],
+                "properties": {
+                    "nome": { "type" : "string", "minLength": 1 },
+                    "cognome": { "type" : "string", "minLength": 1  },
+                    "codiceFiscale": { "type" : "string", "pattern" : "^[A-Z]{6}[A-Z0-9]{2}[A-Z][A-Z0-9]{2}[A-Z][A-Z0-9]{3}[A-Z]$" },
+                    "dataDiNascita": { 
+                            "type" : "string",
+                            "pattern": "^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$" },
+                    "indirizzo": { "type" : "string" },
+                    "mail": { "type" : "string" },
+                    "telefonoCellulare": { "type" : "string" },
+                    "telefonoFisso": { "type" : "string" }
+                }
+        },
+        "numeroVeicoli": { "type": "number" },
+        "note": { "type": "string" },
+        "allegati" : {
+                "type": "array",
+                "items": { "$ref": "#/definitions/descFile" }
+        },
+        "metadati" : {
+                "type": "array",
+                "items": { "$ref": "#/definitions/descElemento" }
+        },
+    },
+
+    "definitions": {
+        "descVeicolo": {
+            "properties": {
+                "marca": { "type": "string" },
+                "modello": { "type": "string" },
+                "targa": { "type": "string" }
+            },
+            "required": [ "marca", "modello", "targa" ]
+        },
+        "descFile": {
+            "properties": {
+                "nomeFile": { "type": "string" },
+                "dimensioneFile": { "type": "number" },
+                "mimeType": { "type": "string" },
+                "base64": { "type": "string" },
+                "hashSHA256File": { "type": "string" }
+            },
+            "required": [ "nomeFile", "dimensioneFile", "mimeType", "base64", "hashSHA256File" ]
+        },
+        "descElemento": {
+            "properties": {
+                "chiave": { "type": "string" },
+                "valore": { "type": "string" }
+            },
+            "required": [ "chiave", "valore" ]
+        }
+   }
+}

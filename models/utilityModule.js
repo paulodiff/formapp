@@ -1,6 +1,7 @@
 var jwt = require('jsonwebtoken');
 var moment = require('moment');
 var ENV   = require('../config.js'); // load configuration data
+var fs = require('fs');
 
 function addZero(x,n) {
       while (x.toString().length < n) {
@@ -49,15 +50,25 @@ module.exports = {
     return buffer;
     },
 
+  base64_encode: function(file) {
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+  },
 
   ensureAuthenticated : function(req, res, next) {
+
+        //"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiY29tcGFueU5hbWUiOiJDb211bmVfZGlfUmltaW5pIiwiYXBwIjoicHJvdG9jb2xsbyJ9LCJpYXQiOjE0Nzk5OTkwMzQsImV4cCI6MTU2NjM5NTQzNH0.5Ako1xZ9If5bNrKN3ns8sZ8YaqaJD7FWDt07zcRb8c0"
+
         console.log('[#AUTH#] ensureAuthenticated ....');
         if (!req.header('Authorization')) {
             console.log('[#AUTH#] ensureAuthenticated : 401 NO TOKEN');
             return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
         }
-        var token = req.header('Authorization').split(' ')[1];
-        //console.log(token);
+          var token = req.header('Authorization').split(' ')[1];
+         
+          // console.log(req.header('Authorization'));
           var payload = null;
           try {
             payload = jwt.decode(token, ENV.secret);
@@ -67,6 +78,8 @@ module.exports = {
             console.log(err);
             return res.status(401).send({ message: err.message });
           }
+
+          // console.log(payload);
 
           if(payload){
             if (payload.exp) {
@@ -99,7 +112,7 @@ module.exports = {
           return jwt.sign(payload, ENV.secret);
     },
 
-    decodeJWT : function(token) {
+    decodeJWT: function(token) {
         //console.log(token);
           var payload = null;
           try {

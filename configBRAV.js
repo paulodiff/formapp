@@ -5,8 +5,8 @@ module.exports = {
     log_level : 'DEBUG',
     security_company_filter : 'BRAV S.R.L.',
     wsJiride : {
-        url_produzione : 'http://test-sicraweb:58000/client/services/ProtocolloSoap?wsdl',
-        url_test : 'http://10.10.129.111:58000/client/services/ProtocolloSoap?wsdl',
+        url_produzione : 'http://test-sicraweb:58000/client/services/ProtocolloSoap?wsdl&CID=COCATEST',
+        url_test : 'http://10.10.129.111:58000/client/services/ProtocolloSoap?wsdl&CID=COCATEST',
         // url : 'http://srv-irideweb.ad.comune.rimini.it/ulisse/iride/web_services_20/wsProtocolloDM/WSProtocolloDM.asmx?wsdl',
         tipo_documento : '01001',
         classifica : '001 006 001',

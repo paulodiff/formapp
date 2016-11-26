@@ -62,6 +62,7 @@ logConsole.info('START ELEZIONI');
 log2fileAccess.info('START ELEZIONI');
 
 
+
 module.exports = function () {
 
     var WS_IRIDE = "";

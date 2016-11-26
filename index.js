@@ -172,6 +172,10 @@ app.use('/api/seq', SeqData);
 var BravData = require('./routes/Bravr')();
 app.use('/api/brav', BravData);
 
+
+var Protocollo = require('./routes/Protocollo')();
+app.use('/api/protocollo', Protocollo);
+
 var UploadData = require('./routes/Uploadr')();
 app.use('/uploadmgr', UploadData);
 
@@ -204,6 +208,32 @@ app.use('/poc', express.static(__dirname + '/poc'));
 app.use('/swagger', express.static(__dirname + '/swagger'));
 
 app.get('/test', function (req, res) {
+
+
+    console.log('test........xmllib');
+
+    var libxmljs = require("libxmljs");
+    var xml =  '<?xml version="1.0" encoding="UTF-8"?>' +
+              '<root>' +
+                  '<child foo="bar">' +
+                      '<grandchild baz="fizbuzz">grandchild content</grandchild>' +
+                  '</child>' +
+                  '<sibling>with content!</sibling>' +
+              '</root>';
+
+    var xmlDoc = libxmljs.parseXml(xml);
+
+    // xpath queries
+    var gchild = xmlDoc.get('//*');
+
+    console.log(gchild.text());  // prints "grandchild content"
+
+    var children = xmlDoc.root().childNodes();
+    var child = children[0];
+
+    console.log(child.attr('foo').value()); // prints "bar"
+
+
   res.send('Hello World!');
 });
 
