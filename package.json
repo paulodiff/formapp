@@ -24,6 +24,7 @@
     "jsonwebtoken": "^6.2.0",
     "jwt-simple": "^0.5.0",
     "log4js": "^0.6.36",
+    "md5-file": "^3.1.1",
     "mongoose": "^4.4.15",
     "morgan": "^1.7.0",
     "node-uuid": "^1.4.7",
@@ -31,6 +32,7 @@
     "passport-local": "^1.0.0",
     "request": "^2.72.0",
     "sequelize": "^3.23.3",
+    "spark-md5": "^2.0.2",
     "supertest": "^1.2.0",
     "tape": "^4.5.1"
   },

@@ -12,6 +12,7 @@
 
 
     <link href="css/main.css" rel="stylesheet">
+    <link href="css/sb-admin-2.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <!-- SB-ADMIN 2.0 OFF -->
 
@@ -109,6 +110,13 @@
     <script src="bower_components/chart.js/dist/Chart.js"></script>
     <script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
 
+    <!-- Google Recaptcha-->
+    <script src="https://www.google.com/recaptcha/api.js?onload=vcRecaptchaApiLoaded&render=explicit"  async defer></script>
+    <script type="text/javascript" src="bower_components/angular-recaptcha/release/angular-recaptcha.js"></script>
+
+    <!-- UI-Validate -->
+    <script type="text/javascript" src="bower_components/angular-ui-validate/dist/validate.js"></script>
+
 
     <!-- your app's js -->
     <script src="scripts/app.js"></script>
@@ -133,6 +141,7 @@
     <script src="scripts/directives/directives.js"></script>  
     <script src="scripts/directives/passwordMatch.js"></script>  
     <script src="scripts/directives/passwordStrength.js"></script>  
+      
 
      
     
@@ -191,6 +200,7 @@
                 <!-- <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">Getting started</a></li> -->
                 <li><a href="#/sigPhoto" ng-click="isCollapsed = !isCollapsed">Photo</a></li>
                 <li><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form1</a></li>
+                <li><a href="#/protocollo">protocollo</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/profile" ng-click="isCollapsed = !isCollapsed">Profile</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form</a></li>
                 <li><a href="#/login"  ng-click="isCollapsed = !isCollapsed">@@Login</a></li>

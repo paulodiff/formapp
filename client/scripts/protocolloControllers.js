@@ -59,8 +59,10 @@ angular.module('myApp.controllers')
     vm.email  = "a@a.com";
     vm.userForm = {};
     vm.model = {};
-    vm.model.name = 'm_COCOCO';
-    vm.model.email = 'm__a@a.com';
+    vm.model.nomeRichiedente = 'MARIO';
+    vm.model.cognomeRichiedente = 'ROSSI';
+    vm.model.emailRichiedente = 'ruggero.ruggeri@comune.rimini.it';
+    vm.model.emailRichiedenteConferma = 'ruggero.ruggeri@comune.rimini.it';
     vm.model.hash = [];
 
 
@@ -106,11 +108,12 @@ angular.module('myApp.controllers')
                         loadNext();
                     } else {
                         running = false;
+                        var hashSpark = spark.end();
                         console.log('<strong>Finished loading!</strong><br/>', 'success');
-                        console.log('<strong>Computed hash:</strong> ' + spark.end() + '<br/>', 'success'); // compute hash
+                        console.log('<strong>Computed hash:</strong> ' + hashSpark + '<br/>', 'success'); // compute hash
                         console.log('<strong>Total time:</strong> ' + (new Date().getTime() - time) + 'ms<br/>', 'success');
                         $rootScope.$broadcast('dialogs.wait.complete');
-                        vm.model.hash.push({ "name" : f.name, "hash" : spark.end() });
+                        vm.model.hash.push({ "name" : f.name, "hash" : hashSpark });
                     }
                 };
                 fileReader.onerror = function () {
@@ -159,7 +162,7 @@ angular.module('myApp.controllers')
             url: uploadUrl,
             method: 'POST',
             //files: vm.options.data.fileList
-            data: {files : upFiles, fields: { formModel : vm.model } }
+            data: {files : upFiles, fields: vm.model  }
         }).then(function (resp) {
             console.log('Success ');
             console.log(resp);
@@ -171,7 +174,7 @@ angular.module('myApp.controllers')
             //usSpinnerService.stop('spinner-1');
         }, function (resp) {
             console.log('Error status: ' + resp.status);
-            dialogs.error('500 - Errore server',response.data.message, response.status);
+            dialogs.error('500 - Errore server',resp.data.message, resp.status);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ');

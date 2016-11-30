@@ -18,6 +18,8 @@ var mongocli = require('./models/mongocli');
 // gestione delle sicurezza
 var frameguard = require('frameguard');
 var helmet = require('helmet');
+// var csrf = require('csurf');
+
 /*
 app.use(helmet.contentSecurityPolicy({
   // Specify directives as normal.
@@ -61,12 +63,12 @@ app.use(helmet.contentSecurityPolicy({
   browserSniff: true
 }));
 */
+
 app.use(helmet.xssFilter({ setOnOldIE: true }));
 app.use(frameguard({ action: 'deny' }));
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
 app.use(helmet.ieNoOpen());
 app.use(helmet.noSniff());
-
 
 var ENV   = require('./config.js'); // load configuration data
 
@@ -92,15 +94,12 @@ dbMysqlPhone.connect('info', function(err) {
   }
 });
 
-
 var log = require('./models/loggerModule.js');
 
 //var logger2Mail = log4js.getLogger('mailer');
+
 log.log2file('Starting server');
 log.log2console('Starting server');
-
-
-
 
 //logger2Mail.debug('Starting server');
 
@@ -110,20 +109,57 @@ app.use(expressSession({
               resave: false,
               saveUninitialized: true,
               cookie: { secure: true }
-            }));
+ }));
 */
 
 // set up our express application
 
 app.use(cors());
 app.use(morgan('dev'));
+
+
+var jsonParser = bodyParser.json({
+                              limit:1024*1024*20, 
+                              type:'application/json'
+                            });
+var urlencodedParser = bodyParser.urlencoded({ 
+                              extended:true,
+                              limit:1024*1024*20,
+                              type:'application/x-www-form-urlencoding' 
+                            });
+
+
+
 app.use(bodyParser.json({
   type: ['json', 'application/csp-report'],
-  limit: '50mb'
-}))
-app.use(bodyParser.urlencoded({ extended: true }));
+  limit: 1024 //50mb
+}));
+
+app.use(bodyParser.urlencoded({ 
+  limit:1024, 
+  extended: true 
+}));
 
 
+app.use(cookieParser('secretPassword'));
+// app.use(csrf({ cookie: true }));
+// app.use(function(req, res, next) {
+//  res.cookie('XSRF-TOKEN', req.csrfToken());
+//  return next();
+// });
+
+// error handler
+/* CSRF Security
+app.use(function (err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err)
+
+  // handle CSRF token errors here
+  console.log('EBADCSRFTOKEN');
+  return next(err);
+  // res.status(403)
+  // res.send('form tampered with')
+})
+*/
 
 // MongoDb pool create
 // Initialize connection once
@@ -172,13 +208,11 @@ app.use('/api/seq', SeqData);
 var BravData = require('./routes/Bravr')();
 app.use('/api/brav', BravData);
 
-
 var Protocollo = require('./routes/Protocollo')();
 app.use('/api/protocollo', Protocollo);
 
 var UploadData = require('./routes/Uploadr')();
 app.use('/uploadmgr', UploadData);
-
 
 var Segnalazioni = require('./routes/Segnalazionir')();
 app.use('/segnalazioni', Segnalazioni);
@@ -206,11 +240,10 @@ app.use('/cli', express.static(__dirname + '/client'));
 app.use('/i2',express.static(__dirname + '/ionic2/www'));
 app.use('/poc', express.static(__dirname + '/poc'));
 app.use('/swagger', express.static(__dirname + '/swagger'));
-
 app.get('/test', function (req, res) {
 
 
-    console.log('test........xmllib');
+console.log('test........xmllib');
 
     var libxmljs = require("libxmljs");
     var xml =  '<?xml version="1.0" encoding="UTF-8"?>' +

@@ -1,12 +1,23 @@
 // Route for Protccollo
 
 
-// Suddivisa in parti: 
-// 1. Autenticazione, 
-// 2. Controllo JSON, 
-// 3. Salvataggio Dati / log
-// 4. Chiamata a Web Service per il protocollo
-// 5. Risposta
+// Note sicurezza:
+// - controllo CaptCha
+// - limite UPLOAD
+// - limite ORARIO uffici con NOTIFICA
+// - controllo parametri SANITIZE 
+// - controllo hash file
+// - generazione PDF
+// - invio mail di risposta
+
+  // protocollazione
+  
+
+  // risposta
+
+  // invio mail di conferma con pdf
+
+  // res.status(200).send('Operazioni terminate ....'); 
 
 
 var express = require('express');
@@ -17,13 +28,21 @@ var fs = require('fs');
 var path = require('path');
 var util = require('util');
 var soap = require('soap');
+
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
+var multiparty = require('multiparty');
+
 var jwt = require('jwt-simple');
 var ENV   = require('../config.js'); // load configuration data
-var ENV_BRAV   = require('../configBRAV.js'); // load user configuration data
+var ENV_PROT   = require('../tmp/configPROTOCOLLO.js'); // load user configuration data
 var mongocli = require('../models/mongocli');
+var spark = require('spark-md5');
+var md5File = require('md5-file');
 var _ = require('lodash');
+var Report = require('fluentreports').Report;
+var nodemailer = require('nodemailer');
+var request = require('request');
 // var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
 // var flow = require('../models/flow-node.js')('tmp'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); 
@@ -38,13 +57,13 @@ log4js.configure({
   appenders: [
     { type: 'console' },
     { type: 'file', 
-      filename: 'log/error-' + ENV_BRAV.log_filename, 
+      filename: 'log/error-' + ENV_PROT.log_filename, 
       category: 'error-file-logger',
       maxLogSize: 120480,
       backups: 10 
     },
     { type: 'file', 
-      filename: 'log/access-' + ENV_BRAV.log_filename, 
+      filename: 'log/access-' + ENV_PROT.log_filename, 
       category: 'access-file-logger',
       maxLogSize: 120480,
       backups: 10 
@@ -54,11 +73,11 @@ log4js.configure({
 
 var logger = log4js.getLogger();
 // init logging
-var logCon  = log4js.getLogger();
+var logConsole  = log4js.getLogger();
 // var loggerDB = log4js.getLogger('mongodb');
 
 var log2file = log4js.getLogger('error-file-logger');
-log2file.setLevel(ENV_BRAV.log_level);
+log2file.setLevel(ENV_PROT.log_level);
 
 var log2fileAccess = log4js.getLogger('access-file-logger');
 
@@ -73,6 +92,180 @@ router.get('/ping', function (req, res) {
 });
 
 
+// invia un documento ad ElasticSearch
+    function verifyReCaptcha(ReCaptcha) {
+        console.log('verifyReCaptcha');
+        return new Promise(function (resolve, reject) {
+       
+            var data = {
+                secret: ENV_PROT.recaptcha_secret, 
+                response: ReCaptcha
+            };
+            
+            var url = 'https://www.google.com/recaptcha/api/siteverify';
+            console.log('verifyReCaptcha:url',url);
+
+            // console.log(data);
+
+            var options = {
+                uri: url,
+                method: 'POST',
+                proxy: ENV_PROT.proxy_url,
+                json: true,
+                qs: data
+            };
+
+            request(options, function (error, response, body) {
+                if (error) {
+                    console.log('verifyReCaptcha:Errore invio richiesta ...');
+                    // console.log(error);
+                    reject(error);
+                }
+                if (!error && response.statusCode == 200) {
+                    console.log('verifyReCaptcha:Errore risposta:');
+                    console.log(response.body);
+                    if(response.body.success){
+                        resolve(response);
+                    } else {
+                        reject(response);
+                    }
+                } else {
+                    // console.log('Errore invio richiesta ...', response);
+                    reject(response);
+                }
+            });
+        });
+    }
+
+
+
+router.get('/mail',  function (req, res) {
+
+    // create reusable transporter object using the default SMTP transport
+    var smtpConfig = {
+        host: 'srv-mail.comune.rimini.it',
+        port: 25,
+        secure: false//, // use SSL
+        //auth: {
+        //    user: 'user@gmail.com',
+        //    pass: 'pass'
+        //}
+    };
+    var transporter = nodemailer.createTransport(smtpConfig)
+
+
+    // setup e-mail data with unicode symbols
+    var mailOptions = {
+        from: '"Ruggero Ruggeri ?" <ruggero.ruggeri@comune.rimini.it>', // sender address
+        to: 'ruggero.ruggeri@comune.rimini.it, paulo.difficiliora@gmail.com', // list of receivers
+        subject: 'Hello ✔', // Subject line
+        text: 'Hello world ?', // plaintext body
+        attachments: [ {  path: './storage/pdf/Report.pdf' }]
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            return console.log(error);
+        }
+        console.log('Message sent: ' + info.response);
+    });
+
+    res.status(200).send('Mail ok');
+
+});
+
+router.get('/testCaptcha',  function (req, res) {
+    req.body = {};
+    req.body.fields = {};
+    req.body.fields.RecaptchaResponse = 'fsdfsdfsdfsdf';
+     console.log(ENV_PROT.recaptcha_secret);
+      console.log(req.body.fields.RecaptchaResponse);
+
+      var data = {
+            secret: ENV_PROT.recaptcha_secret, 
+            response: req.body.fields.RecaptchaResponse
+      }
+
+      var url = 'https://www.google.com/recaptcha/api/siteverify';
+
+        var options = {
+                // url : url,
+                uri: url,
+                method: 'POST',
+                proxy: ENV_PROT.proxy_url,
+                json: true,
+                qs: data
+            };
+
+
+            request(options, function (error, response, body) {
+                if (error) {
+                    console.log('Errore invio richiesta ...');
+                    console.log(error);
+                     res.send(error);
+                    //reject(error);
+                }
+                if (!error && response.statusCode == 201) {
+                    console.log('OK...', response);
+                    res.send(response);
+                    //resolve(response);
+                } else {
+                    console.log('Errore invio richiesta ...', response);
+                    res.send(response);
+                    // reject(response);
+                }
+            });
+       
+});
+
+router.get('/pdf',  function (req, res) {
+
+    var rptFileName = "./storage/pdf/Report.pdf";
+
+    var data = [
+          {item: 'NOME', count: 5, unit: 'loaf'},
+          {item: 'COGNOME', count: 3, unit: 'dozen'},
+          {item: 'Sugar', count: 32, unit: 'gram'},
+          {item: 'Carrot', count: 2, unit: 'kilo'},
+          {item: 'Apple', count: 3, unit: 'kilo'},
+          {item: 'Peanut Butter', count: 1, unit: 'jar'}
+      ];
+
+    var headerFunction = function(Report) {
+        Report.print("Rapporto - Promemoria", {fontSize: 22, bold: true, underline:true, align: "center"});
+        Report.newLine(2);
+    };
+
+    var footerFunction = function(Report) {
+        Report.line(Report.currentX(), Report.maxY()-18, Report.maxX(), Report.maxY()-18);
+        Report.pageNumber({text: "Page {0} of {1}", footer: true, align: "right"});
+        Report.print("Stampato il: "+(new Date().toLocaleDateString()) + ' ' + new Date(), {y: Report.maxY()-14, align: "left"});
+    };
+
+    var rpt = new Report(rptFileName)
+        .margins(20)                                 // Change the Margins to 20 pixels
+        .data(data)                                  // Add our Data
+        .pageHeader(headerFunction)                  // Add a header
+        .pageFooter(footerFunction)                  // Add a footer
+        .detail("{{count}} {{unit}} of {{item}}")    // Put how we want to print out the data line.
+        .render(); 
+
+    // rpt.printStructure(true);
+    
+    
+    res.download(rptFileName); // Set disposition and send it.
+
+    /*
+    var file = fs.createReadStream(rptFileName);
+    var stat = fs.statSync(rptFileName);
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
+    file.pipe(res);
+    */
+});
+
 router.get('/getTestToken', function (req, res) {
     var demoData = {
         companyName: "Comune_di_Rimini",
@@ -82,18 +275,47 @@ router.get('/getTestToken', function (req, res) {
 });
 
 
-router.post('/upload', multipartMiddleware, function(req, res) {
+//router.post('/upload', multipartMiddleware, function(req, res) {
+router.post('/upload', function(req, res) {
+
+    logConsole.info('start upload');
+
+
+    // limite upload
+    // https://github.com/expressjs/node-multiparty
+    var options = {
+        maxFilesSize: ENV_PROT.upload_size 
+    };
+
+    var form = new multiparty.Form(options);
+
+    form.parse(req, function(err, fields, files) {
+        logConsole.info('parse');
+        console.log(err);
+        console.log(fields);
+        console.log(files);
+    });
+
+
   console.log('/uploading.....');
   console.log(req.files);
   console.log('/body.....');
   console.log(req.body);
+  // console.log(req.body.fields.hash);
   
-  var transactionId = req.body.fields.transactionId;
+  // var transactionId = req.body.fields.transactionId;
   var DW_PATH = './storage/PROTOCOLLO';
   // var dir = DW_PATH + "/" +  transactionId;
   var dir = DW_PATH;
   
 
+  // verifyReCaptcha
+
+
+
+  // SANITIZE
+
+  /*
   if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
 
   if(req.files) console.log('1');
@@ -111,13 +333,85 @@ router.post('/upload', multipartMiddleware, function(req, res) {
       console.log(req.files.files[i].originalFilename);
       console.log(req.files.files[i].size);
 
-      fs.renameSync(req.files.files[i].path, dir + "/" + req.files.files[i].originalFilename);
+      var destFile = dir + "/" + req.files.files[i].originalFilename;
+
+      fs.renameSync(req.files.files[i].path, destFile);
+
+
+      var hash2 = md5File.sync(destFile);
+      console.log(destFile, hash2);
+
+
+
 
     }
   } else {
       console.log('No files. ...');
   }
+  */
+
+  // controllo recapcha
+  /*
+  if (req.body.fields.RecaptchaResponse) {
+      console.log('Recaptcha trovato ... verifica.');
+
+      verifyReCaptcha(req.body.fields.RecaptchaResponse).then(function (result) {
+                if (result.statusCode == 200) {
+                    console.log('verifyReCaptcha:sendXML statusCode:', result.statusCode);
+                    // console.log(result.response);
+                    res.status(200).send(result);
+                } else {
+                    //console.log(result);
+                    console.log('verifyReCaptcha:ERROR1:', result.statusCode);
+                    res.status(401).send('ERRORE GRAVE verifyReCaptcha - VEDERE LOG.');
+                }
+            }).catch(function (err) {
+                    // console.log(err);
+                    console.log('verifyReCaptcha:ERROR2:', err.body);
+                    res.status(500).send(err);
+            });
+
+
+  } else {
+      msg = {
+          'title' : 'errore',
+          'obj' : 'Recaptcha non trovato!'
+      };
+      res.status(500).json({'msg' : msg});
+  }
+  */
+
+
+/*
+//Lets configure and request
+request({
+    url: 'https://modulus.io/contact/demo', //URL to hit
+    qs: {from: 'blog example', time: +new Date()}, //Query string data
+    method: 'POST',
+    headers: {
+        'Content-Type': 'MyContentType',
+        'Custom-Header': 'Custom Value'
+    },
+    body: 'Hello Hello! String body!' //Set the body as a string
+}, function(error, response, body){
+    if(error) {
+        console.log(error);
+    } else {
+        console.log(response.statusCode, body);
+    }
+});
+*/
+
+
+  // controllo hash file
+
+
+  // protocollazione
   
+
+  // risposta
+
+  // invio mail di conferma con pdf
 
   res.status(200).send('Operazioni terminate ....');
 
@@ -132,7 +426,7 @@ router.post('/inserisciProtocollo',  utilityModule.ensureAuthenticated, function
     log2fileAccess.info(req.body);
 
     // WS_IRIDE = ENV_BRAV.wsiride.url_test;
-    WS_IRIDE = ENV_BRAV.wsJiride.url_test;
+    WS_IRIDE = ENV_PROT.wsJiride.url_test;
     log2fileAccess.info(WS_IRIDE);
 
     /*
@@ -223,8 +517,8 @@ router.post('/inserisciProtocollo',  utilityModule.ensureAuthenticated, function
                 Origine: 'A',
                 MittenteInterno: '404',
                 //MittenteInterno_Descrizione": "",
-                // AnnoPratica: '2016',
-                // NumeroPratica: '2016-404-0003',
+                AnnoPratica: '2016',
+                NumeroPratica: '2016-404-0003',
 
                  
                MittentiDestinatari: {
@@ -232,11 +526,20 @@ router.post('/inserisciProtocollo',  utilityModule.ensureAuthenticated, function
                   {
                     CodiceFiscale : 'RGGRGR70E25H294T',
                     CognomeNome: 'RUGGERI RUGGERO',
-                    // DataNascita : DataDiNascita,
-                    // Nome : 'RUGGERO',
+                    DataNascita : '01/01/1970',
+                    Indirizzo : 'via roma, 1 - RIMINI (RN)',
+                    Localita : 'RIMINI',
                     // Spese_NProt : 0,
                     // TipoSogg: 'S',
-                    // TipoPersona : 'F'
+                    TipoPersona: 'FI',
+                    Recapiti: {
+                        Recapito: [
+                            {
+                                TipoRecapito: 'EMAIL',
+                                ValoreRecapito: 'ruggero.ruggeri@comune.rimini.it'
+                            }
+                        ]
+                    }
                   }
                 ]
               },
@@ -359,7 +662,7 @@ router.post('/inserisciProtocollo',  utilityModule.ensureAuthenticated, function
 
     // save to disk
    
-    var dir = ENV.storagePath + "/" +  ENV_BRAV.storage_folder;
+    var dir = ENV.storagePath + "/" +  ENV_PROT.storage_folder;
     console.log(dir);
     
     try {
