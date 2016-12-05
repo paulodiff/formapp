@@ -43,6 +43,9 @@ var _ = require('lodash');
 var Report = require('fluentreports').Report;
 var nodemailer = require('nodemailer');
 var request = require('request');
+var moment = require('moment');
+var mime = require('mime');
+var async = require('async');
 // var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
 // var flow = require('../models/flow-node.js')('tmp'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); 
@@ -58,13 +61,13 @@ log4js.configure({
     { type: 'console' },
     { type: 'file', 
       filename: 'log/error-' + ENV_PROT.log_filename, 
-      category: 'error-file-logger',
+      category: 'error-file-logger-protocollo',
       maxLogSize: 120480,
       backups: 10 
     },
     { type: 'file', 
       filename: 'log/access-' + ENV_PROT.log_filename, 
-      category: 'access-file-logger',
+      category: 'access-file-logger-protocollo',
       maxLogSize: 120480,
       backups: 10 
     }
@@ -76,10 +79,10 @@ var logger = log4js.getLogger();
 var logConsole  = log4js.getLogger();
 // var loggerDB = log4js.getLogger('mongodb');
 
-var log2file = log4js.getLogger('error-file-logger');
+var log2file = log4js.getLogger('error-file-logger-protocollo');
 log2file.setLevel(ENV_PROT.log_level);
 
-var log2fileAccess = log4js.getLogger('access-file-logger');
+var log2fileAccess = log4js.getLogger('access-file-logger-protocollo');
 
 
 module.exports = function(){
@@ -88,7 +91,35 @@ var WS_IRIDE =  "";
 var MODO_OPERATIVO = "TEST";
 
 router.get('/ping', function (req, res) {
-  res.send('Protocollo Up!');
+    var p = {};
+    async.auto({
+    one: function(callback) {
+        console.log('one:');
+        callback(null, 'data', 'converted to array');
+    },
+    two: function(callback){
+        console.log('two:');
+        setTimeout(function() {
+            callback('BUM', 'two');
+        }, 1);
+    },
+    tre: ['one', 'two', function(results, callback){
+        console.log('tre:');
+        console.log(results);
+        setTimeout(function() {
+            callback(null, 3);
+        }, 1);
+    }],
+    
+}, function(err, results) {
+    // results is now equal to: {one: 1, two: 2}
+    if(err){
+        res.send('ERRORE:' + err);
+    } else {
+        console.log('completed!');
+        res.send(results);
+    }
+});
 });
 
 
@@ -274,11 +305,309 @@ router.get('/getTestToken', function (req, res) {
     res.send(utilityModule.createJWT(demoData));
 });
 
+/* SAVING FILES  --------------------------------------------------------------------------------------------------------- */
+function savingFiles(fileList, fieldsObj, reqId) {
+    logConsole.info('savingFiles');
+    // var transactionId = req.body.fields.transactionId;
+    var DW_PATH = ENV_PROT.storageFolder;
+    var dir = DW_PATH + "/" + reqId;
+
+    fieldsObj.files = [];
+
+    try{
+        // throw "TEST - File NOT FOUND Exception";
+
+        if (!fs.existsSync(dir)){fs.mkdirSync(dir);}
+        logConsole.info(dir);
+        Object.keys(fileList).forEach(function(name) {
+            logConsole.info('savingFiles:save: ' + name);
+
+            var originalFilename = fileList[name][0].originalFilename;
+            var destFile = dir + "/" + fileList[name][0].originalFilename;
+            var sourceFile = fileList[name][0].path;
+            logConsole.info(destFile);
+            fs.renameSync(sourceFile, destFile);
+            var hash2 = md5File.sync(destFile);
+            logConsole.info(destFile);
+            logConsole.info(hash2);
+
+            fieldsObj.files.push({ 'name' : originalFilename});
+        });
+
+        // save metadata
+        fieldsObj.reqId = reqId;
+        var jsonFile = dir + "/" + reqId + ".txt";
+        logConsole.info(jsonFile);
+        fs.writeFileSync(jsonFile, JSON.stringify(fieldsObj));
+        
+        logConsole.info(fieldsObj);
+
+        return true;
+
+    } catch (e){
+        logConsole.info('savingFiles: ', e);
+        logConsole.info('savingFiles:' + reqId);
+        log2file.error('savingFiles:');
+        log2file.error(reqId);
+        log2file.error(e);
+        return false;
+    }
+}
+
+/* SANITIZE --------------------------------------------------------------------------------------------------------- */
+
+function sanitizeInput(fieldList, fieldsObj,  reqId) {
+    logConsole.info('sanitizeInput');
+    // var transactionId = req.body.fields.transactionId;
+    var DW_PATH = ENV_PROT.storageFolder;
+    // var dir = DW_PATH + "/" +  transactionId;
+    var dir = DW_PATH + "/" + reqId;
+    // var fieldsObj = {};
+
+    Object.keys(fieldList).forEach(function(name) {
+        logConsole.info('got field named ' + name);
+
+        switch(name) {
+            case 'fields[nomeRichiedente]':
+                fieldsObj.nomeRichiedente = fieldList[name][0];
+                break;
+            case 'fields[cognomeRichiedente]':
+                fieldsObj.cognomeRichiedente = fieldList[name][0];
+                break;
+            case 'fields[emailRichiedente]':
+                fieldsObj.emailRichiedente = fieldList[name][0];
+                break;
+            case 'fields[codiceFiscaleRichiedente]':
+                fieldsObj.codiceFiscaleRichiedente = fieldList[name][0];
+                break;
+            case 'fields[cellulareRichiedente]':
+                fieldsObj.cellulareRichiedente = fieldList[name][0];
+                break;
+            case 'fields[dataNascitaRichiedente]':
+                fieldsObj.dataNascitaRichiedente = fieldList[name][0];
+                break;                
+            case 'fields[indirizzoRichiedente]':
+                fieldsObj.indirizzoRichiedente = fieldList[name][0];
+                break;
+            case 'fields[cittaRichiedente]':
+                fieldsObj.cittaRichiedente = fieldList[name][0];
+                break;
+            case 'fields[capRichiedente]':
+                fieldsObj.capRichiedente = fieldList[name][0];
+                break;
+            case 'fields[oggettoRichiedente]':
+                fieldsObj.oggettoRichiedente = fieldList[name][0];
+                break;
+            default:
+                break;
+        }
+
+    });
+
+    // validate object
+    // https://www.npmjs.com/package/validator
+
+    logConsole.info(fieldsObj);
+    logConsole.info('validate obj');
+    var bValid = true;
+    var msgValidator = '';
+    var validator = require('validator');
+ 
+    // test lunghezze
+
+    if( fieldsObj.codiceFiscaleRichiedente.length != 16 ){
+        console.log(fieldsObj.codiceFiscaleRichiedente.length);
+        bValid = false;
+        msgValidator = 'Codice fiscale non valido';
+    }
+
+
+    if( fieldsObj.oggettoRichiedente.length > 300 ){
+        bValid = false;
+        msgValidator = 'Oggetto troppo lungo';
+    }
+
+
+    // test 
+
+    if( !validator.isEmail(fieldsObj.emailRichiedente) ){
+        bValid = false;
+        msgValidator = 'Email non valida';
+    }
+
+    if( !validator.isDecimal(fieldsObj.cellulareRichiedente) ){
+        bValid = false;
+        msgValidator = 'Cellulare non valido';
+    }
+
+    if( !validator.isDecimal(fieldsObj.capRichiedente) ){
+        bValid = false;
+        msgValidator = 'Cap non valido';
+    }
+
+    console.log(fieldsObj.dataNascitaRichiedente);
+    if( !validator.isDate(fieldsObj.dataNascitaRichiedente) ){
+        bValid = false;
+        msgValidator = 'Data di Nascita non valida';
+    }
+
+
+    // sanitize oggettoRichiedente
+    fieldsObj.oggettoRichiedente = validator.escape(fieldsObj.oggettoRichiedente);
+    logConsole.info(fieldsObj.oggettoRichiedente);
+
+
+    if ( bValid ) {
+        return true;
+    } else {
+        log2file.error(msgValidator);
+        logConsole.error(msgValidator);
+        return false;
+    }
+     
+}
+
+/* PROTOCOLLO  --------------------------------------------------------------------------------------------------------- */
+
+function protocolloWS(fieldList, objFilesList,  reqId) {
+
+    logConsole.info('protocolloWS');
+
+    WS_IRIDE = ENV_PROT.wsJiride.url;
+    WS_IRIDE_ENDPOINT = ENV_PROT.wsJiride.endpoint;
+
+    logConsole.info(WS_IRIDE);
+    logConsole.info(WS_IRIDE_ENDPOINT);
+
+
+    // preparazione dati
+
+    var args = { 
+           ProtoIn : {
+                Data: moment().format('DD/MM/YYYY'),
+                Classifica: ENV_PROT.wsJiride.classifica,
+                TipoDocumento: ENV_PROT.wsJiride.tipoDocumento,
+                Oggetto: objFilesList.oggettoRichiedente,
+                Origine: ENV_PROT.wsJiride.origine,
+                MittenteInterno: ENV_PROT.wsJiride.mittenteInterno,
+                //MittenteInterno_Descrizione": "",
+                AnnoPratica: ENV_PROT.wsJiride.annoPratica,
+                NumeroPratica: ENV_PROT.wsJiride.numeroPratica,
+
+                 
+               MittentiDestinatari: {
+                MittenteDestinatario: [
+                  {
+                    CodiceFiscale : objFilesList.codiceFiscaleRichiedente,
+                    CognomeNome: objFilesList.cognomeRichiedente + ' ' + objFilesList.nomeRichiedente,
+                    DataNascita : objFilesList.dataNascitaRichiedente,
+                    Indirizzo : objFilesList.indirizzoRichiedente,
+                    Localita : objFilesList.cittaRichiedente,
+                    // Spese_NProt : 0,
+                    // TipoSogg: 'S',
+                    TipoPersona: ENV_PROT.wsJiride.tipoPersona,
+                    Recapiti: {
+                        Recapito: [
+                            {
+                                TipoRecapito: 'EMAIL',
+                                ValoreRecapito: objFilesList.emailRichiedente
+                            }
+                        ]
+                    }
+                  }
+                ]
+              },
+              
+              AggiornaAnagrafiche : ENV_PROT.wsJiride.aggiornaAnagrafiche,
+              InCaricoA : ENV_PROT.wsJiride.inCaricoA,
+              Utente : ENV_PROT.wsJiride.utente,
+              Ruolo : ENV_PROT.wsJiride.ruolo,              
+              Allegati: {  Allegato: []  }
+            }
+        };
+
+    // build attachements array
+    logConsole.info(args);
+
+    var DW_PATH = ENV_PROT.storageFolder;
+    var dir = DW_PATH + "/" + reqId;
+    
+    objFilesList.files.forEach(function(obj){
+        logConsole.info('adding:', dir + '/' + obj.name);
+        ext = obj.name.substring(obj.name.length - 3);
+        logConsole.info(ext);
+
+        // allegato principale
+        args.ProtoIn.Allegati.Allegato.push(
+            {
+                TipoFile : ext,
+                ContentType : mime.lookup(dir + '/' + obj.name),
+                Image: utilityModule.base64_encode(dir + '/' + obj.name),
+                NomeAllegato: obj.name,
+                Commento : ''
+            }
+        );
+    });
+
+    // AGGIUNGE I metadati
+    var fMetadati = reqId + '.txt';
+    logConsole.info('aggiunta metadati', fMetadati);
+    args.ProtoIn.Allegati.Allegato.push(
+        {
+            TipoFile : 'txt',
+            ContentType : mime.lookup(dir + '/' + fMetadati),
+            Image: utilityModule.base64_encode(dir + '/' + fMetadati),
+            NomeAllegato: fMetadati,
+            Commento : ''
+        }
+    );
+    
+    // var p7m1 = utilityModule.base64_encode('./test.pdf.p7m');
+    // var pdf1 = utilityModule.base64_encode('./test.pdf');
+
+    var soapResult = { result : '....'};
+ 
+    var soapOptions = {
+        endpoint: WS_IRIDE_ENDPOINT
+    };
+
+    logConsole.info('create client');
+
+
+    return new Promise(function (resolve, reject) {
+
+        soap.createClient(WS_IRIDE, soapOptions, function(err, client){
+            
+            if (err) {
+                var msg = 'Errore nella creazione del client soap';
+                log2file.error(msg); log2file.error(err); logConsole.error(err);
+                reject(err);
+            }
+
+            client.InserisciProtocolloEAnagrafiche(args,  function(err, result) {
+            if (err) {
+                var msg = 'Errore nella chiamata ad InserisciProtocollo';
+                    log2file.error(msg);  log2file.error(err);  logConsole.error(msg);
+                    console.log(args);
+                    reject(err);
+                };
+
+                //log2fileAccess.debug(JSON.stringify(result));
+                resolve(result);
+
+            }); //client.InserisciProtocollo
+        }); //soap.createClient
+    });
+}
+
+/* UPLOAD ROUTE  --------------------------------------------------------------------------------------------------------- */
 
 //router.post('/upload', multipartMiddleware, function(req, res) {
 router.post('/upload', function(req, res) {
 
     logConsole.info('start upload');
+    var bRaisedError = false;
+    var ErrorMsg = {};
 
 
     // limite upload
@@ -289,24 +618,99 @@ router.post('/upload', function(req, res) {
 
     var form = new multiparty.Form(options);
 
+    // parsind data
     form.parse(req, function(err, fields, files) {
-        logConsole.info('parse');
-        console.log(err);
-        console.log(fields);
-        console.log(files);
+        
+        var reqId = utilityModule.getTimestampPlusRandom();
+        var objFilesList = {};
+        logConsole.info('parsing ... data:', reqId);
+
+        if(err){
+            bRaisedError = true;
+            logConsole.error('PARSE ERROR');
+            logConsole.error(err);
+            log2file.error('PARSE ERROR');
+            log2file.error(err);
+            res.status(500).json({  msg : 'parse error',  message : err  });
+        } else {
+
+
+            /* sanitize input */ 
+            if(!bRaisedError){
+                if (sanitizeInput(fields, objFilesList, reqId)){
+                    logConsole.info('ok');
+                } else {
+                       bRaisedError = true;
+                    ErrorMsg = {
+                        title: 'Check input error',
+                        msg: 'Errore nei dati di input. Riprovare con altri dati o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.',
+                        code : 451
+                    }
+                    log2file.error(reqId);
+                    log2file.error(ErrorMsg);
+                    logConsole.error(ErrorMsg);
+                }
+            }  
+
+            // salvataggio file allegati e metadati
+            if(!bRaisedError){
+                if (savingFiles(files, objFilesList, reqId )){
+                    logConsole.info('ok');
+                } else {
+                    bRaisedError = true;
+                    ErrorMsg = {
+                        title: 'saving file error',
+                        msg: 'Errore nella memorizzazione remota dei files. Riprovare più tardi o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.',
+                        code : 450
+                    }
+                    log2file.error(reqId);
+                    log2file.error(ErrorMsg);
+                    logConsole.error(ErrorMsg);
+                }
+            }
+
+            // salvataggio file allegati e metadati
+            if(!bRaisedError){
+                protocolloWS(files, objFilesList, reqId )
+                .then( function (result) {
+                    logConsole.info(result);
+                    // save to file
+                })
+                .catch(function (err) {
+                    // console.log(err);
+                    log2file.error(reqId);
+                    log2file.error(err);
+                    
+                    console.log('verifyReCaptcha:ERROR2:', err.body);
+                    res.status(500).send(err);
+                });
+            }
+
+            // hashFilesCheck(files)
+
+            // protocollo()
+
+            // reportEmail() 
+
+        
+            if (bRaisedError){
+                res.status(ErrorMsg.code).send(ErrorMsg);
+            } else {                    
+                ErrorMsg = {
+                        title: 'saving file error',
+                        msg: 'Ecco i dati della sua richiesta<br>Identificativo:<b>' + reqId + '</b><br>Protocollo:<b>2016/1505455</b><br>Le è stata inviata una mail a titolo di promemoria all\' indirizzo mail@adsajsd.com.<br> In caso di ....<br>Grazie.',                        
+                        code : 200
+                    }
+
+                res.status(ErrorMsg.code).send(ErrorMsg);
+            }
+        }
+
     });
 
 
-  console.log('/uploading.....');
-  console.log(req.files);
-  console.log('/body.....');
-  console.log(req.body);
   // console.log(req.body.fields.hash);
   
-  // var transactionId = req.body.fields.transactionId;
-  var DW_PATH = './storage/PROTOCOLLO';
-  // var dir = DW_PATH + "/" +  transactionId;
-  var dir = DW_PATH;
   
 
   // verifyReCaptcha
@@ -413,7 +817,7 @@ request({
 
   // invio mail di conferma con pdf
 
-  res.status(200).send('Operazioni terminate ....');
+  
 
 });
 

@@ -63,6 +63,14 @@ angular.module('myApp.controllers')
     vm.model.cognomeRichiedente = 'ROSSI';
     vm.model.emailRichiedente = 'ruggero.ruggeri@comune.rimini.it';
     vm.model.emailRichiedenteConferma = 'ruggero.ruggeri@comune.rimini.it';
+    vm.model.codiceFiscaleRichiedente = 'RGGRGR70E25H294T';
+    vm.model.cellulareRichiedente = '3355703086';
+    vm.model.dataNascitaRichiedente = '23/12/1912';
+    vm.model.indirizzoRichiedente = 'VIA ROMA, 1';
+    vm.model.cittaRichiedente = 'RIMINI';
+    vm.model.capRichiedente = '47921';
+    vm.model.emailRichiedenteConferma = 'ruggero.ruggeri@comune.rimini.it';
+    vm.model.oggettoRichiedente = 'Invio richiesta generica Sig. MARIO ROSSI, cortesemente ....';
     vm.model.hash = [];
 
 
@@ -72,6 +80,7 @@ angular.module('myApp.controllers')
 
     function calcHash(f){
         console.log('calcHash', f);
+        vm.model.picFile1_info = "";
 
         if(f) {
             var dlg = dialogs.wait('Controllo...','calcolo codice di controllo',0);
@@ -152,9 +161,9 @@ angular.module('myApp.controllers')
 
           console.log('upload!!');
           
-          var upFiles = [];
-          upFiles.push(vm.model.picFile1);
-          upFiles.push(vm.model.picFile2);
+          //var upFiles = [];
+          //upFiles.push(vm.model.picFile1);
+          //upFiles.push(vm.model.picFile2);
           
           
 
@@ -162,19 +171,22 @@ angular.module('myApp.controllers')
             url: uploadUrl,
             method: 'POST',
             //files: vm.options.data.fileList
-            data: {files : upFiles, fields: vm.model  }
+            //data: {files : upFiles, fields: vm.model  }
+            data: {fields: vm.model  }
         }).then(function (resp) {
             console.log('Success ');
             console.log(resp);
 
 
-               dialogs.notify('ok','Azione completata con successo!' + resp);
+               dialogs.notify('Richiesta correttamente pervenuta - ' + resp.status, resp.data.msg);
               //dialogs.error('500 - Errore server',response.data.message, response.status);
           
             //usSpinnerService.stop('spinner-1');
         }, function (resp) {
             console.log('Error status: ' + resp.status);
-            dialogs.error('500 - Errore server',resp.data.message, resp.status);
+            console.log(resp);
+            console.log('Error status: ' + resp.message);
+            dialogs.error('Errore - ' + resp.status, resp.data.msg);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ');

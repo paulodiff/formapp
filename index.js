@@ -226,11 +226,11 @@ app.use('/phone', Phone);
 var Push = require('./routes/Push')();
 app.use('/push', Push);
 
-var Ele = require('./routes/Ele')();
-app.use('/ele', Ele);
+// var Ele = require('./routes/Ele')();
+// app.use('/ele', Ele);
 
-var Elezioni = require('./routes/Elezioni')();
-app.use('/elezioni', Elezioni);
+// var Elezioni = require('./routes/Elezioni')();
+// app.use('/elezioni', Elezioni);
 
 
 //default serving html data
