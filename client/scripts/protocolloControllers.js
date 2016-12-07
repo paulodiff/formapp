@@ -55,6 +55,7 @@ angular.module('myApp.controllers')
 
     vm.id = 'form01';
     vm.showError = true;
+    vm.bshowForm = true;
     vm.name  = "NAME01";
     vm.email  = "a@a.com";
     vm.userForm = {};
@@ -77,6 +78,8 @@ angular.module('myApp.controllers')
     // function assignment
     vm.onSubmit = onSubmit;
     vm.calcHash = calcHash;
+    vm.showForm = function(){ vm.bshowForm = true};
+    vm.hideForm = function(){ vm.bshowForm = false};
 
     function calcHash(f){
         console.log('calcHash', f);
@@ -177,16 +180,17 @@ angular.module('myApp.controllers')
             console.log('Success ');
             console.log(resp);
 
-
-               dialogs.notify('Richiesta correttamente pervenuta - ' + resp.status, resp.data.msg);
+               $rootScope.$broadcast('dialogs.wait.complete'); 
+               dialogs.notify('Richiesta correttamente pervenuta', resp.data);
               //dialogs.error('500 - Errore server',response.data.message, response.status);
           
             //usSpinnerService.stop('spinner-1');
         }, function (resp) {
+            $rootScope.$broadcast('dialogs.wait.complete');
             console.log('Error status: ' + resp.status);
             console.log(resp);
             console.log('Error status: ' + resp.message);
-            dialogs.error('Errore - ' + resp.status, resp.data.msg);
+            dialogs.error('Errore - ' + resp.status, resp.data);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ');
@@ -194,7 +198,8 @@ angular.module('myApp.controllers')
               _progress = progressPercentage
               $rootScope.$broadcast('dialogs.wait.progress',{'msg' : progressPercentage, 'progress' : _progress});
             }else{
-              $rootScope.$broadcast('dialogs.wait.complete');
+              //$rootScope.$broadcast('dialogs.wait.complete');
+              $rootScope.$broadcast('dialogs.wait.progress',{'msg' : 'Elaborazione in corso', 'progress' : _progress});
             }
         });
 

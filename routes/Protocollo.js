@@ -46,6 +46,7 @@ var request = require('request');
 var moment = require('moment');
 var mime = require('mime');
 var async = require('async');
+var handlebars = require('handlebars');
 // var Segnalazione  = require('../models/segnalazione.js'); // load configuration data
 // var flow = require('../models/flow-node.js')('tmp'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); 
@@ -93,6 +94,42 @@ var MODO_OPERATIVO = "TEST";
 router.get('/ping', function (req, res) {
     var p = {};
 
+    logConsole.info('ASYNC preparazione messaggio risposta:');
+    var fileContents = '';
+    var templateFileName = ENV_PROT.templateFileName;
+
+    try {
+        fileContents = fs.readFileSync(templateFileName).toString();
+    } catch (err) {
+        logConsole.error('WSCALL:templateFileName: ' + templateFileName + ' NON TROVATA in configurazione');
+        res.status(500).send('WSCALL:templateFileName: ' + templateFileName + ' NON TROVATA in configurazione');
+        return;
+    }
+
+    // var data = dataSAMPLE; // dati di esempio
+    var model = {};
+    
+    model.reqId = 'AAAAAAAAAAAAAA@MARIO';
+    model.annoProtocollo = '2016';
+    model.numeroProtocollo = '12345678';
+    model.nomeRichiedente = 'MARIO';
+    model.cognomeRichiedente = 'ROSSI';
+    model.emailRichiedente = 'ruggero.ruggeri@comune.rimini.it';
+    model.emailRichiedenteConferma = 'ruggero.ruggeri@comune.rimini.it';
+    model.codiceFiscaleRichiedente = 'RGGRGR70E25H294T';
+    model.cellulareRichiedente = '3355703086';
+    model.dataNascitaRichiedente = '11/12/1912';
+    model.indirizzoRichiedente = 'VIA ROMA, 1';
+    model.cittaRichiedente = 'RIMINI';
+    model.capRichiedente = '47921';
+    model.emailRichiedenteConferma = 'ruggero.ruggeri@comune.rimini.it';
+    model.oggettoRichiedente = 'Invio richiesta generica Sig. MARIO ROSSI, cortesemente ....';
+
+
+    var template = handlebars.compile(fileContents);
+    var xmlBuilded = template(model);
+
+    res.send(xmlBuilded);
 
 
 
@@ -119,10 +156,10 @@ router.get('/ping', function (req, res) {
     // results is now equal to: {one: 1, two: 2}
     if(err){
         console.log(p);
-        res.send('ERRORE:' + err);
+        // res.send('ERRORE:' + err);
     } else {
         console.log('completed!');
-        res.send(p);
+        // res.send(p);
     }
 });
 });
@@ -587,22 +624,25 @@ function protocolloWS(objFilesList,  reqId) {
                 var msg = 'Errore nella creazione del client soap';
                 log2file.error(msg); log2file.error(err); logConsole.error(err);
                 reject(err);
+            } else {
+
+                client.InserisciProtocolloEAnagrafiche(args,  function(err, result) {
+                
+                    if (err) {
+                        var msg = 'Errore nella chiamata ad InserisciProtocollo';
+                        log2file.error(msg);  log2file.error(err);  logConsole.error(msg);
+                        console.log(args);
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+
+                });
             }
 
-            client.InserisciProtocolloEAnagrafiche(args,  function(err, result) {
-            if (err) {
-                var msg = 'Errore nella chiamata ad InserisciProtocollo';
-                    log2file.error(msg);  log2file.error(err);  logConsole.error(msg);
-                    console.log(args);
-                    reject(err);
-                };
-
-                //log2fileAccess.debug(JSON.stringify(result));
-                resolve(result);
-
             }); //client.InserisciProtocollo
-        }); //soap.createClient
-    });
+     }); //soap.createClient
+
 }
 
 /* UPLOAD ROUTE  --------------------------------------------------------------------------------------------------------- */
@@ -613,10 +653,12 @@ router.post('/upload', function(req, res) {
     var bRaisedError = false;
     var ErrorMsg = {};
     var reqId = utilityModule.getTimestampPlusRandom();
+    var supportMsg = '<br>Riprovare più tardi o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.';
     var objFilesList = {};
     var objFieldList = {};
     var objFieldSanitized = {};
     var objDatiProtocollo = {};
+    var htmlResponseMsg = '';
     logConsole.info('start upload: ' + reqId);
 
     // limite upload
@@ -625,8 +667,8 @@ router.post('/upload', function(req, res) {
     async.series([
 
             function(callback){
-                logConsole.info('ASYNC Gmail rechaota test:');
-                callback(null, 'Invio mail ... ok');
+                logConsole.info('ASYNC Gmail Recaptcha test:');
+                callback(null, 'Gmail Recaptcha ... ok');
             },
             
             function(callback) {
@@ -638,7 +680,7 @@ router.post('/upload', function(req, res) {
                         if(err){
                             ErrorMsg = {
                                             title: 'Check input error',
-                                            msg: 'Errore nella decodifica dei dati ricevuti. Riprovare con altri dati o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.',
+                                            msg: 'Errore nella decodifica dei dati ricevuti. ' + supportMsg,
                                             code : 455
                                         }
                             logConsole.error(err);
@@ -663,7 +705,7 @@ router.post('/upload', function(req, res) {
                 } else {
                     ErrorMsg = {
                         title: 'Check input error',
-                        msg: 'Errore nei dati di input. Riprovare con altri dati o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.',
+                        msg: 'Errore nei dati di input. ' + supportMsg,
                         code : 456
                     }
                     log2file.error(reqId);
@@ -708,11 +750,12 @@ router.post('/upload', function(req, res) {
                 })
                 .catch(function (err) {
                     // console.log(err);
+                    logConsole.error('ASYNC protocolloWS:');
                     log2file.error(reqId);
                     log2file.error(err);
                     ErrorMsg = {
                         title: 'Errore di protocollo',
-                        msg: 'Errore nella protocollazione della richiesta. Riprovare più tardi o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.',
+                        msg: 'Errore nella protocollazione della richiesta.' + supportMsg,
                         code : 458
                     }
                     callback(ErrorMsg, null);
@@ -731,6 +774,34 @@ router.post('/upload', function(req, res) {
                 callback(null, 'salvataggio dati protocollo nella cartella ... ok');
             },
 
+            function(callback){
+                logConsole.info('ASYNC preparazione messaggio risposta:');
+ 
+                var fileContents = '';
+                var templateFileName = ENV_PROT.templateFileName;
+
+                try {
+                    fileContents = fs.readFileSync(templateFileName).toString();
+                } catch (err) {
+                    log2file.error(reqId);
+                    log2file.error(err);
+                    ErrorMsg = {
+                        title: 'Errore preparazione messaggio',
+                        msg: 'Errore preparazione messaggio di risposta. '  + supportMsg,
+                        code : 459
+                    }
+                    callback(ErrorMsg, null);
+                }
+
+                objFieldSanitized.idProtocollo =  objDatiProtocollo.InserisciProtocolloEAnagraficheResult.IdDocumento;
+                objFieldSanitized.numeroProtocollo = objDatiProtocollo.InserisciProtocolloEAnagraficheResult.AnnoProtocollo;
+                objFieldSanitized.annoProtocollo = objDatiProtocollo.InserisciProtocolloEAnagraficheResult.NumeroProtocollo;
+            
+                var template = handlebars.compile(fileContents);
+                htmlResponseMsg = template(objFieldSanitized);
+                callback(null, 'Messaggio di risposta preparato ok');
+
+            },
 
             function(callback){
                 logConsole.info('ASYNC invio mail:');
@@ -739,7 +810,7 @@ router.post('/upload', function(req, res) {
                 logConsole.info(objDatiProtocollo.InserisciProtocolloEAnagraficheResult.AnnoProtocollo);
                 logConsole.info(objDatiProtocollo.InserisciProtocolloEAnagraficheResult.NumeroProtocollo);
 
-                var msg = "Comune di Rimini - Protocollo " +  objDatiProtocollo.InserisciProtocolloEAnagraficheResult.AnnoProtocollo + "/" + objDatiProtocollo.InserisciProtocolloEAnagraficheResult.NumeroProtocollo;
+                // var msg = "Comune di Rimini - Protocollo " +  objDatiProtocollo.InserisciProtocolloEAnagraficheResult.AnnoProtocollo + "/" + objDatiProtocollo.InserisciProtocolloEAnagraficheResult.NumeroProtocollo;
 
                     // create reusable transporter object using the default SMTP transport
                 var smtpConfig = {
@@ -756,8 +827,8 @@ router.post('/upload', function(req, res) {
                     from: '"Ruggero Ruggeri" <ruggero.ruggeri@comune.rimini.it>', // sender address
                     to: objFieldSanitized.emailRichiedente, // list of receivers
                     subject: 'Promemoria - Presentazione Istanza', 
-                    text: msg, // plaintext body
-                    html: msg // html body
+                    // text: msg, // plaintext body
+                    html: htmlResponseMsg // html body
                 };
                 transporter.sendMail(mailOptions, function(error, info){
                     if(error){
@@ -765,7 +836,7 @@ router.post('/upload', function(req, res) {
                         log2file.error(err);
                         ErrorMsg = {
                            title: 'Errore di protocollo',
-                            msg: 'Errore durante invio mail. Riprovare più tardi o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.',
+                            msg: 'Errore durante invio mail. ' + supportMsg,
                             code : 459
                         }
                         callback(ErrorMsg, null);
@@ -788,8 +859,9 @@ router.post('/upload', function(req, res) {
             res.status(ErrorMsg.code).send(ErrorMsg);
         } else {
             logConsole.info('ALL OK!!!!');
-            results.msg = 'Protocollo N. ecc.';
-            res.status(200).send(results);
+            // results.msg = htmlResponseMsg;
+            logConsole.info(htmlResponseMsg);
+            res.status(200).send(htmlResponseMsg);
         }
     });
 

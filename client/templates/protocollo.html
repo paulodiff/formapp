@@ -9,7 +9,7 @@
     
 
        <!-- create our form -->
-    <form name="vm.userForm">
+    <form name="vm.userForm" ng-show="vm.bshowForm">
 
 <div class="panel panel-success">
   <div class="panel-heading">Dati</div>
@@ -306,7 +306,7 @@
                 type="file" 
                 ng-model="vm.model.picFile1" 
                 name="file1"    
-                accept="image/*" 
+                accept="*/*" 
                 required
                 ngf-select 
                 ngf-max-size="20MB" 
@@ -326,7 +326,7 @@
                 type="file" 
                 ng-model="vm.model.ciFile1" 
                 name="ciFile1"    
-                accept="image/*" 
+                accept="*/*" 
                 ngf-select 
                 ngf-max-size="20MB" 
                 ngf-change="vm.calcHash($file)"
@@ -345,7 +345,7 @@
                 type="file" 
                 ng-model="vm.model.ciFile2" 
                 name="ciFile2"    
-                accept="image/*" 
+                accept="*/*" 
                 ngf-select 
                 ngf-max-size="200MB" 
                 ngf-change="vm.calcHash($file)"
@@ -406,6 +406,17 @@
 
         
     </form>
+
+
+      <div class="form-group">
+            <button type="submit"
+                    class="btn btn-raised btn-info btn-block btn-lg"  
+                    ng-click="vm.showForm()">SInvia richiesta</button>
+            <button type="submit"
+                    class="btn btn-raised btn-info btn-block btn-lg"  
+                    ng-click="vm.hideForm()">HInvia richiesta</button>
+
+        </div>
 
 <!--
     <pre>vm.userForm.$valid = {{ vm.userForm.$valid | json }}</pre>
