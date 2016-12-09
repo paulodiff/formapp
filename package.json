@@ -41,7 +41,10 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^2.0.2",
+    "gulp-resources": "^0.3.0",
+    "gulp-useref": "^3.1.2",
     "mocha": "^2.4.5",
     "should": "^8.3.2",
     "supertest": "^1.2.0",
