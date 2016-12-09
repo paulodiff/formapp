@@ -653,6 +653,7 @@ router.post('/upload', function(req, res) {
     var bRaisedError = false;
     var ErrorMsg = {};
     var reqId = utilityModule.getTimestampPlusRandom();
+    ErrorMsg.reqId = reqId;
     var supportMsg = '<br>Riprovare più tardi o inviare una mail di segnalazione a ruggero.ruggeri@comune.rimini.it utilizzando il seguente identificativo di richiesta:<br><b>' + reqId + '</b><br>Grazie.';
     var objFilesList = {};
     var objFieldList = {};
@@ -668,7 +669,20 @@ router.post('/upload', function(req, res) {
 
             function(callback){
                 logConsole.info('ASYNC Gmail Recaptcha test:');
+                var p = {"nomeRichiedente":"MARIO","cognomeRichiedente":"ROSSI","emailRichiedente":"ruggero.ruggeri@comune.rimini.it","codiceFiscaleRichiedente":"RGGRGR70E25H294T","cellulareRichiedente":"3355703086","dataNascitaRichiedente":"11/12/1912","indirizzoRichiedente":"VIA ROMA, 1","cittaRichiedente":"RIMINI","capRichiedente":"47921","oggettoRichiedente":"Invio richiesta generica Sig. MARIO ROSSI, cortesemente ....","files":[],"reqId":"20161209@112659@342@52188","idProtocollo":139364,"annoProtocollo":"2016","numeroProtocollo":100144};
+                ErrorMsg = {
+                                            title: 'Errore controllo ReCaptcha',
+                                            msg: 'Si è verificato un errore nel controllo del codice antifrode ReCaptcha',
+                                            //msg : p,
+                                            reqId: reqId,
+                                            code : 999
+                                        };
+
+
+
+                //callback(ErrorMsg, null);
                 callback(null, 'Gmail Recaptcha ... ok');
+
             },
             
             function(callback) {
@@ -680,7 +694,7 @@ router.post('/upload', function(req, res) {
                         if(err){
                             ErrorMsg = {
                                             title: 'Check input error',
-                                            msg: 'Errore nella decodifica dei dati ricevuti. ' + supportMsg,
+                                            msg: 'Errore nella decodifica dei dati ricevuti. (MAXSIZE)' + supportMsg,
                                             code : 455
                                         }
                             logConsole.error(err);
@@ -794,8 +808,8 @@ router.post('/upload', function(req, res) {
                 }
 
                 objFieldSanitized.idProtocollo =  objDatiProtocollo.InserisciProtocolloEAnagraficheResult.IdDocumento;
-                objFieldSanitized.numeroProtocollo = objDatiProtocollo.InserisciProtocolloEAnagraficheResult.AnnoProtocollo;
-                objFieldSanitized.annoProtocollo = objDatiProtocollo.InserisciProtocolloEAnagraficheResult.NumeroProtocollo;
+                objFieldSanitized.annoProtocollo = objDatiProtocollo.InserisciProtocolloEAnagraficheResult.AnnoProtocollo;
+                objFieldSanitized.numeroProtocollo = objDatiProtocollo.InserisciProtocolloEAnagraficheResult.NumeroProtocollo;
             
                 var template = handlebars.compile(fileContents);
                 htmlResponseMsg = template(objFieldSanitized);
@@ -861,7 +875,13 @@ router.post('/upload', function(req, res) {
             logConsole.info('ALL OK!!!!');
             // results.msg = htmlResponseMsg;
             logConsole.info(htmlResponseMsg);
-            res.status(200).send(htmlResponseMsg);
+            var Msg = {
+                           title: 'Istanza ricevuta con successo!',
+                            msg: objFieldSanitized,
+                            reqId: reqId,
+                            code : 200
+                        }
+            res.status(200).send(Msg);
         }
     });
 

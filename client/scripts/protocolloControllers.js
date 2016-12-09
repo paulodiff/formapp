@@ -73,13 +73,14 @@ angular.module('myApp.controllers')
     vm.model.emailRichiedenteConferma = 'ruggero.ruggeri@comune.rimini.it';
     vm.model.oggettoRichiedente = 'Invio richiesta generica Sig. MARIO ROSSI, cortesemente ....';
     vm.model.hash = [];
+    vm.responseMessage = {};
 
 
     // function assignment
     vm.onSubmit = onSubmit;
     vm.calcHash = calcHash;
-    vm.showForm = function(){ vm.bshowForm = true};
-    vm.hideForm = function(){ vm.bshowForm = false};
+    vm.show_Form = function(){ vm.bshowForm = true};
+    vm.hide_Form = function(){ vm.bshowForm = false};
 
     function calcHash(f){
         console.log('calcHash', f);
@@ -181,7 +182,10 @@ angular.module('myApp.controllers')
             console.log(resp);
 
                $rootScope.$broadcast('dialogs.wait.complete'); 
-               dialogs.notify('Richiesta correttamente pervenuta', resp.data);
+               // dialogs.notify('Richiesta correttamente pervenuta', resp.data);
+               vm.responseMessage = resp.data;
+               vm.bshowForm = false;
+               console.log(vm.responseMessage);
               //dialogs.error('500 - Errore server',response.data.message, response.status);
           
             //usSpinnerService.stop('spinner-1');
@@ -189,8 +193,18 @@ angular.module('myApp.controllers')
             $rootScope.$broadcast('dialogs.wait.complete');
             console.log('Error status: ' + resp.status);
             console.log(resp);
-            console.log('Error status: ' + resp.message);
-            dialogs.error('Errore - ' + resp.status, resp.data);
+
+            if (resp.status == -1){
+                vm.responseMessage.title = "Errore di connessione";
+                vm.responseMessage.msg = "Verificare la connessione internet e riprovare la trasmissione";
+                vm.responseMessage.code = 999;
+            } else {
+                vm.responseMessage = resp.data;
+            }
+
+            vm.bshowForm = false;
+            // dialogs.error('Errore - ' + resp.status, resp.data.msg);
+            console.log(vm.responseMessage);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ');
