@@ -194,6 +194,7 @@ angular.module('myApp.controllers')
 
 
     vm.testSocketIO = testSocketIO;
+    vm.testSendData = testSendData;
 
     // function assignment
     vm.onSubmit = onSubmit;
@@ -205,8 +206,30 @@ angular.module('myApp.controllers')
     function testSocketIO() {
       console.log('testSocketIO');
       $scope.sendMessage();
+   }
+
+    function testSendData() {
+      console.log('testSendData');
+
+
+          var apiUrl = "http://localhost:9988/api/protocollo/testSIO";
+          console.log('apiUrl', apiUrl);
+
+
+         return $http({ 
+                    url: apiUrl, 
+                    method: "GET",
+                    params: ''
+                  })
+        .then(function (res) {
+           console.log(res.data);
+            
+        });
 
    }
+
+
+
 
     function onInputFileChange(f){
         console.log('onInputFileChange', f);

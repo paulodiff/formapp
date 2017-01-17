@@ -237,7 +237,11 @@ app.use('/push', Push);
 
 
 var Socket = require('./routes/Socketr.js');
+app.set('socketio', io);
 io.sockets.on('connection', Socket);
+
+
+
 
 //io.sockets.on('connection', function(socket){
 //    console.log('a user connected');

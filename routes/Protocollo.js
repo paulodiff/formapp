@@ -1842,6 +1842,77 @@ router.get('/getList', function(req, res) {
       });      
 });
 
+
+//##############################################################################################################
+//##############################################################################################################
+//##############################################################################################################
+//##############################################################################################################
+//##############################################################################################################
+//##############################################################################################################
+
+
+router.get('/testSIO', function(req, res) {
+  console.log('TESTSIO');
+
+  var io = req.app.get('socketio');
+  io.emit('send:message', { msg: new Date() });
+  console.log('io.socket ... emitted!');
+
+
+ async.series([
+
+            function(callback){
+                logConsole.info('ASYNC 1A');
+                setTimeout(
+
+                    function () {
+                        logConsole.info('ASYNC 1B');    
+                        callback(null, 'OK1');
+                        io.emit('send:message', { msg: new Date() });
+                    
+                }, 2000);
+
+            },
+
+            function(callback){
+                logConsole.info('ASYNC 2A');
+                setTimeout(
+
+                    function () {
+                        logConsole.info('ASYNC 2B');    
+                        callback(null, 'OK3');
+                        io.emit('send:message', { msg: new Date() });
+                    
+                }, 2000);
+
+            }
+            
+/*
+            function(callback){
+                logConsole.info('ASYNC 2');
+                io.emit('send:message', { msg: new Date() });
+                callback(null, 'OK2');
+            }
+*/
+        ],function(err, results) {
+            // results is now equal to: {one: 1, two: 2}
+            logConsole.info('ASYNC FINAL!:');
+            if(err){
+                log2file.error(err);
+                logConsole.error(err);
+                res.status(ErrorMsg.code).send(ErrorMsg);
+            } else {
+                logConsole.info('ALL OK!!!!');
+                res.status(200).send('ok');
+            }
+        });
+
+
+
+});
+
+
+
 /*
 router.get('/download/:identifier', function(req, res) {
   console.log('Get /download/identifier : '+ req.params.identifier);
@@ -1849,10 +1920,6 @@ router.get('/download/:identifier', function(req, res) {
 });
 
 
-router.get('/test', function(req, res) {
-  console.log('Get /download/identifier : '+ req.params.identifier);
-  res.status(200).send({ok:1});
-});
 
 router.get('/map',function(req, res) {
   console.log('/map');
