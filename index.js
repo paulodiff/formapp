@@ -1,5 +1,10 @@
 var express = require('express');
+var http = require('http');
 var app = express();
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+
+
 var uuid = require('node-uuid');
 
 //var flash        = require('connect-flash');
@@ -193,6 +198,10 @@ var loginr = require('./routes/loginr')(passport);
 app.use('/api/auth', loginr);
 */
 
+
+app.set('socketio', io);
+
+
 var Sloginr = require('./routes/Sloginr')();
 app.use('/auth', Sloginr);
 
@@ -225,6 +234,17 @@ app.use('/phone', Phone);
 
 var Push = require('./routes/Push')();
 app.use('/push', Push);
+
+
+var Socket = require('./routes/Socketr.js');
+io.sockets.on('connection', Socket);
+
+//io.sockets.on('connection', function(socket){
+//    console.log('a user connected');
+//    socket.on('disconnect', function(){
+//        console.log('user disconnected');
+//    });
+//  });
 
 // var Ele = require('./routes/Ele')();
 // app.use('/ele', Ele);
@@ -292,6 +312,11 @@ models.Person.hasMany(models.Blobs);
 models.Person.hasMany(models.Nucleos);
 
 
+server.listen(app.get('port'), function() {
+    log.log2console('Express server listening on port ' + server.address().port); 
+});
+
+/*
 
 models.sequelize.sync().then(function () {
   log.log2console('Sequelize sync!');
@@ -300,3 +325,4 @@ models.sequelize.sync().then(function () {
   });
 });
 
+*/

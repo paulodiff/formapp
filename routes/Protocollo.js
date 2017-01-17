@@ -627,6 +627,7 @@ function protocolloWS(objFilesList,  reqId) {
             } else {
 
                 client.InserisciProtocolloEAnagrafiche(args,  function(err, result) {
+                //client.InserisciProtocollo(args,  function(err, result) {
                 
                     if (err) {
                         var msg = 'Errore nella chiamata ad InserisciProtocollo';
@@ -1301,8 +1302,11 @@ router.post('/inserisciProtocollo',  utilityModule.ensureAuthenticated, function
 
 
 
+        //client.InserisciProtocollo(args,  function(err, result) {
         client.InserisciProtocolloEAnagrafiche(args,  function(err, result) {
            
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>c I PPPPPPP');
+
            // log2file.debug(result);
            // console.log(result);
 

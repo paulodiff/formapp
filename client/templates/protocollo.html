@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="alert alert-info" role="alert">
+    <div class="well" role="alert">
      <h4>COMUNE DI RIMINI - RICEVIMENTO ISTANZE</h4>
      <p>Compilare accuratamente i dati sottostanti per la trasmissione di una istanza generica</p>
     </div>
@@ -301,7 +301,7 @@
    <div class="form-group">
      <label  for="inputFile2">Allegato Istanza - (dimensione massima 20Mb) {{vm.model.picFile1_info}}</label>
       <input    id="inputFile2"
-                class="btn btn-raised btn-primary btn-block"
+                class="btn btn-raised btn-success btn-block"
                 type="file" 
                 ng-model="vm.model.picFile1" 
                 name="file1"    
@@ -321,7 +321,7 @@
    <div class="form-group">
      <label  for="inputFile2">Carta Identità Fronte - (dimensione massima 20Mb)</label>
       <input    id="inputFile2"
-                class="btn btn-raised btn-primary  btn-block"
+                class="btn btn-raised btn-success  btn-block"
                 type="file" 
                 ng-model="vm.model.ciFile1" 
                 name="ciFile1"    
@@ -340,7 +340,7 @@
      <label  for="inputFile2">Carta Identità Retro - (dimensione massima 200Mb)</label>
      
       <input    id="inputFile2"
-                class="btn btn-raised btn-primary btn-block"
+                class="btn btn-raised btn-success btn-block"
                 type="file" 
                 ng-model="vm.model.ciFile2" 
                 name="ciFile2"    
@@ -354,6 +354,27 @@
       <span class="label label-danger" ng-show="vm.userForm.ciFile2.$error.maxSize" class="badge">File troppo grande 
           {{errorFile.size / 1000000|number:1}}MB: max 2M</span>
    </div>
+
+
+   <div class="form-group">
+     <label  for="inputFileCSS" class="btn btn-block btn-raised btn-success"><i class="material-icons">note_add</i> {{vm.labelInputFileCSS}}</label>
+     
+      <input    id="inputFileCSS"
+                class="inputfile inputfile-1"
+                type="file" 
+                ng-model="vm.model.inputFileCSS" 
+                name="inputFileCSS"    
+                accept="*/*" 
+                ng-hide="true"
+                ngf-select 
+                ngf-max-size="1MB" 
+                ngf-change="vm.onInputFileChange($file)"
+                ngf-model-invalid="errorFile"> 
+
+      <span class="label label-danger" ng-show="vm.userForm.inputFileCSS.$error.maxSize" class="badge">File troppo grande 
+          {{errorFile.size / 1000000|number:1}}MB: max 2M</span>
+   </div>
+
 
 
   </div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>Collector Data Form Application</title>
+    <title>Presentazione Istanze Online - Comune di Rimini</title>
     <link rel="shortcut icon" href="favicon.ico" />
 
     <link href="//fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600" rel="stylesheet">
@@ -117,6 +117,8 @@
 
     <!-- endbuild -->
 
+    <!-- <script src="bower_components/particles.js/particles.min.js"></script> -->
+
     <!-- Google Recaptcha-->
     <script src="https://www.google.com/recaptcha/api.js?onload=vcRecaptchaApiLoaded&render=explicit"  async defer></script>
     <!-- build:js fast/combined2.js -->
@@ -126,6 +128,10 @@
     <!-- UI-Validate -->
     <script type="text/javascript" src="bower_components/angular-ui-validate/dist/validate.js"></script>
 
+
+    <!-- socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+
     <!-- your app's js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/configuration.js"></script>
@@ -134,6 +140,7 @@
     <script src="scripts/formlyService.js"></script>
     <script src="scripts/utilsService.js"></script>
     <script src="scripts/sigService.js"></script> 
+    <script src="scripts/socketService.js"></script> 
     <script src="scripts/rootControllers.js"></script>
     <script src="scripts/loginControllers.js"></script>
     <script src="scripts/sigControllers.js"></script>
@@ -143,6 +150,7 @@
     <script src="scripts/uigridControllers.js"></script>
     <script src="scripts/elezioniControllers.js"></script>
     <script src="scripts/protocolloControllers.js"></script>
+    <script src="scripts/batchControllers.js"></script>
 
     <script src="scripts/filters.js"></script>
     <script src="scripts/rootDirectives.js"></script>
@@ -163,7 +171,7 @@
   </head>
 
   <body ng-app="myApp" ng-controller="AppCtrl">
-
+<a id="topPosition"></a>
 
 
 <nav ng-controller="SNavbarCtrl" class="navbar navbar-inverse navbar-static-top navbar-inner">
@@ -191,6 +199,8 @@
                 <li><a href="#/protocollo">Presentazione Istanze</a></li>
                 <li><a href="#/graphPhone">___</a></li>
                 <li><a href="#/form">__</a></li>
+                <li><a href="#/elezioni">_****_</a></li>
+                <li><a href="#/batch">_B_</a></li>
                 <!-- <li><a href="#/elezioni">Elezioni</a></li> -->
           </ul>
 
@@ -207,12 +217,13 @@
         <nav uib-collapse="!isCollapsed">
             <ul class="nav navbar-nav">
                 <!-- <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">Getting started</a></li> -->
-                <li><a href="#/sigPhoto" ng-click="isCollapsed = !isCollapsed">Photo</a></li>
-                <li><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form1</a></li>
+                <li class="active"><a href="#/">Home</a></li>
                 <li><a href="#/protocollo">Istanze</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/profile" ng-click="isCollapsed = !isCollapsed">Profile</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/form" ng-click="isCollapsed = !isCollapsed">Form</a></li>
                 <li><a href="#/login"  ng-click="isCollapsed = !isCollapsed">@@Login</a></li>
+                <li><a href="#/form" ng-click="isCollapsed = !isCollapsed">F1</a></li>
+                <li><a href="#/sigPhoto" ng-click="isCollapsed = !isCollapsed">P1</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/logout">Esci({{getUserId()}})</a></li>
             </ul>
         </nav>

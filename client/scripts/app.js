@@ -63,7 +63,7 @@ angular.module('myApp', [//'ionic',
     //.when('/c?id', '/contacts/:id')
     //.when('/user/:id', '/contacts/:id')
     // If the url is ever invalid, e.g. '/asdf', then redirect to '/' aka the home state
-    $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.otherwise('homeIstanze');
     
     $stateProvider.state('menu', {
             url: "/menu",
@@ -81,8 +81,8 @@ angular.module('myApp', [//'ionic',
     });
 
 
-    $stateProvider.state('home', {
-        url: '/',
+    $stateProvider.state('homeIstanze', {
+        url: '/homeIstanze',
         controller: 'SHomeCtrl',
         templateUrl: 'templates/Shome.html',
         accessLogged: false,
@@ -207,6 +207,18 @@ angular.module('myApp', [//'ionic',
           //loginRequired: loginRequired
         }
     });
+
+    $stateProvider.state('batch', {
+        url: '/batch',
+        templateUrl: 'templates/batch.html',
+        controller: 'BatchCtrl',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+
 
     $stateProvider.state('sigPosition', {
         url: '/sigPosition',
