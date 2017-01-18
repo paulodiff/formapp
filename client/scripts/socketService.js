@@ -1,6 +1,7 @@
 angular.module('myApp.services')
 .factory('socket', function ($rootScope) {
   var socket = io.connect();
+  console.log(socket);
   return {
     on: function (eventName, callback) {
       socket.on(eventName, function () {  
@@ -19,6 +20,9 @@ angular.module('myApp.services')
           }
         });
       })
+    },
+    getId: function (){
+      return socket.id;
     }
   };
 });

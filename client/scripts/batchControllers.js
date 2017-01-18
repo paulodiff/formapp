@@ -33,6 +33,13 @@ angular.module('myApp.controllers')
     $scope.messages.push(message);
   });
 
+  socket.on('log:message', function (message) {
+    console.log('S:LOG:MESSAGE', message);
+    if (message.progress)  $rootScope.$broadcast('dialogs.wait.progress',{'progress' : message.progress});
+    $scope.messages.push(message);
+  });
+  
+
   socket.on('change:name', function (data) {
     console.log('S-CHANGE:NAME', message);
     changeName(data.oldName, data.newName);
@@ -208,9 +215,14 @@ angular.module('myApp.controllers')
       $scope.sendMessage();
    }
 
+
+// ###########################################################################################################################
+
     function testSendData() {
       console.log('testSendData');
+      console.log(socket.getId());
 
+          var dlg = dialogs.wait('Attendere ...','calcolo codice di controllo',0);
 
           var apiUrl = "http://localhost:9988/api/protocollo/testSIO";
           console.log('apiUrl', apiUrl);
@@ -219,10 +231,15 @@ angular.module('myApp.controllers')
          return $http({ 
                     url: apiUrl, 
                     method: "GET",
-                    params: ''
+                    params: {
+                        socketId : socket.getId()
+                    }
                   })
         .then(function (res) {
+            $rootScope.$broadcast('dialogs.wait.complete');
+            console.log('Respo OK');
            console.log(res.data);
+
             
         });
 

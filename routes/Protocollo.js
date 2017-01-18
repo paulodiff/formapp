@@ -1850,42 +1850,55 @@ router.get('/getList', function(req, res) {
 //##############################################################################################################
 //##############################################################################################################
 
-
 router.get('/testSIO', function(req, res) {
   console.log('TESTSIO');
+  console.log(req.query);
+
+  var socketId = req.query.socketId;
 
   var io = req.app.get('socketio');
   io.emit('send:message', { msg: new Date() });
+  io.to(socketId).emit('log:message', { msg: new Date(), progress: 0});
   console.log('io.socket ... emitted!');
 
 
  async.series([
-
             function(callback){
-                logConsole.info('ASYNC 1A');
                 setTimeout(
-
-                    function () {
-                        logConsole.info('ASYNC 1B');    
-                        callback(null, 'OK1');
-                        io.emit('send:message', { msg: new Date() });
-                    
-                }, 2000);
-
+                            function () {   
+                                logConsole.info('ASYNC 1B');   
+                                io.to(socketId).emit('log:message', { msg: new Date(), progress: 10});     
+                                callback(null, 'OK1');
+                           }, 2000);
             },
 
             function(callback){
-                logConsole.info('ASYNC 2A');
                 setTimeout(
-
                     function () {
                         logConsole.info('ASYNC 2B');    
-                        callback(null, 'OK3');
-                        io.emit('send:message', { msg: new Date() });
-                    
+                        io.to(socketId).emit('log:message', { msg: new Date(), progress:50 });
+                        callback(null, 'OK2');
                 }, 2000);
+            },
 
+            function(callback){
+                setTimeout(
+                    function () {
+                        logConsole.info('ASYNC 3B');    
+                        io.to(socketId).emit('log:message', { msg: new Date(), progress: 75 });
+                        callback(null, 'OK3');
+                }, 2000);
+            },
+
+            function(callback){
+                setTimeout(
+                    function () {
+                        logConsole.info('ASYNC 3B');    
+                        io.to(socketId).emit('log:message', { msg: new Date(), progress: 100 });
+                        callback(null, 'OK4');
+                }, 2000);
             }
+
             
 /*
             function(callback){
