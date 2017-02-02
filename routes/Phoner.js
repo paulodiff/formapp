@@ -31,16 +31,19 @@ module.exports = function(){
 
 // GET /api/me
 router.get('/getData', function(req, res) {
-  console.log('get /me');
+  console.log('getData');
   //var qry = "select tel_data, tel_ora, tel_chiamato, tel_chiamante, tel_durata from tel_telefonate where tel_chiamato =  '4607' order by tel_timestamp";
 
   var numTel = '4607';
-  var daData = '2016-08-01';
-  var aData = '2016-08-31';
+  var daData = '2017-01-01';
+  var aData = '2017-01-31';
 
   if(req.query.daData){ daData = req.query.daData; }
   if(req.query.aData){ aData = req.query.aData; }
   if(req.query.numTel){ numTel = req.query.numTel; }
+
+  console.log('dataData:', daData);
+  console.log('dData:', aData);
 
 
   var qry =  "select count(*) as numTelefonate , tel_data";
@@ -51,12 +54,22 @@ router.get('/getData', function(req, res) {
   qry = qry + " group by tel_data order by tel_data ";
 
 
+ console.log(qry);
+
   dbMysql.get().query(qry, function(err, result) {
     if (err) {
       log.log2console(err);
       return res.status(500).json({ dataset: result });
     } else {
       log.log2console(result);
+
+      console.log('Phoner.js-------------------------------------------');
+
+      result.forEach(function(element) {
+        console.log(element);
+        element.data_ora = new Date(element.tel_data);
+      });
+
       return res.status(200).json({ dataset: result });
     }
   })

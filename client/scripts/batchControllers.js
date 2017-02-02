@@ -35,7 +35,10 @@ angular.module('myApp.controllers')
 
   socket.on('log:message', function (message) {
     console.log('S:LOG:MESSAGE', message);
-    if (message.progress)  $rootScope.$broadcast('dialogs.wait.progress',{'progress' : message.progress});
+    if (message.progress && message.msg)  $rootScope.$broadcast('dialogs.wait.progress',{
+      'msg': message.msg,
+      'progress' : message.progress
+    });
     $scope.messages.push(message);
   });
   

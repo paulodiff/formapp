@@ -86,36 +86,73 @@ angular.module('myApp.controllers')
 }])
 
 .controller('GraphPhoneCtrl', 
-            ['$rootScope','$scope', '$http', '$state', '$location','UtilsService', '$filter', 'Session', '$log', '$timeout','ENV', 'usSpinnerService',
-     function($rootScope,  $scope,   $http, $state,   $location,  UtilsService ,  $filter,   Session,   $log,   $timeout, ENV, usSpinnerService) {
+            ['$rootScope','$scope', '$http', '$state', '$location','UtilsService', '$filter', 'Session', '$log', '$timeout','ENV', 'usSpinnerService', 'NgTableParams',
+     function($rootScope,  $scope,   $http, $state,   $location,  UtilsService ,  $filter,   Session,   $log,   $timeout, ENV, usSpinnerService, NgTableParams) {
     
   $log.debug('GraphPhoneCtrl>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');                                 
 
+    
+
+  function getDatasource($column){
+    console.log('getDatasource------------------------');
+    console.log($column.title());
+    if ($column.title() === "Country") {
+        console.log('getDatasource ... ok');
+        return [{ id: '2017-01-23', title: "2017-01-23"}, { id: '2017-01-24', title: "2017-01-24"}];
+    }
+   }
+
+ 
+
 
   $scope.reloadData = function(){
-    console.log('reloadData');
+    console.log('reloadData .....');
+
+    console.log('Format Date');
+    
+    
+    var pars = {};
+    pars.daData = moment(vm.model.daData, 'DD/MM/YYYY', false).format('YYYY-MM-DD');
+    pars.aData = moment(vm.model.aData).format('YYYY-MM-DD');
+    pars.numTel = vm.model.numTel;
+
+    console.log(pars);
+    
+    var dataset = [{ name: 'christian', age: 21 }, { name: 'anthony', age: 88 }];
+    vm.tableParams = new NgTableParams({}, { dataset: dataset });
+        
     usSpinnerService.spin('spinner-1');
-    $http(  {
+    $http({
         url : $rootScope.base_url +  '/phone/getData',
         method : 'GET',
-        params : vm.model
+        params : pars
     })
-      .success(function(data) {
+    .success(function(data) {
         console.log(data);
-
-         
-
+       
         $scope.labels = [];
         $scope.data = [];
+    
+
+       console.log('reloadData ..... RESPONSE ....');
 
         angular.forEach(data.dataset, function(item) {
             $scope.data.push(item.numTelefonate);
-            $scope.labels.push(item.tel_data.substring(0, 10));
-            
+            // console.log(moment(item.tel_data).format('YYYY-MM-DD'));
+            $scope.labels.push(moment(item.tel_data).format('YYYY-MM-DD'));
+
+            dataset.push({
+              name: moment(item.tel_data).format('YYYY-MM-DD'),
+              age: item.numTelefonate,
+              country : moment(item.tel_data).format('YYYY-MM-DD')
+            })
+
         });
 
         usSpinnerService.stop('spinner-1');
       });  
+      
+    
 
   }
 
@@ -172,9 +209,7 @@ angular.module('myApp.controllers')
     opened: false
   };
 
-
   // simple form with formly
-
   
   var vm = this;
   var unique = 1;
@@ -190,11 +225,10 @@ angular.module('myApp.controllers')
       { "id": "Altro",  "label":"Altro" }
     ];
 
-
-
   vm.id = 'form01';
   vm.showError = true;
   vm.onSubmit = onSubmit;
+  vm.getDatasource = getDatasource;
   vm.author = { // optionally fill in your info below :-)
       name: 'RR',
       url: 'https://www.comune.rimini.it' // a link to your twitter/github/blog/whatever
@@ -212,15 +246,15 @@ angular.module('myApp.controllers')
       //showErrorState: true,
       //transactionId : UtilsService.getTimestampPlusRandom(),
       numTel: '4607',
-      daData: new Date('08-08-2016'),
-      aData: new Date('08-20-2016')
+      daData: new Date('01-19-2017'),
+      aData: new Date('01-31-2017')
   };
 
   vm.errors = {};
 
   // dati globali del form  
 
-    vm.options = {
+  vm.options = {
       formState: {
         awesomeIsForced: false
       },
@@ -246,7 +280,7 @@ angular.module('myApp.controllers')
           type: 'datepicker',
           templateOptions: {
               label: 'Data di Partenza',
-              type: 'text',
+              type: 'date',
               datepickerPopup: 'dd-MMMM-yyyy'
             }
          }
@@ -257,7 +291,7 @@ angular.module('myApp.controllers')
           type: 'datepicker',
           templateOptions: {
               label: 'Data di Arrivo',
-              type: 'text',
+              type: 'date',
               datepickerPopup: 'dd-MMMM-yyyy'
             }
          }

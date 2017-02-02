@@ -1,0 +1,46 @@
+<h1>sseChat-HTML</h1>
+
+<h1>Chat'n'cut</h1>
+      <form class="send-chat" ng-submit="sendChat()" >
+        <fieldset ng-disabled="newChat.sending || !user.id">
+          <input autofocus required min-length=1 ng-model=newChat.message>
+        </fieldset>
+      </form>
+
+      <div class="chat-messages">
+        <p ng-repeat="chat in chats | limitTo:10"
+            ng-class="{ sending: chat.sending, failed: chat.failed, mine: isMine(chat) }">
+          {{ chat.message }}
+        </p>
+      </div>
+
+      <select ng-options="item as item.label for item in listOfRooms track by item.id" ng-model="selected"></select>
+      
+      <li ng-repeat="color in listOfRooms">
+        <label><input type="checkbox" ng-model="color.id">{{color.label}}</label>
+      </li>
+
+<button type="submit" class="btn btn-lg btn-warning btn-block" ng-click="vm.testSocketIO()">TEST-SCOKET-IO</button>
+<button type="submit" class="btn btn-lg btn-warning btn-block" ng-click="vm.testSendData()">TEST-SEND-DATA</button>
+
+<div class="container">
+   
+     <div>
+
+      <form ng-submit="vm.onSubmit()" name="vm.form" novalidate>
+        <formly-form model="vm.model" fields="vm.fields" options="vm.options" form="vm.form">
+          <button type="submit" class="btn btn-lg btn-warning btn-block submit-button" ng-disabled="vm.form.$invalid">Invia i dati</button>
+        </formly-form>
+      </form>
+      
+      <p>Form Data</p>
+      <pre>{{vm.model | json}}</pre>
+      <p>Form Error</p>
+      <pre>{{vm.errors | json}}</pre>
+    </div>
+    <div>
+        <p>Output</p>
+        <pre>{{outputStatusCode}}</pre>
+        <pre>{{outputResponse}}</pre>
+    </div>
+</div>      

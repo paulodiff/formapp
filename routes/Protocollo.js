@@ -1851,22 +1851,22 @@ router.get('/getList', function(req, res) {
 //##############################################################################################################
 
 router.get('/testSIO', function(req, res) {
-  console.log('TESTSIO');
-  console.log(req.query);
+  
 
   var socketId = req.query.socketId;
-
   var io = req.app.get('socketio');
+
   io.emit('send:message', { msg: new Date() });
   io.to(socketId).emit('log:message', { msg: new Date(), progress: 0});
-  console.log('io.socket ... emitted!');
+  
 
+  logConsole.info(socketId, 'TESTSIO - START!');
 
  async.series([
             function(callback){
                 setTimeout(
                             function () {   
-                                logConsole.info('ASYNC 1B');   
+                                logConsole.info(socketId, ' - ASYNC 1');   
                                 io.to(socketId).emit('log:message', { msg: new Date(), progress: 10});     
                                 callback(null, 'OK1');
                            }, 2000);
@@ -1875,7 +1875,7 @@ router.get('/testSIO', function(req, res) {
             function(callback){
                 setTimeout(
                     function () {
-                        logConsole.info('ASYNC 2B');    
+                        logConsole.info(socketId, ' - ASYNC 2');    
                         io.to(socketId).emit('log:message', { msg: new Date(), progress:50 });
                         callback(null, 'OK2');
                 }, 2000);
@@ -1884,7 +1884,7 @@ router.get('/testSIO', function(req, res) {
             function(callback){
                 setTimeout(
                     function () {
-                        logConsole.info('ASYNC 3B');    
+                        logConsole.info(socketId, ' - ASYNC 3');    
                         io.to(socketId).emit('log:message', { msg: new Date(), progress: 75 });
                         callback(null, 'OK3');
                 }, 2000);
@@ -1893,7 +1893,7 @@ router.get('/testSIO', function(req, res) {
             function(callback){
                 setTimeout(
                     function () {
-                        logConsole.info('ASYNC 3B');    
+                        logConsole.info(socketId, ' - ASYNC 4');    
                         io.to(socketId).emit('log:message', { msg: new Date(), progress: 100 });
                         callback(null, 'OK4');
                 }, 2000);
@@ -1909,13 +1909,13 @@ router.get('/testSIO', function(req, res) {
 */
         ],function(err, results) {
             // results is now equal to: {one: 1, two: 2}
-            logConsole.info('ASYNC FINAL!:');
+            logConsole.info(socketId, ' - ASYNC FINAL!');
             if(err){
                 log2file.error(err);
                 logConsole.error(err);
                 res.status(ErrorMsg.code).send(ErrorMsg);
             } else {
-                logConsole.info('ALL OK!!!!');
+                logConsole.info(socketId, ' - ASYNC OK!');
                 res.status(200).send('ok');
             }
         });

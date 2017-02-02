@@ -23,6 +23,7 @@ angular.module('myApp', [//'ionic',
                          //'ngMockE2E',
                          'ngStorage',
                          'ngFileUpload',
+                         'ngTable',
                          'ui.grid',
                          'ui.grid.selection',
                          'ui.validate',
@@ -246,6 +247,16 @@ angular.module('myApp', [//'ionic',
         url: '/sigSend',
         templateUrl: 'templates/sigSend.html',
         controller: 'sigSendController',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+    $stateProvider.state('sseChat', {
+        url: '/sseChat',
+        templateUrl: 'templates/sseChat.html',
+        controller: 'sseChatController',
         controllerAs: 'vm',
         resolve: {
           //loginRequired: loginRequired

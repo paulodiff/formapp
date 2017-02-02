@@ -241,7 +241,98 @@ app.set('socketio', io);
 io.sockets.on('connection', Socket);
 
 
+// SSE -------------------------------------------------------------------------------------------------------------------------
+// da mettere nel middleware _ _ _ _ TO DO
+//https://github.com/timruffles/event-source-express-angular-real-time-tutorial/blob/master/server/server.js
+// create a demo room only
+var rooms = require("./models/room.js");
+var users = require("./models/userchat.js");
+rooms.create("demo");
 
+app.get("/sserooms/:id/chats", fetchRoom, function(req, res) {
+  console.log('GET /sserooms', req.params.id);
+  res.send(res.locals.room.latest());
+});
+
+app.post("/sserooms/:id/chats", fetchRoom, function(req, res) {
+  console.log('POST /sserooms', req.params.id);
+  console.log(res.locals.room);
+  var room = res.locals.room;
+  room.chat(req.body);
+  res.send(200);
+});
+
+app.get("/sserooms/:id/events", fetchRoom, function(req, res) {
+  var room = res.locals.room;
+  var sse = startSses(res);
+  room.on("chat", sendChat);
+      
+  req.once("end", function() {
+    rooms.removeListener("chat", sendChat);
+  });
+       
+  function sendChat(chat) {
+    sse("chat", chat);
+  }
+});
+
+app.get("/sseusers/:id", function(req, res) {
+  console.log('GET /sseusers');
+  users.get(req.params.id, function(err, user) {
+    if(err) {
+      return res.send(404);
+    }
+    console.log(user);
+    res.send(user);
+  });
+});
+
+app.post("/sseusers", function(req, res) {
+  console.log('POST /sseusers');
+  console.log('creazione utente');
+  users.create(function(err, user) {
+    if(err) {
+      return res.send(500);
+    }
+    console.log(user);
+    res.send(user);
+  });
+});
+
+
+
+
+function startSses(res) {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+  res.write("\n");
+
+  return function sendSse(name,data,id) {
+    res.write("event: " + name + "\n");
+    if(id) res.write("id: " + id + "\n");
+    res.write("data: " + JSON.stringify(data) + "\n\n");
+  }
+}
+
+// middleware
+function fetchRoom(req, res, next) {
+  // recuper l'id della chiamata ed imposta la room nelle variabili locali alla richiesta per elaborazione successiva
+  console.log('fetchRoom: ', req.params.id );
+  var room = rooms.get(req.params.id);
+  console.log('fetchRoom: ', room );
+  if(room) {
+    res.locals.room = room;
+    next();
+  } else {
+    res.status(404).end();
+  }
+}
+
+
+// SSE --------------------------------------------------------------------------------------------------------------------------
 
 //io.sockets.on('connection', function(socket){
 //    console.log('a user connected');
