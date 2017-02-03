@@ -6,7 +6,7 @@ angular.module('myApp.services')
    
 // .service('VersionService', [function() {  return '1.0.2'; }])
 
-.factory("EventSource", ['$rootScope', function ($rootScope) {
+.factory("EventSourceSse", ['$rootScope', function ($rootScope) {
   function EventSourceNg(url) {
     this._source = new EventSource(url);
   }
@@ -25,10 +25,11 @@ angular.module('myApp.services')
   var api = {
     create: function() {
       console.log('sseUsers:create');
-      var user = {};
+      var user = {}; // {Id, $promise}
 
       user.$promise = $http.post('/sseusers')
         .success(function(data) {
+          console.log('.. ritorna un Id dal server ..');
           //localStorage.userId = data.id;
           sessionStorage.userId = data.id;
           user.id = data.id;
@@ -52,7 +53,7 @@ angular.module('myApp.services')
   return api;
 }])
 
-.factory("sseChats", ['$http', '$rootScope', 'EventSource', function ($http, $rootScope, EventSource) {
+.factory("sseChats", ['$http', '$rootScope', 'EventSourceSse', function ($http, $rootScope, EventSourceSse) {
 
   function getForRoom(id, userId) {
 

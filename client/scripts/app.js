@@ -284,6 +284,9 @@ angular.module('myApp', [//'ionic',
       return deferred.promise;
     }
 
+    // material design
+    $.material.init();
+
 }])
 
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>Presentazione Istanze Online - Comune di Rimini</title>
+    <title>TEST-CSS</title>
     <link rel="shortcut icon" href="favicon.ico" />
 
     <link href="//fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600" rel="stylesheet">
@@ -47,7 +47,6 @@
     <script src="lib/bootstrap.min.js"></script>
 
     <!-- bootstrap-material-design -->
-    <script src="lib/bootstrap-material-design/js/arrive.min.js"></script>
     <script src="lib/bootstrap-material-design/js/ripples.min.js"></script>
     <script src="lib/bootstrap-material-design/js/material.min.js"></script>
     
@@ -290,10 +289,52 @@
 
     <span class="centeredspin" us-spinner="{radius:30, width:8, length: 16, position: relative}" spinner-key="spinner-1"></span>
     <div role="main">
-      <section ui-view></section>
+      
+
+
+<div class="container">
+
+  <h2>checkbox-inline</h2>
+  <div class="form-group">
+    <label class="checkbox-inline">
+    <input type="checkbox" id="inlineCheckbox1" value="option1"> 1
+  </label>
+    <label class="checkbox-inline">
+    <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
+  </label>
+    <label class="checkbox-inline">
+    <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
+  </label>
+    <div>
+
+      <h2>radio-inline</h2>
+      <div class="form-group">
+        <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1
+  </label>
+        <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2
+  </label>
+        <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 3
+  </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
     </div>
 
-    
+    <script>  $.material.init();  </script>
 
   </body>
 </html>

@@ -1,6 +1,7 @@
 var userId = 0;
 var users = {};
 
+// crea degli Id utente
 exports.create = function(cb) {
   console.log('userchat.js:create');
   userId += 1;

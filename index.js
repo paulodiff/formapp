@@ -235,16 +235,20 @@ app.use('/phone', Phone);
 var Push = require('./routes/Push')();
 app.use('/push', Push);
 
-
 var Socket = require('./routes/Socketr.js');
 app.set('socketio', io);
 io.sockets.on('connection', Socket);
+
+
+var Sse = require('./routes/Sse')();
+app.use('/sse', Sse);
 
 
 // SSE -------------------------------------------------------------------------------------------------------------------------
 // da mettere nel middleware _ _ _ _ TO DO
 //https://github.com/timruffles/event-source-express-angular-real-time-tutorial/blob/master/server/server.js
 // create a demo room only
+/*
 var rooms = require("./models/room.js");
 var users = require("./models/userchat.js");
 rooms.create("demo");
@@ -262,9 +266,16 @@ app.post("/sserooms/:id/chats", fetchRoom, function(req, res) {
   res.send(200);
 });
 
+// EventSource link :id (Room/SessionId)
 app.get("/sserooms/:id/events", fetchRoom, function(req, res) {
+  
+  
   var room = res.locals.room;
   var sse = startSses(res);
+
+  console.log('GET /sserooms/id/events', room);
+
+
   room.on("chat", sendChat);
       
   req.once("end", function() {
@@ -287,9 +298,11 @@ app.get("/sseusers/:id", function(req, res) {
   });
 });
 
+
+// POST sseuser crea l'utente e lo ritorna 
 app.post("/sseusers", function(req, res) {
-  console.log('POST /sseusers');
-  console.log('creazione utente');
+  console.log('# POST /sseusers');
+  console.log('# creazione utente');
   users.create(function(err, user) {
     if(err) {
       return res.send(500);
@@ -330,7 +343,7 @@ function fetchRoom(req, res, next) {
     res.status(404).end();
   }
 }
-
+*/
 
 // SSE --------------------------------------------------------------------------------------------------------------------------
 

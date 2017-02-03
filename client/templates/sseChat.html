@@ -1,46 +1,80 @@
-<h1>sseChat-HTML</h1>
-
-<h1>Chat'n'cut</h1>
-      <form class="send-chat" ng-submit="sendChat()" >
-        <fieldset ng-disabled="newChat.sending || !user.id">
-          <input autofocus required min-length=1 ng-model=newChat.message>
-        </fieldset>
-      </form>
-
-      <div class="chat-messages">
-        <p ng-repeat="chat in chats | limitTo:10"
-            ng-class="{ sending: chat.sending, failed: chat.failed, mine: isMine(chat) }">
-          {{ chat.message }}
-        </p>
-      </div>
-
-      <select ng-options="item as item.label for item in listOfRooms track by item.id" ng-model="selected"></select>
-      
-      <li ng-repeat="color in listOfRooms">
-        <label><input type="checkbox" ng-model="color.id">{{color.label}}</label>
-      </li>
-
-<button type="submit" class="btn btn-lg btn-warning btn-block" ng-click="vm.testSocketIO()">TEST-SCOKET-IO</button>
-<button type="submit" class="btn btn-lg btn-warning btn-block" ng-click="vm.testSendData()">TEST-SEND-DATA</button>
-
 <div class="container">
+
+    <h4>Node EventSource pub/sub {{sseUserId}}</h4>
+
+    
+    <div class="form-group">
+      <div ng-repeat="color in listOfChannels">
+          <label class="checkbox-inline">
+            <input type="checkbox" ng-model="color.id">{{color.label}}
+           </label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-raised btn-lg" ng-click="vm.sseConnect()">CONNECT</button>
+    <button type="submit" class="btn btn-primary btn-raised btn-info" ng-click="vm.sseSubscribe()">SUBSCRIBE</button>
+    <button type="submit" class="btn btn-primary btn-raised btn-danger" ng-click="vm.sseUnsubscribe()">UNSUBSCRIBE</button>
+    <button type="submit" class="btn btn-raised btn-raised btn-success" ng-click="vm.sseSendData()">SEND DATA</button>
+    <button type="submit" class="btn btn-primary btn-raised btn-success" ng-click="vm.sseTest()">TEST</button>
+
+<div class="form-group">
+  <label class="col-lg-2 control-label">Radios</label>
+
+  <div class="col-lg-10">
+    <div class="radio radio-primary">
+      <label>
+        <input type="radio" name="optionsRadios" checked="">
+        Option one
+      </label>
+    </div>
+    <div class="radio radio-primary">
+      <label>
+        <input type="radio" name="optionsRadios">
+        Option two
+      </label>
+    </div>
+  </div>
+</div>
+
+
+
    
      <div>
+      <p>Sse Messages</p>
+      <pre>{{vm.sseMessages | json}}</pre>
+      <pre>{{listOfChannels | json}}</pre>
+    </div>
 
-      <form ng-submit="vm.onSubmit()" name="vm.form" novalidate>
-        <formly-form model="vm.model" fields="vm.fields" options="vm.options" form="vm.form">
-          <button type="submit" class="btn btn-lg btn-warning btn-block submit-button" ng-disabled="vm.form.$invalid">Invia i dati</button>
-        </formly-form>
-      </form>
-      
-      <p>Form Data</p>
-      <pre>{{vm.model | json}}</pre>
-      <p>Form Error</p>
-      <pre>{{vm.errors | json}}</pre>
-    </div>
+
+
+  <h2>checkbox-inline</h2>
+  <div class="form-group">
+    <label class="checkbox-inline">
+    <input type="checkbox" id="inlineCheckbox1" value="option1"> 1
+  </label>
+    <label class="checkbox-inline">
+    <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
+  </label>
+    <label class="checkbox-inline">
+    <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
+  </label>
     <div>
-        <p>Output</p>
-        <pre>{{outputStatusCode}}</pre>
-        <pre>{{outputResponse}}</pre>
+
+      <h2>radio-inline</h2>
+      <div class="form-group">
+        <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1
+  </label>
+        <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2
+  </label>
+        <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 3
+  </label>
+      </div>
     </div>
-</div>      
+  </div>
+</div>
+
+<script> $.material.init(); </script>
