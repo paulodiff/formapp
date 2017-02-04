@@ -10,11 +10,18 @@ var ENV   = require('../config.js'); // load configuration data
 var User  = require('../models/user.js'); // load configuration data
 var utilityModule  = require('../models/utilityModule.js'); // load configuration data
 var clients = {};
+var channels = {};
+var subscriptions = {};
+
+
+channels['CH1'] = { id: 'CH1', desc: 'CH1D'};
+channels['CH2'] = { id: 'CH2', desc: 'CH2D'};
+channels['CH3'] = { id: 'CH3', desc: 'CH3D'};
 
 // fake middleware
 function fetchRoom(req, res, next) {
   // recuper l'id della chiamata ed imposta la room nelle variabili locali alla richiesta per elaborazione successiva
-  console.log('MIDDLEWARE fetchRoom: ', req.params.id );
+  console.log('MIDDLEWARE fetchRoom: ');
   next();
   // var room = rooms.get(req.params.id);
   // console.log('fetchRoom: ', room );
@@ -50,6 +57,135 @@ module.exports = function(){
       });
 
     });
+
+    // getChannels
+    // subChannel/:channelId
+    // unsubChannel/:channelId
+    // pubChannel/:channelId
+
+    // get all Channels
+    router.get("/getChannels", fetchRoom, function(req, res) {
+      console.log('/getChannels', channels);
+      res.status(200).send(channels); 
+    });
+
+
+    // subscribe to channel
+    router.get("/subChannel/:channelId/:userId", fetchRoom, function(req, res) {
+        var userId = req.params.userId.toString();
+        var channelId = req.params.channelId.toString();
+        var msg = '';
+        console.log('/subChannels/:channelId/:userId', channelId, userId);
+        if(!subscriptions[channelId]) subscriptions[channelId] = [];
+        if(subscriptions[channelId].indexOf(userId) === -1){
+          subscriptions[channelId].push(userId);
+          msg = {
+              action : "subscription ok!",
+              userId: userId,
+              channelId: channelId
+          }
+
+        } else {
+          console.log(userId, channelId, 'exist!');
+          msg = {
+            action : "subscription already exist!",
+            userId: userId,
+            channelId: channelId
+          }
+            
+        }
+        console.log(subscriptions);
+        
+        res.status(200).send(msg); 
+    });
+
+  
+    // ussubscribe to channel
+    router.get("/unsubChannel/:channelId/:userId", fetchRoom, function(req, res) {
+        var userId = req.params.userId.toString();
+        var channelId = req.params.channelId.toString();
+        var msg = '';
+        console.log('/unsubChannels/:channelId/:userId', channelId, userId);
+
+        // exist channel ?
+        if (subscriptions[channelId]){
+          // exist userId ?
+          if (subscriptions[channelId].indexOf(userId) === -1){
+            console.log('userId not found!');
+            msg = {
+              action : "unsubscription ERROR! USERID NOT FOUND!",
+              userId: userId,
+              channelId: channelId
+            }
+
+          } else {
+            console.log('delete ...');
+            var arrayId = subscriptions[channelId].indexOf(userId);
+            subscriptions[channelId].splice(arrayId);
+            msg = {
+              action : "unsubscription ok!",
+              userId: userId,
+              channelId: channelId
+            }
+          }
+
+        } else {
+          console.log('channel not found!');
+          msg = {
+            action : "unsubscription ERROR! CHANNEL NOT FOUND!",
+            userId: userId,
+            channelId: channelId
+          } 
+        } 
+        
+        console.log(subscriptions);
+    
+        res.status(200).send(msg); 
+    });
+
+
+    // pub to channel
+    router.get("/pubChannel/:channelId", fetchRoom, function(req, res) {
+        var channelId = req.params.channelId.toString();
+        var msg = '';
+        console.log('/pubChannel/:channelId', channelId);
+
+        // exist subscriptions to channel ?
+        if (subscriptions[channelId]){
+          // for all users channel publish message
+          subscriptions[channelId].forEach(function(userId){
+            if (clients[userId]){
+              console.log('send message ', channelId, userId);
+              clients[userId].write('id: ' + '100' + '\n');
+              clients[userId].write('data: {\n');
+              clients[userId].write('data: "msg": "hello world",\n');
+              clients[userId].write('data: "channelId": "' + channelId +  '",\n');
+              clients[userId].write('data: "userId": "' + userId + '"\n');
+              clients[userId].write('data: }\n\n');
+            } else {
+              console.log(userId, ' NOT FOUND!');    
+            }
+          });
+            msg = {
+              action : "pubChannel OK!",
+              userId: '',
+              channelId: channelId
+            }
+          
+        } else {
+            console.log(channelId, ' not found!');
+            msg = {
+              action : "pubChannel ERROR! CHANNELID NOT FOUND!",
+              userId: '',
+              channelId: channelId
+            }
+        }
+        console.log(subscriptions);
+        res.status(200).send(msg); 
+    });
+
+
+
 
     // subscribe to channel
     router.get("/sub/:channel", fetchRoom, function(req, res) {

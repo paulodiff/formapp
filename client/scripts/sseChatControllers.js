@@ -19,22 +19,7 @@ angular.module('myApp.controllers')
   
     vm.sseMessages = [];
 
-  $scope.listOfChannels = [{
-                            id: 1,
-                            label: 'Channel1',
-                            subItem: { name: 'aSubItem' }
-                        }, 
-                        {
-                            id: 2,
-                            label: 'Channel2',
-                            subItem: { name: 'bSubItem' }
-                        }, 
-                        {
-                            id: 3,
-                            label: 'Channel3',
-                            subItem: { name: 'bSubItem' }
-                        }
-                        ];
+  $scope.listOfChannels = [];
 
   $scope.sseUserId = UtilsService.getRandomId();
 
@@ -66,6 +51,17 @@ angular.module('myApp.controllers')
   }
   */
 
+  function updateReport(data){
+    for (var i in $scope.listOfChannels) {
+        console.log(data);
+        console.log($scope.listOfChannels[i].id);
+        if ($scope.listOfChannels[i].id == data.channelId) {
+            $scope.listOfChannels[i].cnt = $scope.listOfChannels[i].cnt + 1;
+            break; //Stop this loop, we found it!
+        }
+    }
+  }
+
   function sseConnect() {
         console.log('sseConnect');
         var id = $scope.sseUserId;
@@ -76,7 +72,12 @@ angular.module('myApp.controllers')
 
         chatEvents.addEventListener('message', function(e) {
             vm.sseMessages.push(e.data);
-            console.log(e);
+            console.log(e.data);
+            var data = JSON.parse(e.data);
+            console.log(data);
+            updateReport(data);
+            // $scope.listOfChannels
+            
         });
 
         chatEvents.addEventListener('open', function(e) {
@@ -85,23 +86,44 @@ angular.module('myApp.controllers')
 
   }
 
+  function sseSelectChannel(item){
+      console.log(item);
+      if (item.value) {
+          console.log('subscribe!');
+          var url = $rootScope.base_url + '/sse/subChannel/'  + item.id + '/' + $scope.sseUserId;
+      } else {
+          console.log('unsubscribe!');
+          var url = $rootScope.base_url + '/sse/unsubChannel/'  + item.id + '/' + $scope.sseUserId;
+      }
+      console.log(url);
+       $http.get(url).then(function(data) {
+                console.log(data);
+        }, function() {
+                console.log('test! - error');
+                console.log(data);
+        });
+  }
+
   function  sseSubscribe(){
       console.log('sseSubscribe');
   }
 
   function  sseUnsubscribe(){
       console.log('sseUnsubscribe');
-
+      
   }
 
-  function sseSendData(){
+  function sseSendData(item){
       console.log('sseSendData');
+      console.log(item);
+      var url = $rootScope.base_url + '/sse/pubChannel/'  + item.id;
+      console.log(url);
 
-     $http.get( $rootScope.base_url + '/sse/broadcast')
-        .then(function() {
-          console.log('test!');
+     $http.get(url)
+        .then(function(data) {
+          console.log(data);
         }, function() {
-          console.log('test! - error');
+          console.log(data);
         });
   }
 
@@ -122,7 +144,43 @@ angular.module('myApp.controllers')
   vm.sseSendData = sseSendData;
   vm.sseSubscribe = sseSubscribe;
   vm.sseUnsubscribe = sseUnsubscribe;
+  vm.sseSelectChannel = sseSelectChannel;
   vm.sseTest = sseTest;
+
+  // init channel - da muovere nei services
+  $http.get($rootScope.base_url + '/sse/getChannels')
+        .then(function(result) {
+            console.log('>getChannels ...')
+            console.log(result);
+
+
+        angular.forEach(result.data, function(item) {
+            //$scope.data.push(item.numTelefonate);
+            //$scope.labels.push(moment(item.tel_data).format('YYYY-MM-DD'));
+            console.log(item);
+
+            $scope.listOfChannels.push({
+                id : item.id,
+                desc: item.desc,
+                cnt : 0
+            });
+
+            /*
+            dataset.push({
+              name: moment(item.tel_data).format('YYYY-MM-DD'),
+              age: item.numTelefonate,
+              country : moment(item.tel_data).format('YYYY-MM-DD')
+            })
+            */
+
+        });
+        console.log($scope.listOfChannels);
+
+
+            //$scope.listOfChannels = data;
+        }, function() {
+          console.log('getChannels! - error');
+   });
 
                                  
 }]);
