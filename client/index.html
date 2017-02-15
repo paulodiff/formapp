@@ -13,8 +13,11 @@
     <link href="css/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <link href="lib/bootstrap.min.css" rel="stylesheet">
+
     <link href="lib/bootstrap-material-design/css/bootstrap-material-design.css" rel="stylesheet">
     <link href="lib/bootstrap-material-design/css/ripples.min.css" rel="stylesheet">
+    <link href="lib/bootstrap-material-design/css/snackbar.min.css" rel="stylesheet">
+
     <link href="css/style.css" rel="stylesheet">
     <link href="bower_components/please-wait/build/please-wait.css" rel="stylesheet">
     <link href="bower_components/angular-ui-select/dist/select.css" rel="stylesheet">
@@ -50,6 +53,7 @@
     <script src="lib/bootstrap-material-design/js/arrive.min.js"></script>
     <script src="lib/bootstrap-material-design/js/ripples.min.js"></script>
     <script src="lib/bootstrap-material-design/js/material.min.js"></script>
+    <script src="lib/bootstrap-material-design/js/snackbar.min.js"></script>
     
 
 
@@ -159,6 +163,7 @@
     <script src="scripts/protocolloControllers.js"></script>
     <script src="scripts/batchControllers.js"></script>
     <script src="scripts/sseChatControllers.js"></script>
+    <script src="scripts/pushControllers.js"></script>
 
     <script src="scripts/filters.js"></script>
     <script src="scripts/rootDirectives.js"></script>
@@ -168,12 +173,9 @@
       
     <!-- endbuild -->
 
-     
-    
-<!--    
--->    
+       
 
-    <!-- <script src="scripts/service-worker-registration.js"></script> -->
+    <!-- SERVICE WORKER REGISTRATION -->
 
     
   </head>
@@ -210,6 +212,7 @@
                 <li><a href="#/elezioni">_****_</a></li>
                 <li><a href="#/batch">_B_</a></li>
                 <li><a href="#/sseChat">SSE</a></li>
+                <li><a href="#/push">P</a></li>
                 <!-- <li><a href="#/elezioni">Elezioni</a></li> -->
           </ul>
 
@@ -234,6 +237,7 @@
                 <li><a href="#/form" ng-click="isCollapsed = !isCollapsed">F1</a></li>
                 <li><a href="#/sigPhoto" ng-click="isCollapsed = !isCollapsed">P1</a></li>
                 <li><a href="#/sseChat" ng-click="isCollapsed = !isCollapsed">SSE</a></li>
+                <li><a href="#/push">P</a></li>
                 <li ng-if="isAuthenticated()"><a href="#/logout">Esci({{getUserId()}})</a></li>
             </ul>
         </nav>

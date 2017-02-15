@@ -264,6 +264,17 @@ angular.module('myApp', [//'ionic',
     });
 
 
+    $stateProvider.state('push', {
+        url: '/push',
+        templateUrl: 'templates/push.html',
+        controller: 'pushController',
+        controllerAs: 'vm',
+        resolve: {
+          //loginRequired: loginRequired
+        }
+    });
+
+
     function skipIfLoggedIn($q, $auth) {
       var deferred = $q.defer();
       if ($auth.isAuthenticated()) {

@@ -156,12 +156,21 @@ module.exports = function(){
           subscriptions[channelId].forEach(function(userId){
             if (clients[userId]){
               console.log('send message ', channelId, userId);
+              var msg = {
+                action: 'published!',
+                channelId: channelId,
+                userId: userId
+              }
               clients[userId].write('id: ' + '100' + '\n');
+              // res.write("data: " + JSON.stringify(data) + "\n\n");
+              clients[userId].write("data: " + JSON.stringify(msg) + "\n\n");
+              /*
               clients[userId].write('data: {\n');
               clients[userId].write('data: "msg": "hello world",\n');
               clients[userId].write('data: "channelId": "' + channelId +  '",\n');
               clients[userId].write('data: "userId": "' + userId + '"\n');
               clients[userId].write('data: }\n\n');
+              */
             } else {
               console.log(userId, ' NOT FOUND!');    
             }
@@ -186,28 +195,24 @@ module.exports = function(){
 
 
 
-
-    // subscribe to channel
-    router.get("/sub/:channel", fetchRoom, function(req, res) {
-      var channel = request.params.id.toString();
-      console.log('/sub/:channel', channel);
-      // verifica autenticazione
-      // sottoscrizione al canale
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end();      
-    });
-
-    router.get("/broadcast", function(req, res) {
+    router.get("/pubBroadcast", function(req, res) {
       // verifica autenticazione
       
       console.log('>/broadcast');
       //console.log(clients);
 
-      for (var index in clients){
-          console.log(index);
+      for (var userId in clients){
+          console.log(userId);
           console.log('SEND DATA..................');
-          clients[index].write('id: ' + '100' + '\n');
-          clients[index].write('data: ' + 'DATI' + '\n\n');
+
+          var msg = {
+                msg: 'broadcast',
+                channelId: 'broadcast',
+                userId: userId
+          }
+        clients[userId].write('id: ' + '999' + '\n');
+        clients[userId].write("data: " + JSON.stringify(msg) + "\n\n");
+
       }
 
       /*
@@ -217,9 +222,7 @@ module.exports = function(){
           element.write('data: ' + 'DATI' + '\n\n');
       });
       */
-
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end();      
+      res.status(200).send({msg: 'broadcast sent!'});
 
     });
 
@@ -231,6 +234,12 @@ module.exports = function(){
       var channel = request.body.channel;
       console.log('>/post/:channel', channel);
       console.log(clients);
+
+      var msg = {
+                msg: 'hello!',
+                channelId: channelId,
+                userId: userId
+      }
 
 
       clients.forEach(function(element) {
@@ -244,31 +253,7 @@ module.exports = function(){
 
     });
 
-    // unsubscribe to channel
-    router.get("/unsub/:channel", fetchRoom, function(req, res) {
-      // verifica autenticazione
-      // sottoscrizione al canale
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end();      
-    });
 
-    router.post('/pub/news', function(req, res){
-        console.log('New post');
-        // chiude correttamente la richiesta
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.end();
-
-        //var id = request.body.id;
-
-        /*
-        if(clients[id] != null) {
-            console.log('id = ' + id);
-            console.log('data = ' + request.body.data);
-            clients[id].write('id: ' + request.body.id + '\n');
-            clients[id].write('data: ' + request.body.data + '\n\n');
-        }
-        */
-    });
 
     // test
     router.get("/test", function(req, res) {

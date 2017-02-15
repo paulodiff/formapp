@@ -84,6 +84,8 @@ angular.module('myApp.controllers')
             console.log(e);
         });
 
+        $.snackbar({content: 'Client connected!'});
+
   }
 
   function sseSelectChannel(item){
@@ -98,6 +100,9 @@ angular.module('myApp.controllers')
       console.log(url);
        $http.get(url).then(function(data) {
                 console.log(data);
+                var msg = data.data.channelId + ":" + data.data.action;
+                console.log(msg);
+                $.snackbar({content: msg});
         }, function() {
                 console.log('test! - error');
                 console.log(data);
@@ -122,6 +127,9 @@ angular.module('myApp.controllers')
      $http.get(url)
         .then(function(data) {
           console.log(data);
+          var msg = data.data.channelId + ":" + data.data.action;
+          $.snackbar({content: msg});
+
         }, function() {
           console.log(data);
         });
@@ -129,7 +137,19 @@ angular.module('myApp.controllers')
 
 
   function sseTest(){
-      console.log('sseTest');
+      console.log('sseTest ....');
+
+      var options =  {
+            content: "Some text" // text of the snackbar
+            // style: "toast", // add a custom class to your snackbar
+            //timeout: 100, // time in milliseconds after the snackbar autohides, 0 is disabled
+            //htmlAllowed: true, // allows HTML as content value
+            //onClose: function(){ } // callback called when the snackbar gets closed.        
+    }
+
+    //$.snackbar({content: 'This is a JS generated snackbar, it rocks!'});
+    $.snackbar(options);
+
 
       $http.get($rootScope.base_url + '/sse/test')
         .then(function(data) {
